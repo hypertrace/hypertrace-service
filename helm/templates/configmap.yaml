@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMap.name }}
+  labels:
+    release: {{ .Release.Name }}
+data:
+  application.conf: |-
+    document.store {
+      dataStoreType = mongo
+      mongo {
+        {{- if .Values.configMap.mongodb.url }}
+        url = {{ .Values.configMap.mongodb.url | quote }}
+        {{- else }}
+        host = {{ .Values.configMap.mongodb.host }}
+        {{- end }}
+      }
+    }
