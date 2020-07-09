@@ -1,0 +1,52 @@
+###########
+# Deployment and Service
+###########
+replicaCount: 1
+maxUnavailable: 0
+
+image:
+  repository: hypertrace/hypertrace-federated-service
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+containerPort: 9001
+containerHealthProbePort: 9002
+
+nodeLabels: {}
+
+javaOpts: "-XX:InitialRAMPercentage=50.0 -XX:MaxRAMPercentage=75.0"
+
+livenessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 5
+
+readinessProbe:
+  initialDelaySeconds: 2
+  periodSeconds: 5
+
+resources:
+  limits:
+    cpu: 2
+    memory: 768Mi
+  requests:
+    cpu: 100m
+    memory: 768Mi
+
+deploymentLabels:
+  app: hypertrace-federated-service
+
+podLabels:
+  app: hypertrace-federated-service
+
+deploymentSelectorMatchLabels:
+  app: hypertrace-federated-service
+
+logConfig:
+  name: hypertrace-federated-service-log-config
+  monitorInterval: 30
+  rootLogger:
+    level: INFO
+  appender:
+    rolling:
+      enabled: false
