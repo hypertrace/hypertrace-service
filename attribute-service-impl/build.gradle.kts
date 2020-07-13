@@ -13,8 +13,8 @@ dependencies {
         + " introduced org.apache.httpcomponents:httpclient@4.5.12")
   }
 
-  implementation("org.hypertrace.core.documentstore:document-store:0.1.0")
-  implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.1.0")
+  implementation("org.hypertrace.core.documentstore:document-store:0.1.1")
+  implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.1.1")
 
   implementation("com.fasterxml.jackson.core:jackson-databind:2.9.5")
   implementation("com.typesafe:config:1.3.2")

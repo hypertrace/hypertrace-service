@@ -56,9 +56,9 @@ tasks.integrationTest {
 dependencies {
   implementation(project(":attribute-service-impl"))
 
-  implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.0")
-  implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.1.0")
-  implementation("org.hypertrace.core.documentstore:document-store:0.1.0")
+  implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.3")
+  implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.1.1")
+  implementation("org.hypertrace.core.documentstore:document-store:0.1.1")
 
   // Logging
   implementation("org.slf4j:slf4j-api:1.7.25")
@@ -73,7 +73,7 @@ dependencies {
   //Integration test dependencies
   integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
   integrationTestImplementation(project(":attribute-service-client"))
-  integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.0")
+  integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.3")
 }
 
 application {
