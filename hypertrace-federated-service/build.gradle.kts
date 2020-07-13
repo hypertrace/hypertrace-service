@@ -17,9 +17,9 @@ dependencies {
   implementation("org.hypertrace.gateway.service:gateway-service")
   implementation("org.hypertrace.gateway.service:gateway-service-impl")
 
-  implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.2")
-  implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.1.0")
-  implementation("org.hypertrace.core.documentstore:document-store:0.1.0")
+  implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.3")
+  implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.1.1")
+  implementation("org.hypertrace.core.documentstore:document-store:0.1.1")
 
   // Logging
   implementation("org.slf4j:slf4j-api:1.7.30")
