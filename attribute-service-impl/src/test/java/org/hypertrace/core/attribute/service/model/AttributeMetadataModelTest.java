@@ -40,7 +40,7 @@ public class AttributeMetadataModelTest {
             + "\"unit\":\"ms\","
             + "\"type\":\"ATTRIBUTE\","
             + "\"labels\":[\"item1\"],"
-            + "\"groupable\":false,"
+            + "\"groupable\":true,"
             + "\"supportedAggregations\":[],"
             + "\"onlyAggregationsAllowed\":false,"
             + "\"sources\":[],"
@@ -102,7 +102,9 @@ public class AttributeMetadataModelTest {
             + "}";
 
     AttributeMetadataModel deserializedModel = AttributeMetadataModel.fromJson(json);
-    Assertions.assertFalse(deserializedModel.isGroupable());
+    Assertions.assertTrue(deserializedModel.isGroupable());
+    AttributeMetadata metadata = deserializedModel.toDTO();
+    Assertions.assertTrue(metadata.getGroupable());
 
     json =
         "{"
@@ -113,7 +115,7 @@ public class AttributeMetadataModelTest {
             + "\"unit\":\"ms\","
             + "\"type\":\"ATTRIBUTE\","
             + "\"labels\":[\"item1\"],"
-            + "\"groupable\":true,"
+            + "\"groupable\":false,"
             + "\"supportedAggregations\":[],"
             + "\"onlyAggregationsAllowed\":false,"
             + "\"sources\":[],"
@@ -124,8 +126,8 @@ public class AttributeMetadataModelTest {
             + "}";
 
     deserializedModel = AttributeMetadataModel.fromJson(json);
-    Assertions.assertTrue(deserializedModel.isGroupable());
-    AttributeMetadata metadata = deserializedModel.toDTO();
-    Assertions.assertTrue(metadata.getGroupable());
+    Assertions.assertFalse(deserializedModel.isGroupable());
+    metadata = deserializedModel.toDTO();
+    Assertions.assertFalse(metadata.getGroupable());
   }
 }

@@ -47,8 +47,7 @@ public class AttributeMetadataModel implements Document {
   @JsonProperty(value = "tenant_id")
   private String tenantId;
 
-  /** if true, UI will render the attribute in group-by widget */
-  private boolean groupable;
+  private boolean groupable = true;
 
   private List<AggregateFunction> supportedAggregations = Collections.emptyList();
   private boolean onlyAggregationsAllowed;
