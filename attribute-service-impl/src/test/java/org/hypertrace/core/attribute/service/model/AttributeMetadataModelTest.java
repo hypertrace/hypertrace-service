@@ -125,5 +125,7 @@ public class AttributeMetadataModelTest {
 
     deserializedModel = AttributeMetadataModel.fromJson(json);
     Assertions.assertTrue(deserializedModel.isGroupable());
+    AttributeMetadata metadata = deserializedModel.toDTO();
+    Assertions.assertTrue(metadata.getGroupable());
   }
 }
