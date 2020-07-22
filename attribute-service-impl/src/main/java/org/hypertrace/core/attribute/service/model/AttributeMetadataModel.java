@@ -47,6 +47,9 @@ public class AttributeMetadataModel implements Document {
   @JsonProperty(value = "tenant_id")
   private String tenantId;
 
+  /** if true, UI will render the attribute in group-by widget */
+  private boolean groupable;
+
   private List<AggregateFunction> supportedAggregations = Collections.emptyList();
   private boolean onlyAggregationsAllowed;
   private List<AttributeSource> sources = Collections.emptyList();
@@ -70,6 +73,7 @@ public class AttributeMetadataModel implements Document {
     attributeMetadataModel.setOnlyAggregationsAllowed(
         attributeMetadata.getOnlyAggregationsAllowed());
     attributeMetadataModel.setSources(attributeMetadata.getSourcesList());
+    attributeMetadataModel.setGroupable(attributeMetadata.getGroupable());
     attributeMetadataModel.setMetadata(
         attributeMetadata.getMetadataMap().entrySet().stream()
             .collect(
@@ -168,6 +172,14 @@ public class AttributeMetadataModel implements Document {
     this.tenantId = tenantId;
   }
 
+  public boolean isGroupable() {
+    return groupable;
+  }
+
+  public void setGroupable(boolean groupable) {
+    this.groupable = groupable;
+  }
+
   public List<AttributeSource> getSources() {
     return sources;
   }
@@ -210,6 +222,7 @@ public class AttributeMetadataModel implements Document {
             .setValueKind(valueKind)
             .setDisplayName(displayName)
             .setMaterialized(materialized)
+            .setGroupable(groupable)
             .setType(type)
             .addAllLabels(labels)
             .addAllSupportedAggregations(supportedAggregations)
@@ -270,6 +283,8 @@ public class AttributeMetadataModel implements Document {
         + ", tenantId='"
         + tenantId
         + '\''
+        + ", groupable="
+        + groupable
         + ", supportedAggregations="
         + supportedAggregations
         + ", onlyAggregationsAllowed="
@@ -301,6 +316,7 @@ public class AttributeMetadataModel implements Document {
         && type == that.type
         && Objects.equals(labels, that.labels)
         && Objects.equals(tenantId, that.tenantId)
+        && Objects.equals(groupable, that.groupable)
         && Objects.equals(supportedAggregations, that.supportedAggregations)
         && Objects.equals(sources, that.sources)
         && Objects.equals(metadata, that.metadata);
@@ -319,6 +335,7 @@ public class AttributeMetadataModel implements Document {
         type,
         labels,
         tenantId,
+        groupable,
         supportedAggregations,
         onlyAggregationsAllowed,
         sources,

@@ -40,6 +40,7 @@ public class AttributeMetadataModelTest {
             + "\"unit\":\"ms\","
             + "\"type\":\"ATTRIBUTE\","
             + "\"labels\":[\"item1\"],"
+            + "\"groupable\":false,"
             + "\"supportedAggregations\":[],"
             + "\"onlyAggregationsAllowed\":false,"
             + "\"sources\":[],"
@@ -78,5 +79,51 @@ public class AttributeMetadataModelTest {
     AttributeMetadata attributeMetadata1 =
         AttributeMetadataModel.fromDTO(attributeMetadata).toDTO();
     Assertions.assertEquals(attributeMetadata, attributeMetadata1);
+  }
+
+  @Test
+  public void testAttributeMetaModelFromJson() throws IOException {
+    String json =
+        "{"
+            + "\"fqn\":\"fqn\","
+            + "\"key\":\"key\","
+            + "\"scope\":\"EVENT\","
+            + "\"materialized\":true,"
+            + "\"unit\":\"ms\","
+            + "\"type\":\"ATTRIBUTE\","
+            + "\"labels\":[\"item1\"],"
+            + "\"supportedAggregations\":[],"
+            + "\"onlyAggregationsAllowed\":false,"
+            + "\"sources\":[],"
+            + "\"id\":\"EVENT.key\","
+            + "\"value_kind\":\"TYPE_STRING\","
+            + "\"display_name\":\"Some Name\","
+            + "\"tenant_id\":\"tenantId\""
+            + "}";
+
+    AttributeMetadataModel deserializedModel = AttributeMetadataModel.fromJson(json);
+    Assertions.assertFalse(deserializedModel.isGroupable());
+
+    json =
+        "{"
+            + "\"fqn\":\"fqn\","
+            + "\"key\":\"key\","
+            + "\"scope\":\"EVENT\","
+            + "\"materialized\":true,"
+            + "\"unit\":\"ms\","
+            + "\"type\":\"ATTRIBUTE\","
+            + "\"labels\":[\"item1\"],"
+            + "\"groupable\":true,"
+            + "\"supportedAggregations\":[],"
+            + "\"onlyAggregationsAllowed\":false,"
+            + "\"sources\":[],"
+            + "\"id\":\"EVENT.key\","
+            + "\"value_kind\":\"TYPE_STRING\","
+            + "\"display_name\":\"Some Name\","
+            + "\"tenant_id\":\"tenantId\""
+            + "}";
+
+    deserializedModel = AttributeMetadataModel.fromJson(json);
+    Assertions.assertTrue(deserializedModel.isGroupable());
   }
 }
