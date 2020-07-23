@@ -47,7 +47,7 @@ public class AttributeMetadataModel implements Document {
   @JsonProperty(value = "tenant_id")
   private String tenantId;
 
-  private boolean groupable = true;
+  private Boolean groupable;
 
   private List<AggregateFunction> supportedAggregations = Collections.emptyList();
   private boolean onlyAggregationsAllowed;
@@ -172,7 +172,9 @@ public class AttributeMetadataModel implements Document {
   }
 
   public boolean isGroupable() {
-    return groupable;
+    return groupable != null
+        ? groupable.booleanValue()
+        : AttributeKind.TYPE_STRING.equals(valueKind);
   }
 
   public void setGroupable(boolean groupable) {
@@ -221,7 +223,7 @@ public class AttributeMetadataModel implements Document {
             .setValueKind(valueKind)
             .setDisplayName(displayName)
             .setMaterialized(materialized)
-            .setGroupable(groupable)
+            .setGroupable(isGroupable())
             .setType(type)
             .addAllLabels(labels)
             .addAllSupportedAggregations(supportedAggregations)
