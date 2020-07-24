@@ -14,7 +14,7 @@ dependencies {
   }
 
   implementation("org.hypertrace.core.documentstore:document-store:0.1.1")
-  implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.1.1")
+  implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.1.3")
 
   implementation("com.fasterxml.jackson.core:jackson-databind:2.9.5")
   implementation("com.typesafe:config:1.3.2")
