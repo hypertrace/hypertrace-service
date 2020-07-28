@@ -10,4 +10,8 @@ ignore:
     - '*':
         reason: no available replacement
         expires: 2020-07-31T00:00:00.000Z
+  SNYK-JAVA-IOGRPC-571957:
+    - '*':
+        reason: No replacement available
+        expires: 2020-08-31T00:00:00.000Z
 patch: {}
