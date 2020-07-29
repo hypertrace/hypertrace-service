@@ -97,6 +97,7 @@ message AttributeMetadata {
   repeated AttributeSource sources = 12;
   map<string, AttributeSourceMetadata> metadata = 13;
   string id = 14;
+  bool groupable = 15;
 }
 
 message AttributeSourceMetadata {

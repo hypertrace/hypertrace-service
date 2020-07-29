@@ -84,6 +84,7 @@ public class AttributeServiceImplTest {
               .setScope(AttributeScope.EVENT)
               .setDisplayName("EVENT name")
               .setValueKind(AttributeKind.TYPE_STRING)
+              .setGroupable(true)
               .setType(AttributeType.ATTRIBUTE)
               // Add default aggregations. See SupportedAggregationsDecorator
               .addAllSupportedAggregations(List.of(AggregateFunction.DISTINCT_COUNT))
@@ -95,6 +96,7 @@ public class AttributeServiceImplTest {
               .setKey("duration")
               .setScope(AttributeScope.EVENT)
               .setDisplayName("EVENT duration")
+              .setGroupable(false)
               .setValueKind(AttributeKind.TYPE_INT64)
               .setType(AttributeType.METRIC)
               // Add default aggregations. See SupportedAggregationsDecorator
@@ -239,6 +241,7 @@ public class AttributeServiceImplTest {
               .setScope(AttributeScope.EVENT)
               .setDisplayName("EVENT name")
               .setValueKind(AttributeKind.TYPE_STRING)
+              .setGroupable(true)
               .setType(AttributeType.ATTRIBUTE)
               // Add default aggregations. See SupportedAggregationsDecorator
               .addAllSupportedAggregations(List.of(AggregateFunction.DISTINCT_COUNT))
@@ -250,6 +253,7 @@ public class AttributeServiceImplTest {
               .setKey("duration")
               .setScope(AttributeScope.EVENT)
               .setDisplayName("EVENT duration")
+              .setGroupable(false)
               .setValueKind(AttributeKind.TYPE_INT64)
               .setType(AttributeType.METRIC)
               // Add default aggregations. See SupportedAggregationsDecorator

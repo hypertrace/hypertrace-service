@@ -24,6 +24,7 @@ public class AttributeMetadataModelTest {
     attributeMetadataModel.setKey("key");
     attributeMetadataModel.setDisplayName("Some Name");
     attributeMetadataModel.setMaterialized(true);
+    attributeMetadataModel.setGroupable(true);
     attributeMetadataModel.setScope(AttributeScope.EVENT);
     attributeMetadataModel.setType(AttributeType.ATTRIBUTE);
     attributeMetadataModel.setUnit("ms");
@@ -40,6 +41,7 @@ public class AttributeMetadataModelTest {
             + "\"unit\":\"ms\","
             + "\"type\":\"ATTRIBUTE\","
             + "\"labels\":[\"item1\"],"
+            + "\"groupable\":true,"
             + "\"supportedAggregations\":[],"
             + "\"onlyAggregationsAllowed\":false,"
             + "\"sources\":[],"
@@ -78,5 +80,107 @@ public class AttributeMetadataModelTest {
     AttributeMetadata attributeMetadata1 =
         AttributeMetadataModel.fromDTO(attributeMetadata).toDTO();
     Assertions.assertEquals(attributeMetadata, attributeMetadata1);
+  }
+
+  @Test
+  public void testAttributeMetaModelGroupableFromJson() throws IOException {
+    String json =
+        "{"
+            + "\"fqn\":\"fqn\","
+            + "\"key\":\"key\","
+            + "\"scope\":\"EVENT\","
+            + "\"materialized\":true,"
+            + "\"unit\":\"ms\","
+            + "\"type\":\"ATTRIBUTE\","
+            + "\"labels\":[\"item1\"],"
+            + "\"supportedAggregations\":[],"
+            + "\"onlyAggregationsAllowed\":false,"
+            + "\"sources\":[],"
+            + "\"id\":\"EVENT.key\","
+            + "\"value_kind\":\"TYPE_BOOL\","
+            + "\"display_name\":\"Some Name\","
+            + "\"tenant_id\":\"tenantId\""
+            + "}";
+
+    // backward compatibility test, no groupable field, BOOL type
+    AttributeMetadataModel deserializedModel = AttributeMetadataModel.fromJson(json);
+    Assertions.assertFalse(deserializedModel.isGroupable());
+    AttributeMetadata metadata = deserializedModel.toDTO();
+    Assertions.assertFalse(metadata.getGroupable());
+
+    json =
+        "{"
+            + "\"fqn\":\"fqn\","
+            + "\"key\":\"key\","
+            + "\"scope\":\"EVENT\","
+            + "\"materialized\":true,"
+            + "\"unit\":\"ms\","
+            + "\"type\":\"ATTRIBUTE\","
+            + "\"labels\":[\"item1\"],"
+            + "\"supportedAggregations\":[],"
+            + "\"onlyAggregationsAllowed\":false,"
+            + "\"sources\":[],"
+            + "\"id\":\"EVENT.key\","
+            + "\"value_kind\":\"TYPE_STRING\","
+            + "\"display_name\":\"Some Name\","
+            + "\"tenant_id\":\"tenantId\""
+            + "}";
+
+    // backward compatibility test, no groupable field, STRING type
+    deserializedModel = AttributeMetadataModel.fromJson(json);
+    Assertions.assertTrue(deserializedModel.isGroupable());
+    metadata = deserializedModel.toDTO();
+    Assertions.assertTrue(metadata.getGroupable());
+
+    json =
+        "{"
+            + "\"fqn\":\"fqn\","
+            + "\"key\":\"key\","
+            + "\"scope\":\"EVENT\","
+            + "\"materialized\":true,"
+            + "\"unit\":\"ms\","
+            + "\"type\":\"ATTRIBUTE\","
+            + "\"labels\":[\"item1\"],"
+            + "\"groupable\":true,"
+            + "\"supportedAggregations\":[],"
+            + "\"onlyAggregationsAllowed\":false,"
+            + "\"sources\":[],"
+            + "\"id\":\"EVENT.key\","
+            + "\"value_kind\":\"TYPE_BOOL\","
+            + "\"display_name\":\"Some Name\","
+            + "\"tenant_id\":\"tenantId\""
+            + "}";
+
+    // override default, BOOL type
+    deserializedModel = AttributeMetadataModel.fromJson(json);
+    Assertions.assertTrue(deserializedModel.isGroupable());
+    metadata = deserializedModel.toDTO();
+    Assertions.assertTrue(metadata.getGroupable());
+
+
+    json =
+        "{"
+            + "\"fqn\":\"fqn\","
+            + "\"key\":\"key\","
+            + "\"scope\":\"EVENT\","
+            + "\"materialized\":true,"
+            + "\"unit\":\"ms\","
+            + "\"type\":\"ATTRIBUTE\","
+            + "\"labels\":[\"item1\"],"
+            + "\"groupable\":false,"
+            + "\"supportedAggregations\":[],"
+            + "\"onlyAggregationsAllowed\":false,"
+            + "\"sources\":[],"
+            + "\"id\":\"EVENT.key\","
+            + "\"value_kind\":\"TYPE_STRING\","
+            + "\"display_name\":\"Some Name\","
+            + "\"tenant_id\":\"tenantId\""
+            + "}";
+
+    // override default, STRING type
+    deserializedModel = AttributeMetadataModel.fromJson(json);
+    Assertions.assertFalse(deserializedModel.isGroupable());
+    metadata = deserializedModel.toDTO();
+    Assertions.assertFalse(metadata.getGroupable());
   }
 }
