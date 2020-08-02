@@ -66,5 +66,4 @@ logConfig:
 config-bootstrapper:
   job:
     prefix: attribute
-
-configurationCommands: {}
+  configurationCommands: {}
