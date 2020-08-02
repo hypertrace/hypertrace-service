@@ -65,7 +65,7 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: [ "-c", "/etc/config-bootstrapper/application.conf", "-C", "/etc/config-bootstrapper/configs", "--upgrade" ]
+          args: [ "-c", "/etc/config-bootstrapper/application.conf", "-C", "/app/resources/configs/config-bootstrapper/{{ .Values.job.prefix }}-service", "--upgrade" ]
           env:
             - name: SERVICE_NAME
               value: "{{ .Chart.Name }}"
@@ -79,8 +79,12 @@ spec:
               subPath: application.conf
             - name: log4j-config
               mountPath: /var/{{ .Chart.Name }}/log
+            {{- range $key, $value := .Values.configurationCommands }}
             - name: bootstrap-configs
-              mountPath: /etc/config-bootstrapper/configs
+              mountPath: /app/resources/configs/config-bootstrapper/{{ $.Values.job.prefix }}-service/extras/{{ $key }}
+              subPath: {{ $key }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+
   backoffLimit: 100

@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.hypertrace.core.bootstrapper.commands.Command;
 import org.hypertrace.core.bootstrapper.commands.Command.Operation;
 import org.hypertrace.core.bootstrapper.commands.CommandType;
@@ -68,7 +69,8 @@ public class BootstrapRunner {
         "Starting validate with args:{} at time:{}", bootstrapArgs, System.currentTimeMillis());
     File commandsResource = new File(bootstrapArgs.getCommandResource());
     File[] commandFiles =
-        (commandsResource.isFile()) ? new File[] {commandsResource} : commandsResource.listFiles();
+        (commandsResource.isFile()) ? new File[] {commandsResource} :
+            FileUtils.listFiles(commandsResource, null, true).toArray(File[]::new);
     Map<ConfigBootstrapStatusKey, Config> bootstrapStatusKeyConfigMap =
         groupConfigsByKey(commandFiles);
     for (Entry<ConfigBootstrapStatusKey, Config> configEntry :
@@ -85,7 +87,8 @@ public class BootstrapRunner {
         "Starting upgrade with args:{} at time:{}", bootstrapArgs, System.currentTimeMillis());
     File commandsResource = new File(bootstrapArgs.getCommandResource());
     File[] commandFiles =
-        (commandsResource.isFile()) ? new File[] {commandsResource} : commandsResource.listFiles();
+        (commandsResource.isFile()) ? new File[] {commandsResource} :
+            FileUtils.listFiles(commandsResource, null, true).toArray(File[]::new);
     Map<ConfigBootstrapStatusKey, Config> bootstrapStatusKeyConfigMap =
         groupConfigsByKey(commandFiles);
     for (Entry<ConfigBootstrapStatusKey, Config> configEntry :
