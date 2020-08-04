@@ -92,7 +92,7 @@ public class BootstrapRunner {
         (commandsResource.isFile()) ? new File[] {commandsResource} :
             FileUtils.listFiles(commandsResource, null, true).toArray(File[]::new);
     for (File f: commandFiles) {
-      LOGGER.info("read config file:{}", f.getAbsolutePath());
+      LOGGER.info("Reading config file:{}", f.getAbsolutePath());
     }
     Map<ConfigBootstrapStatusKey, Config> bootstrapStatusKeyConfigMap =
         groupConfigsByKey(commandFiles);
