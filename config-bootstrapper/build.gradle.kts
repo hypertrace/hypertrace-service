@@ -53,7 +53,7 @@ tasks.register<DockerStopContainer>("stopMongoContainer") {
 }
 
 tasks.register<DockerPullImage>("pullAttributeServiceImage") {
-  image.set("hypertrace/attribute-service:0.1.0")
+  image.set("hypertrace/attribute-service:0.1.9")
 }
 
 tasks.register<DockerCreateContainer>("createAttributeServiceContainer") {
@@ -124,7 +124,7 @@ tasks.test {
 dependencies {
   implementation("org.hypertrace.entity.service:entity-service-client:0.1.3")
   implementation("org.hypertrace.core.documentstore:document-store:0.1.1")
-  implementation("org.hypertrace.core.attribute.service:attribute-service-client:0.1.0")
+  implementation("org.hypertrace.core.attribute.service:attribute-service-client:0.1.9")
   implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.1.3")
 
   implementation("org.slf4j:slf4j-api:1.7.30")
