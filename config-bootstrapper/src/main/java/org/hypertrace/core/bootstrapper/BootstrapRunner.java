@@ -1,8 +1,10 @@
 package org.hypertrace.core.bootstrapper;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigRenderOptions;
 import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueFactory;
@@ -89,6 +91,9 @@ public class BootstrapRunner {
     File[] commandFiles =
         (commandsResource.isFile()) ? new File[] {commandsResource} :
             FileUtils.listFiles(commandsResource, null, true).toArray(File[]::new);
+    for (File f: commandFiles) {
+      LOGGER.info("read config file:{}", f.getAbsolutePath());
+    }
     Map<ConfigBootstrapStatusKey, Config> bootstrapStatusKeyConfigMap =
         groupConfigsByKey(commandFiles);
     for (Entry<ConfigBootstrapStatusKey, Config> configEntry :
@@ -96,7 +101,7 @@ public class BootstrapRunner {
       // get the status for each key and upgrade only if needed
       ConfigBootstrapStatus configBootstrapStatus =
           configBootstrapStatusDao.getConfigBootstrapStatus(configEntry.getKey());
-      Config config = configEntry.getValue();
+      ConfigBootstrapStatusKey configKey = configEntry.getKey();
       String checksum = DigestUtils.sha1Hex(configEntry.getValue().toString());
 
       // apply the config only if it hasn't been applied
@@ -124,8 +129,8 @@ public class BootstrapRunner {
             ConfigFactory.parseMap(Map.of(BootstrapConstants.ROLLBACK, rollbackConfigList));
         ConfigBootstrapStatus status =
             new ConfigBootstrapStatus(
-                config.getInt(BootstrapConstants.VERSION),
-                config.getString(BootstrapConstants.NAME),
+                configKey.getVersion(),
+                configKey.getName(),
                 checksum,
                 ConfigBootstrapStatus.Status.SUCCEEDED,
                 rollbackConfig.root().render(ConfigRenderOptions.concise()));
@@ -179,10 +184,10 @@ public class BootstrapRunner {
                         config.getString(BootstrapConstants.NAME)),
                 Function.identity(),
                 (c1, c2) -> {
-                  List<? extends Config> configList =
+                  List<? extends ConfigObject> configList =
                       Stream.concat(
-                              c1.getConfigList(BootstrapConstants.COMMANDS).stream(),
-                              c2.getConfigList(BootstrapConstants.COMMANDS).stream())
+                              c1.getObjectList(BootstrapConstants.COMMANDS).stream(),
+                              c2.getObjectList(BootstrapConstants.COMMANDS).stream())
                           .collect(Collectors.toList());
                   return ConfigFactory.parseMap(Map.of(BootstrapConstants.COMMANDS, configList));
                 },

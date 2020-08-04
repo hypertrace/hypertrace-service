@@ -30,6 +30,9 @@ public class BootstrapRunnerTest {
   @Mock private BootstrapContext bootstrapContext;
   @Mock private AttributeServiceClient attributesServiceClient;
   @Mock private EntityTypeServiceClient entityTypeServiceClient;
+  private final String RESOURCE_DIR = "config-bootstrapper-test";
+  private final String COMMAND_CONF_RESOURCE_DIR = RESOURCE_DIR + "/command-conf";
+  private final String SINGLE_COMMAND_CONF_RESOURCE_DIR = COMMAND_CONF_RESOURCE_DIR + "/hypertrace-core";
 
   @BeforeEach
   public void setup() throws Exception {
@@ -48,12 +51,16 @@ public class BootstrapRunnerTest {
     String resourcesPath =
         Thread.currentThread()
             .getContextClassLoader()
-            .getResource("config-bootstrapper-test")
+            .getResource(RESOURCE_DIR)
             .getPath();
+    String resourceConf = Thread.currentThread()
+        .getContextClassLoader()
+        .getResource(SINGLE_COMMAND_CONF_RESOURCE_DIR)
+        .getPath();;
     bootstrapRunner.execute(
         BootstrapArgs.from(
             new String[] {
-              "-c", resourcesPath + "/application.conf", "-C", resourcesPath, "--upgrade"
+              "-c", resourcesPath + "/application.conf", "-C", resourceConf, "--upgrade"
             }));
 
     ArgumentCaptor<ConfigBootstrapStatus> bootstrapStatusCaptor =
@@ -70,7 +77,7 @@ public class BootstrapRunnerTest {
     bootstrapRunner.execute(
         BootstrapArgs.from(
             new String[] {
-              "-c", resourcesPath + "/application.conf", "-C", resourcesPath, "--upgrade"
+              "-c", resourcesPath + "/application.conf", "-C", resourceConf, "--upgrade"
             }));
     Assertions.assertEquals(1, TestCommand.additions);
 
@@ -86,7 +93,7 @@ public class BootstrapRunnerTest {
     bootstrapRunner.execute(
         BootstrapArgs.from(
             new String[] {
-              "-c", resourcesPath + "/application.conf", "-C", resourcesPath, "--upgrade"
+              "-c", resourcesPath + "/application.conf", "-C", resourceConf, "--upgrade"
             }));
     Assertions.assertEquals(2, TestCommand.additions);
   }
@@ -101,12 +108,16 @@ public class BootstrapRunnerTest {
     String resourcesPath =
         Thread.currentThread()
             .getContextClassLoader()
-            .getResource("config-bootstrapper-test")
+            .getResource(RESOURCE_DIR)
             .getPath();
+    String resourceConf = Thread.currentThread()
+        .getContextClassLoader()
+        .getResource(SINGLE_COMMAND_CONF_RESOURCE_DIR)
+        .getPath();;
     bootstrapRunner.execute(
         BootstrapArgs.from(
             new String[] {
-              "-c", resourcesPath + "/application.conf", "-C", resourcesPath, "--upgrade"
+                "-c", resourcesPath + "/application.conf", "-C", resourceConf, "--upgrade"
             }));
 
     ArgumentCaptor<ConfigBootstrapStatus> bootstrapStatusCaptor =
@@ -140,12 +151,16 @@ public class BootstrapRunnerTest {
     String resourcesPath =
         Thread.currentThread()
             .getContextClassLoader()
-            .getResource("config-bootstrapper-test")
+            .getResource(RESOURCE_DIR)
             .getPath();
+    String resourceConf = Thread.currentThread()
+        .getContextClassLoader()
+        .getResource(SINGLE_COMMAND_CONF_RESOURCE_DIR)
+        .getPath();;
     bootstrapRunner.execute(
         BootstrapArgs.from(
             new String[] {
-              "-c", resourcesPath + "/application.conf", "-C", resourcesPath, "--validate"
+                "-c", resourcesPath + "/application.conf", "-C", resourceConf, "--validate"
             }));
 
     Assertions.assertEquals(1, TestCommand.validations);
@@ -178,5 +193,62 @@ public class BootstrapRunnerTest {
         commandClassesSet.size(),
         commandTypes.size(),
         String.format("commandClasses:%s   commandTypes:%s", commandClassesSet, commandTypes));
+  }
+
+  @Test
+  public void testUpgrade_confWith_same_version_name() {
+    // Test upgrade - first run
+    TestCommand.additions = 0;
+    BootstrapRunner bootstrapRunner = new BootstrapRunner(configBootstrapStatusDao);
+    when(configBootstrapStatusDao.upsertConfigBootstrapStatus(any())).thenReturn(true);
+    when(configBootstrapStatusDao.getConfigBootstrapStatus(any())).thenReturn(null);
+    String resourcesPath =
+        Thread.currentThread()
+            .getContextClassLoader()
+            .getResource(RESOURCE_DIR)
+            .getPath();
+    String resourceConf = Thread.currentThread()
+        .getContextClassLoader()
+        .getResource(COMMAND_CONF_RESOURCE_DIR)
+        .getPath();;
+    bootstrapRunner.execute(
+        BootstrapArgs.from(
+            new String[] {
+                "-c", resourcesPath + "/application.conf", "-C", resourceConf, "--upgrade"
+            }));
+
+    ArgumentCaptor<ConfigBootstrapStatus> bootstrapStatusCaptor =
+        ArgumentCaptor.forClass(ConfigBootstrapStatus.class);
+    verify(configBootstrapStatusDao).upsertConfigBootstrapStatus(bootstrapStatusCaptor.capture());
+    ConfigBootstrapStatus configBootstrapStatus = bootstrapStatusCaptor.getValue();
+    Assertions.assertEquals(1, configBootstrapStatus.getVersion());
+    Assertions.assertEquals("test", configBootstrapStatus.getName());
+    Assertions.assertEquals(2, TestCommand.additions);
+
+    // Try rerunning without changing the bootstrap status
+    when(configBootstrapStatusDao.getConfigBootstrapStatus(any()))
+        .thenReturn(configBootstrapStatus);
+    bootstrapRunner.execute(
+        BootstrapArgs.from(
+            new String[] {
+                "-c", resourcesPath + "/application.conf", "-C", resourceConf, "--upgrade"
+            }));
+    Assertions.assertEquals(2, TestCommand.additions);
+
+    // Change checksum of the file and try again
+    when(configBootstrapStatusDao.getConfigBootstrapStatus(any()))
+        .thenReturn(
+            new ConfigBootstrapStatus(
+                configBootstrapStatus.getVersion(),
+                configBootstrapStatus.getName(),
+                "some other checksum",
+                configBootstrapStatus.getStatus(),
+                configBootstrapStatus.getRollbackConfig()));
+    bootstrapRunner.execute(
+        BootstrapArgs.from(
+            new String[] {
+                "-c", resourcesPath + "/application.conf", "-C", resourceConf, "--upgrade"
+            }));
+    Assertions.assertEquals(4, TestCommand.additions);
   }
 }
