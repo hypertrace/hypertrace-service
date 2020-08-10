@@ -54,7 +54,7 @@ public class BootstrapRunner {
   public void execute(BootstrapArgs bootstrapArgs) {
     BootstrapContext bootstrapContext =
         BootstrapContext.buildFrom(
-            ConfigFactory.parseFile(new File(bootstrapArgs.getConfigFile())));
+            ConfigFactory.parseFile(new File(bootstrapArgs.getConfigFile())).resolve());
     if (bootstrapArgs.isValidate()) {
       validate(bootstrapContext, bootstrapArgs);
     }
