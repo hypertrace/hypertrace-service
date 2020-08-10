@@ -24,7 +24,7 @@ public class ConfigBootstrapper {
 
   private static void bootstrapper(String[] args) {
     BootstrapArgs bootstrapArgs = BootstrapArgs.from(args);
-    Config config = ConfigFactory.parseFile(new File(bootstrapArgs.getConfigFile()));
+    Config config = ConfigFactory.parseFile(new File(bootstrapArgs.getConfigFile())).resolve();
     String dataStoreType = config.getString(DocumentStoreConfig.DATASTORE_TYPE_CONFIG_KEY);
     Datastore datastore =
         DatastoreProvider.getDatastore(dataStoreType, config.getConfig(dataStoreType));
