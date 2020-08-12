@@ -43,7 +43,7 @@ public class FederatedService extends PlatformService {
   private static final String GATEWAY_SERVICE_QUERY_SERVICE_CONFIG = "query.service.config";
   private static final String QUERY_SERVICE_SERVICE_CONFIG = "service.config";
 
-  private static final String DEFAULT_CLUSTER_NAME = "dev";
+  private static final String DEFAULT_CLUSTER_NAME = "default-cluster";
 
   private String serviceName;
   private Server server;
@@ -104,8 +104,7 @@ public class FederatedService extends PlatformService {
     String clusterName = ConfigUtils.getEnvironmentProperty(CLUSTER_NAME);
     if (clusterName == null) { clusterName = DEFAULT_CLUSTER_NAME; }
 
-    return configClient.getConfig(serviceName,
-        clusterName,
+    return configClient.getConfig(serviceName, clusterName,
         ConfigUtils.getEnvironmentProperty(POD_NAME),
         ConfigUtils.getEnvironmentProperty(CONTAINER_NAME)
     );
