@@ -43,6 +43,7 @@ tasks.run<JavaExec> {
 
 tasks.processResources {
   dependsOn("copyServiceConfigs");
+  dependsOn("copyOverrideServiceConfigs")
 }
 
 tasks.register<Copy>("copyServiceConfigs") {
@@ -59,6 +60,21 @@ fun createCopySpec(projectName: String, serviceName: String): CopySpec {
     from("../${projectName}/${serviceName}/src/main/resources/configs/common") {
       include("application.conf")
       into("${serviceName}")
+    }
+  }
+}
+
+tasks.register<Copy>("copyOverrideServiceConfigs") {
+  with(
+      createCopySpec("hypertrace-federated-service", "gateway-service")
+  ).into("./build/resources/main/configs/")
+}
+
+fun createOverrideCopySpec(projectName: String, serviceName: String): CopySpec {
+  return copySpec {
+    from("./src/main/resources/configs/${projectName}/${serviceName}") {
+      include("application.conf")
+      into("${serviceName}/staging")
     }
   }
 }
