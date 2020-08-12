@@ -66,7 +66,7 @@ fun createCopySpec(projectName: String, serviceName: String): CopySpec {
 
 tasks.register<Copy>("copyOverrideServiceConfigs") {
   with(
-      createCopySpec("hypertrace-federated-service", "gateway-service")
+      createOverrideCopySpec("hypertrace-federated-service", "gateway-service")
   ).into("./build/resources/main/configs/")
 }
 
@@ -74,7 +74,7 @@ fun createOverrideCopySpec(projectName: String, serviceName: String): CopySpec {
   return copySpec {
     from("./src/main/resources/configs/${projectName}/${serviceName}") {
       include("application.conf")
-      into("${serviceName}/staging")
+      into("${serviceName}/dev")
     }
   }
 }
