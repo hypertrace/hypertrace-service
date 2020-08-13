@@ -35,9 +35,11 @@ spec:
         - name: log4j-config
           configMap:
             name: {{ .Values.job.prefix }}-{{ .Values.logConfig.name }}
+        {{- if .Values.configurationCommands }}
         - name: bootstrap-configs
           configMap:
             name: {{ .Values.job.prefix }}-bootstrap-configs
+        {{- end }}
     {{- with .Values.nodeLabels }}
       nodeSelector:
       {{- toYaml . | nindent 8}}
