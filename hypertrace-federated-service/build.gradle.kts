@@ -62,5 +62,3 @@ fun createCopySpec(projectName: String, serviceName: String): CopySpec {
     }
   }
 }
-
-
