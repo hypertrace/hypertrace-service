@@ -1,12 +1,12 @@
 [submodule "attribute-service"]
 	path = attribute-service
-	url = git@github.com:hypertrace/attribute-service.git
+	url = https://github.com/hypertrace/attribute-service.git
 [submodule "entity-service"]
 	path = entity-service
-	url = git@github.com:hypertrace/entity-service.git
+	url = https://github.com/hypertrace/entity-service.git
 [submodule "gateway-service"]
 	path = gateway-service
-	url = git@github.com:hypertrace/gateway-service.git
+	url = https://github.com/hypertrace/gateway-service.git
 [submodule "query-service"]
 	path = query-service
-	url = git@github.com:hypertrace/query-service.git
+	url = https://github.com/hypertrace/query-service.git
