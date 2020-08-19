@@ -18,6 +18,13 @@ application {
   mainClassName = "org.hypertrace.core.bootstrapper.ConfigBootstrapper"
 }
 
+hypertraceDocker {
+  defaultImage {
+    javaApplication {
+      serviceName.set("${project.name}")
+    }
+  }
+}
 
 tasks.register<DockerCreateNetwork>("createIntegrationTestNetwork") {
   networkName.set("config-bootstrapper-int-test")
