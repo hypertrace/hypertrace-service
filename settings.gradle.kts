@@ -16,5 +16,7 @@ includeBuild("./attribute-service")
 includeBuild("./entity-service")
 includeBuild("./gateway-service")
 includeBuild("./query-service")
+includeBuild("./hypertrace-graphql")
+includeBuild("./hypertrace-graphql/hypertrace-core-graphql")
 
 include(":hypertrace-federated-service")

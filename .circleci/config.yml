@@ -32,7 +32,8 @@ commands:
     steps:
       - run:
           name: Pull Submodules
-          command: git submodule update --init
+          # submodule hypertrace-graphql includes a submodule of hypertrace-core-graphql
+          command: git submodule update --init --recursive
       - run:
           name: Ensure submodules point to commit from master branch
           command: git submodule foreach "git merge-base --is-ancestor HEAD origin/master"

@@ -10,3 +10,6 @@
 [submodule "query-service"]
 	path = query-service
 	url = https://github.com/hypertrace/query-service.git
+[submodule "hypertrace-graphql"]
+	path = hypertrace-graphql
+	url = https://github.com/hypertrace/hypertrace-graphql.git
