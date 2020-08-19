@@ -39,7 +39,7 @@ public class FederatedService extends PlatformService {
   private static final String ENTITY_SERVICE_NAME = "entity-service";
   private static final String GATEWAY_SERVICE_NAME = "gateway-service";
   private static final String QUERY_SERVICE_NAME = "query-service";
-  private static final String HYPERTRACE_GRAPHQL_SERVICE_NAME = "hypertrace-graphql-service";
+  private static final String GRAPHQL_SERVICE_NAME = "hypertrace-graphql-service";
 
   private static final String ENTITY_SERVICE_ENTITY_SERVICE_CONFIG = "entity.service.config";
   private static final String GATEWAY_SERVICE_QUERY_SERVICE_CONFIG = "query.service.config";
@@ -103,7 +103,7 @@ public class FederatedService extends PlatformService {
     this.server = serverBuilder.build();
 
     // init graphql service
-    final Config graphQlServiceAppConfig = getServiceConfig(HYPERTRACE_GRAPHQL_SERVICE_NAME);
+    final Config graphQlServiceAppConfig = getServiceConfig(GRAPHQL_SERVICE_NAME);
     graphQlService = new GraphQlServiceImpl(graphQlServiceAppConfig);
   }
 

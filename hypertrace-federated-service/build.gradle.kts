@@ -16,7 +16,6 @@ dependencies {
   implementation("org.hypertrace.core.query.service:query-service-impl")
   implementation("org.hypertrace.gateway.service:gateway-service")
   implementation("org.hypertrace.gateway.service:gateway-service-impl")
-  implementation("org.hypertrace.core.graphql:hypertrace-core-graphql-spi")
   implementation("org.hypertrace.graphql:hypertrace-graphql-service")
 
 
