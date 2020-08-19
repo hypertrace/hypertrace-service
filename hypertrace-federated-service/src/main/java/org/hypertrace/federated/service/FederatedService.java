@@ -20,6 +20,7 @@ import org.hypertrace.entity.type.service.EntityTypeServiceImpl;
 import org.hypertrace.gateway.service.GatewayServiceImpl;
 import org.hypertrace.gateway.service.entity.config.DomainObjectConfigs;
 import org.hypertrace.gateway.service.entity.config.InteractionConfigs;
+import org.hypertrace.graphql.service.GraphQlServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,7 @@ public class FederatedService extends PlatformService {
   private static final String ENTITY_SERVICE_NAME = "entity-service";
   private static final String GATEWAY_SERVICE_NAME = "gateway-service";
   private static final String QUERY_SERVICE_NAME = "query-service";
+  private static final String HYPERTRACE_GRAPHQL_SERVICE_NAME = "hypertrace-graphql-service";
 
   private static final String ENTITY_SERVICE_ENTITY_SERVICE_CONFIG = "entity.service.config";
   private static final String GATEWAY_SERVICE_QUERY_SERVICE_CONFIG = "query.service.config";
@@ -47,6 +49,7 @@ public class FederatedService extends PlatformService {
 
   private String serviceName;
   private Server server;
+  private GraphQlServiceImpl graphQlService;
 
   public FederatedService(ConfigClient configClient) {
     super(configClient);
@@ -98,6 +101,10 @@ public class FederatedService extends PlatformService {
     serverBuilder.addService(InterceptorUtil.wrapInterceptors(ht));
 
     this.server = serverBuilder.build();
+
+    // init graphql service
+    final Config graphQlServiceAppConfig = getServiceConfig(HYPERTRACE_GRAPHQL_SERVICE_NAME);
+    graphQlService = new GraphQlServiceImpl(graphQlServiceAppConfig);
   }
 
   private Config getServiceConfig(String serviceName) {
@@ -112,22 +119,28 @@ public class FederatedService extends PlatformService {
 
   @Override
   protected void doStart() {
-    try {
+    Thread thread = new Thread(() -> {
       try {
-        server.start();
-      } catch (IOException e) {
-        LOGGER.error("Unable to start server");
+        try {
+          server.start();
+        } catch (IOException e) {
+          LOGGER.error("Unable to start server");
+          throw new RuntimeException(e);
+        }
+        server.awaitTermination();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
         throw new RuntimeException(e);
       }
-      server.awaitTermination();
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new RuntimeException(e);
-    }
+    });
+    thread.start();
+    graphQlService.start();
   }
 
   @Override
   protected void doStop() {
+    server.shutdownNow();
+    graphQlService.stop();
   }
 
   @Override

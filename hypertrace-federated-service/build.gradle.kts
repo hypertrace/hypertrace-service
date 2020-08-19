@@ -16,6 +16,9 @@ dependencies {
   implementation("org.hypertrace.core.query.service:query-service-impl")
   implementation("org.hypertrace.gateway.service:gateway-service")
   implementation("org.hypertrace.gateway.service:gateway-service-impl")
+  implementation("org.hypertrace.core.graphql:hypertrace-core-graphql-spi")
+  implementation("org.hypertrace.graphql:hypertrace-graphql-service")
+
 
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.4")
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.1.3")
@@ -50,7 +53,8 @@ tasks.register<Copy>("copyServiceConfigs") {
       createCopySpec("attribute-service", "attribute-service"),
       createCopySpec("entity-service", "entity-service"),
       createCopySpec("gateway-service", "gateway-service"),
-      createCopySpec("query-service", "query-service")
+      createCopySpec("query-service", "query-service"),
+      createCopySpec("hypertrace-graphql", "hypertrace-graphql-service")
   ).into("./build/resources/main/configs/")
 }
 
