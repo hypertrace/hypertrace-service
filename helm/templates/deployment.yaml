@@ -59,6 +59,9 @@ spec:
             - name: grpc-port
               containerPort: {{ .Values.containerPort }}
               protocol: TCP
+            - name: http
+              containerPort: {{ .Values.graphqlPort }}
+              protocol: TCP
             - name: health-port
               containerPort: {{ .Values.containerHealthProbePort }}
               protocol: TCP

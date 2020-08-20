@@ -12,6 +12,7 @@ imagePullSecrets: []
 
 containerPort: 9001
 containerHealthProbePort: 9002
+graphqlPort: 23431
 
 nodeLabels: {}
 
