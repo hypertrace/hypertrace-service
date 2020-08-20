@@ -41,6 +41,9 @@ spec:
         - name: query-service-config
           configMap:
             name: query-service-config
+        - name: hypertrace-graphql-service-config
+          configMap:
+            name: hypertrace-graphql-service-config
         - name: log4j-config
           configMap:
             name: {{ .Values.logConfig.name }}
@@ -55,6 +58,9 @@ spec:
           ports:
             - name: grpc-port
               containerPort: {{ .Values.containerPort }}
+              protocol: TCP
+            - name: http
+              containerPort: {{ .Values.graphqlPort }}
               protocol: TCP
             - name: health-port
               containerPort: {{ .Values.containerHealthProbePort }}
@@ -82,6 +88,9 @@ spec:
               subPath: application.conf
             - name: query-service-config
               mountPath: /app/resources/configs/query-service/staging/application.conf
+              subPath: application.conf
+            - name: hypertrace-graphql-service-config
+              mountPath: /app/resources/configs/hypertrace-graphql-service/staging/application.conf
               subPath: application.conf
             - name: log4j-config
               mountPath: /var/{{ .Chart.Name }}/log
