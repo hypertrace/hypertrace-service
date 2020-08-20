@@ -41,6 +41,9 @@ spec:
         - name: query-service-config
           configMap:
             name: query-service-config
+        - name: hypertrace-graphql-service-config
+          configMap:
+            name: hypertrace-graphql-service-config
         - name: log4j-config
           configMap:
             name: {{ .Values.logConfig.name }}
@@ -82,6 +85,9 @@ spec:
               subPath: application.conf
             - name: query-service-config
               mountPath: /app/resources/configs/query-service/staging/application.conf
+              subPath: application.conf
+            - name: hypertrace-graphql-service-config
+              mountPath: /app/resources/configs/hypertrace-graphql-service/staging/application.conf
               subPath: application.conf
             - name: log4j-config
               mountPath: /var/{{ .Chart.Name }}/log
