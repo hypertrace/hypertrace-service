@@ -20,7 +20,6 @@ import org.hypertrace.entity.type.service.EntityTypeServiceImpl;
 import org.hypertrace.gateway.service.GatewayServiceImpl;
 import org.hypertrace.gateway.service.entity.config.DomainObjectConfigs;
 import org.hypertrace.gateway.service.entity.config.InteractionConfigs;
-import org.hypertrace.graphql.service.GraphQlServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +48,7 @@ public class FederatedService extends PlatformService {
 
   private String serviceName;
   private Server server;
-  private GraphQlServiceImpl graphQlService;
+  private HypertraceUIServer hypertraceUIServer;
 
   public FederatedService(ConfigClient configClient) {
     super(configClient);
@@ -64,29 +63,29 @@ public class FederatedService extends PlatformService {
     // Attribute service
     final Config attributeServiceAppConfig = getServiceConfig(ATTRIBUTE_SERVICE_NAME);
     serverBuilder.addService(
-        InterceptorUtil.wrapInterceptors(new AttributeServiceImpl(attributeServiceAppConfig)));
+            InterceptorUtil.wrapInterceptors(new AttributeServiceImpl(attributeServiceAppConfig)));
 
     // Entity service
     final Config entityServiceAppConfig = getServiceConfig(ENTITY_SERVICE_NAME);
     final EntityServiceConfig entityServiceConfig = new EntityServiceConfig(
-        entityServiceAppConfig.getConfig(ENTITY_SERVICE_ENTITY_SERVICE_CONFIG));
+            entityServiceAppConfig.getConfig(ENTITY_SERVICE_ENTITY_SERVICE_CONFIG));
     final Config dataStoreConfig =
-        entityServiceConfig.getDataStoreConfig(entityServiceConfig.getDataStoreType());
+            entityServiceConfig.getDataStoreConfig(entityServiceConfig.getDataStoreType());
     final Datastore datastore =
-        DatastoreProvider.getDatastore(entityServiceConfig.getDataStoreType(), dataStoreConfig);
+            DatastoreProvider.getDatastore(entityServiceConfig.getDataStoreType(), dataStoreConfig);
 
     serverBuilder.addService(InterceptorUtil.wrapInterceptors(new EntityTypeServiceImpl(datastore)))
-        .addService(InterceptorUtil.wrapInterceptors(new EntityDataServiceImpl(datastore)))
-        .addService(InterceptorUtil
-            .wrapInterceptors(new EntityQueryServiceImpl(datastore, entityServiceAppConfig)));
+            .addService(InterceptorUtil.wrapInterceptors(new EntityDataServiceImpl(datastore)))
+            .addService(InterceptorUtil
+                    .wrapInterceptors(new EntityQueryServiceImpl(datastore, entityServiceAppConfig)));
 
     // Query service
     final Config queryServiceAppConfig = getServiceConfig(QUERY_SERVICE_NAME);
     final QueryServiceImplConfig queryServiceImplConfig =
-        QueryServiceImplConfig.parse(queryServiceAppConfig.getConfig(QUERY_SERVICE_SERVICE_CONFIG));
+            QueryServiceImplConfig.parse(queryServiceAppConfig.getConfig(QUERY_SERVICE_SERVICE_CONFIG));
 
     serverBuilder
-        .addService(InterceptorUtil.wrapInterceptors(new QueryServiceImpl(queryServiceImplConfig)));
+            .addService(InterceptorUtil.wrapInterceptors(new QueryServiceImpl(queryServiceImplConfig)));
 
     // Gateway service
     final Config gatewayServiceAppConfig = getServiceConfig(GATEWAY_SERVICE_NAME);
@@ -95,31 +94,33 @@ public class FederatedService extends PlatformService {
     InteractionConfigs.init(gatewayServiceAppConfig);
 
     GatewayServiceImpl ht = new GatewayServiceImpl(
-        gatewayServiceAppConfig,
-        gatewayServiceAppConfig.getConfig(GATEWAY_SERVICE_QUERY_SERVICE_CONFIG));
+            gatewayServiceAppConfig,
+            gatewayServiceAppConfig.getConfig(GATEWAY_SERVICE_QUERY_SERVICE_CONFIG));
 
     serverBuilder.addService(InterceptorUtil.wrapInterceptors(ht));
 
     this.server = serverBuilder.build();
 
-    // init graphql service
+    // start Hypertrace UI
     final Config graphQlServiceAppConfig = getServiceConfig(GRAPHQL_SERVICE_NAME);
-    graphQlService = new GraphQlServiceImpl(graphQlServiceAppConfig);
+    hypertraceUIServer = new HypertraceUIServer(graphQlServiceAppConfig);
   }
 
   private Config getServiceConfig(String serviceName) {
     String clusterName = ConfigUtils.getEnvironmentProperty(CLUSTER_NAME);
-    if (clusterName == null) { clusterName = DEFAULT_CLUSTER_NAME; }
+    if (clusterName == null) {
+      clusterName = DEFAULT_CLUSTER_NAME;
+    }
 
     return configClient.getConfig(serviceName, clusterName,
-        ConfigUtils.getEnvironmentProperty(POD_NAME),
-        ConfigUtils.getEnvironmentProperty(CONTAINER_NAME)
+            ConfigUtils.getEnvironmentProperty(POD_NAME),
+            ConfigUtils.getEnvironmentProperty(CONTAINER_NAME)
     );
   }
 
   @Override
   protected void doStart() {
-    Thread thread = new Thread(() -> {
+    Thread grpcThread = new Thread(() -> {
       try {
         try {
           server.start();
@@ -133,14 +134,19 @@ public class FederatedService extends PlatformService {
         throw new RuntimeException(e);
       }
     });
-    thread.start();
-    graphQlService.start();
+
+    Thread uiThread = new Thread(() -> {
+      hypertraceUIServer.start();
+    });
+
+    grpcThread.start();
+    uiThread.start();
   }
 
   @Override
   protected void doStop() {
     server.shutdownNow();
-    graphQlService.stop();
+    hypertraceUIServer.stop();
   }
 
   @Override
