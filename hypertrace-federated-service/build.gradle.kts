@@ -22,7 +22,6 @@ dependencies {
 
   implementation("org.eclipse.jetty:jetty-server:9.4.30.v20200611")
   implementation("org.eclipse.jetty:jetty-servlet:9.4.30.v20200611")
-  implementation("org.eclipse.jetty:jetty-servlets:9.4.30.v20200611")
 
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.4")
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.1.3")

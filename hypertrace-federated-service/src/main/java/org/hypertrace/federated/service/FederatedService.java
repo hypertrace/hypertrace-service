@@ -93,10 +93,7 @@ public class FederatedService extends PlatformService {
     DomainObjectConfigs.init(gatewayServiceAppConfig);
     InteractionConfigs.init(gatewayServiceAppConfig);
 
-    GatewayServiceImpl ht = new GatewayServiceImpl(
-            gatewayServiceAppConfig,
-            gatewayServiceAppConfig.getConfig(GATEWAY_SERVICE_QUERY_SERVICE_CONFIG));
-
+    GatewayServiceImpl ht = new GatewayServiceImpl(gatewayServiceAppConfig);
     serverBuilder.addService(InterceptorUtil.wrapInterceptors(ht));
 
     this.server = serverBuilder.build();

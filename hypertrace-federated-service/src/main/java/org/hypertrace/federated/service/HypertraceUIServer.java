@@ -24,9 +24,9 @@ public class HypertraceUIServer {
   private Server server;
   private GraphQlServiceImpl graphQlService;
 
-  public HypertraceUIServer(Config graphQlServiceAppConfig) {
+  public HypertraceUIServer(Config appConfig) {
     server = new Server(PORT);
-    graphQlService = new GraphQlServiceImpl(graphQlServiceAppConfig);
+    graphQlService = new GraphQlServiceImpl(appConfig);
 
     ResourceHandler resourceHandler = new ResourceHandler();
     resourceHandler.setBaseResource(getBaseResource());
