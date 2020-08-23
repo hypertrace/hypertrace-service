@@ -35,8 +35,8 @@ commands:
           # submodule hypertrace-graphql includes a submodule of hypertrace-core-graphql
           command: git submodule update --init --recursive
       - run:
-          name: Ensure submodules point to commit from master branch
-          command: git submodule foreach "git merge-base --is-ancestor HEAD origin/master"
+          name: Ensure submodules point to commit from main branch
+          command: git submodule foreach "git merge-base --is-ancestor HEAD origin/main"
   setup_build_environment:
     description: 'Generates cache key from a hash of all gradle files'
     steps:
@@ -135,7 +135,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
       - package-charts:
           context: hypertrace-publishing
           requires:
@@ -143,4 +143,4 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
