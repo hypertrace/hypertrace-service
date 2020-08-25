@@ -97,7 +97,7 @@ public class HypertraceUIServer {
   public void start() {
     try {
       this.server.start();
-      LOGGER.info("Started HypertraceUI service on port: {}.", PORT);
+      LOGGER.info("Started Hypertrace UI service on port: {}.", PORT);
       this.server.join();
     } catch (Exception var4) {
       LOGGER.error("Failed to start HypertraceUI servlet.");
