@@ -8,4 +8,4 @@ Combines the following hypertrace services into a single service. This is used i
 - **Entity service:** Service that provides CRUD operations for differently identified entities of observed applications.
 - **Gateway service:** An entry service that acts as a single access point for querying data from other services like entity-service, query-service, etc
 - **Query service:** Query service exposes APIs to query data from the underlying stores. 
- 
+- **Hypetrace UI:** Serves static UI resources 
