@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Serves both hypertrace-ui and graphql
+ * Serves both the Hypertrace UI and GraphQL APIs used by it.
  */
 public class HypertraceUIServer {
   private static final Logger LOGGER = LoggerFactory.getLogger(HypertraceUIServer.class);
