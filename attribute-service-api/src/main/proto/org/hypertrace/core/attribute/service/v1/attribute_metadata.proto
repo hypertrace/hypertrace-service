@@ -98,6 +98,7 @@ message AttributeMetadata {
   map<string, AttributeSourceMetadata> metadata = 13;
   string id = 14;
   bool groupable = 15;
+  AttributeDefinition definition = 16;
 }
 
 message AttributeSourceMetadata {
@@ -137,3 +138,38 @@ message AttributeMetadataFilter {
 message Empty {
 }
 
+message AttributeDefinition {
+  oneof value {
+    string span_path = 1;
+    Projection projection = 2;
+  }
+}
+
+message Projection {
+  oneof value {
+    string attribute_key = 1;
+    LiteralValue literal = 2;
+    ProjectionExpression expression = 3;
+  }
+}
+
+message LiteralValue {
+  oneof value {
+    string string_value = 1;
+    bool boolean_value = 2;
+    double float_value = 3;
+    int64 int_value = 4;
+  }
+}
+
+message ProjectionExpression {
+  ProjectionOperator operator = 1;
+  repeated Projection arguments = 2;
+}
+
+enum ProjectionOperator {
+  PROJECTION_OPERATOR_UNSET = 0;
+  PROJECTION_OPERATOR_CONCAT = 1;
+  PROJECTION_OPERATOR_HASH = 2;
+  PROJECTION_OPERATOR_DEFAULT = 3;
+}
