@@ -72,10 +72,6 @@ public class HypertraceUIServer {
             explorerContextHandler,
             graphQlService.getContextHandler()});
 
-//    HandlerList handlers = new HandlerList();
-//    handlers.setHandlers(new Handler[]{resourceHandler, graphQlService.getContextHandler(),
-//            new DefaultHandler()});
-
     server.setHandler(contexts);
     server.setStopAtShutdown(true);
   }
