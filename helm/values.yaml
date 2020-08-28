@@ -42,6 +42,8 @@ deploymentLabels:
 podLabels:
   app: attribute-service
 
+podAnnotations: {}
+
 deploymentSelectorMatchLabels:
   app: attribute-service
 
