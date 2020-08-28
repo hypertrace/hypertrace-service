@@ -16,6 +16,7 @@ dependencies {
   implementation("org.hypertrace.entity.service:entity-service-impl")
   implementation("org.hypertrace.core.query.service:query-service")
   implementation("org.hypertrace.core.query.service:query-service-impl")
+  implementation("org.hypertrace.core.query.service:query-service-client")
   implementation("org.hypertrace.gateway.service:gateway-service")
   implementation("org.hypertrace.gateway.service:gateway-service-impl")
   implementation("org.hypertrace.graphql:hypertrace-graphql-service")
@@ -25,6 +26,7 @@ dependencies {
 
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.4")
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.1.3")
+  implementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.1.3")
   implementation("org.hypertrace.core.documentstore:document-store:0.1.1")
 
   // Logging

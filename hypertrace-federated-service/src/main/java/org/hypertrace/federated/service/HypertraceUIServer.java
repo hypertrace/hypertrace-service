@@ -4,6 +4,7 @@ import com.typesafe.config.Config;
 import java.net.URI;
 import java.net.URL;
 import java.util.EnumSet;
+import java.util.Timer;
 import javax.servlet.DispatcherType;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -30,10 +31,14 @@ public class HypertraceUIServer {
 
   private Server server;
   private GraphQlServiceImpl graphQlService;
+  private Config federatedServiceAppConfig;
+  private Config graphQlServiceAppConfig;
 
-  public HypertraceUIServer(Config appConfig) {
+  public HypertraceUIServer(Config federatedServiceAppConfig, Config graphQlServiceAppConfig) {
+    this.federatedServiceAppConfig = federatedServiceAppConfig;
+    this.graphQlServiceAppConfig = graphQlServiceAppConfig;
     server = new Server(PORT);
-    graphQlService = new GraphQlServiceImpl(appConfig);
+    graphQlService = new GraphQlServiceImpl(graphQlServiceAppConfig);
 
     ResourceHandler resourceHandler = new ResourceHandler();
     resourceHandler.setBaseResource(getBaseResource());
@@ -88,6 +93,17 @@ public class HypertraceUIServer {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public void startWithTimeTask() {
+    int healthCheckRetries = federatedServiceAppConfig.getInt("hypertraceUI.health.check.retries");
+    int healthCheckInterval = federatedServiceAppConfig.getInt("hypertraceUI.health.check.interval");
+    int healthCheckTimeout = federatedServiceAppConfig.getInt("hypertraceUI.health.check.timeout");
+    int healthCheckStartPeriod = federatedServiceAppConfig.getInt("hypertraceUI.health.check.start_period");
+
+    HypertraceUIServerTimerTask timerTask = new HypertraceUIServerTimerTask(healthCheckRetries, healthCheckTimeout,
+            graphQlServiceAppConfig.getString("defaultTenantId"), this);
+    new Timer().scheduleAtFixedRate(timerTask, healthCheckStartPeriod * 1000, healthCheckInterval * 1000);
   }
 
   public void start() {
