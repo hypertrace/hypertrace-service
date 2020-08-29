@@ -97,6 +97,8 @@ public class HypertraceUIServer {
     String defaultTenant = graphQlServiceAppConfig.getString(DEFAULT_TENANT_ID_CONFIG);
     HypertraceUIServerTimerTask timerTask = new HypertraceUIServerTimerTask(appConfig,
             this, defaultTenant);
+    LOGGER.info(String.format("Staring a timer task for checking health for bootstrapping process, " +
+            "will try first attempt after [%s] seconds", timerTask.getStartPeriod()));
     new Timer().scheduleAtFixedRate(timerTask, timerTask.getStartPeriod() * 1000,
             timerTask.getInterval() * 1000);
   }
