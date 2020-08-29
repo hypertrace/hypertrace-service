@@ -71,7 +71,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
       if (numTries >= maxTries) {
         cancel();
         LOGGER.info(String.format("Max out attempt [%s] in checking bootstrapping. Manually check " +
-                "the status of pinot, all-view-creator, and config-bootstrapper.", numTries));
+                "the status of all-view-creator, and config-bootstrapper.", numTries));
         uiServer.start();
         return;
       }
@@ -85,7 +85,8 @@ public class HypertraceUIServerTimerTask extends TimerTask {
       }
 
     } catch (Exception ex) {
-      LOGGER.warn("Failure in dependent service health check. Few data services like pinot is not yet up");
+      LOGGER.warn("Failure in healthcheck status of dependent service. The bootstrapping jobs " +
+              "all-view-creator, and config-bootstrapper might not have finished yet.");
     }
     numTries++;
     LOGGER.info(String.format("Finished an attempt [%s] in checking for bootstrapping status, " +
