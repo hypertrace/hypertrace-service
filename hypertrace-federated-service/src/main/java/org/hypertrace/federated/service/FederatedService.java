@@ -41,9 +41,7 @@ public class FederatedService extends PlatformService {
   private static final String GRAPHQL_SERVICE_NAME = "hypertrace-graphql-service";
 
   private static final String ENTITY_SERVICE_ENTITY_SERVICE_CONFIG = "entity.service.config";
-  private static final String GATEWAY_SERVICE_QUERY_SERVICE_CONFIG = "query.service.config";
   private static final String QUERY_SERVICE_SERVICE_CONFIG = "service.config";
-  private static final String UI_SERVER_INIT_WAIT_TIME = "ui.server.init.wait.time";
 
   private static final String DEFAULT_CLUSTER_NAME = "default-cluster";
 
