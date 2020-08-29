@@ -59,8 +59,6 @@ public class FederatedService extends PlatformService {
   protected void doInit() {
     serviceName = getAppConfig().getString(SERVICE_NAME_CONFIG);
     int port = getAppConfig().getInt(PORT_PATH);
-    long uiWaitTime = getAppConfig().hasPath(UI_SERVER_INIT_WAIT_TIME) ?
-            getAppConfig().getInt(UI_SERVER_INIT_WAIT_TIME) : 30;
 
     final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(port);
 
