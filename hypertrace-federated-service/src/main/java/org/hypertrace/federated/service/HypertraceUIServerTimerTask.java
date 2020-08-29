@@ -70,8 +70,8 @@ public class HypertraceUIServerTimerTask extends TimerTask {
     try {
       if (numTries >= maxTries) {
         cancel();
-        LOGGER.info(String.format("Max out attempt [%s] in checking bootstrapping. Manually check " +
-                "the status of all-view-creator, and config-bootstrapper.", numTries));
+        LOGGER.info(String.format("Max out attempts [%s] in checking bootstrapping status. Manually check " +
+                "the status of jobs [all-view-creator, config-bootstrapper].", numTries));
         uiServer.start();
         return;
       }
@@ -85,12 +85,12 @@ public class HypertraceUIServerTimerTask extends TimerTask {
       }
 
     } catch (Exception ex) {
-      LOGGER.warn("Failure in healthcheck status of dependent service. The bootstrapping jobs " +
-              "all-view-creator, and config-bootstrapper might not have finished yet.");
+      LOGGER.warn(String.format("Finished an attempt [%s] in checking for bootstrapping status. " +
+              "It seems bootstrapping jobs [all-view-creators, config-bootstrapper] have not yet finished. " +
+              "will retry after [%s] seconds", numTries, interval));
+    } finally {
+      numTries++;
     }
-    numTries++;
-    LOGGER.info(String.format("Finished an attempt [%s] in checking for bootstrapping status, " +
-            "will retry after [%s] seconds", numTries, interval));
   }
 
   private boolean executeHealthCheck() {
