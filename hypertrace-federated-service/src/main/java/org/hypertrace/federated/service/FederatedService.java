@@ -41,7 +41,6 @@ public class FederatedService extends PlatformService {
   private static final String GRAPHQL_SERVICE_NAME = "hypertrace-graphql-service";
 
   private static final String ENTITY_SERVICE_ENTITY_SERVICE_CONFIG = "entity.service.config";
-  private static final String GATEWAY_SERVICE_QUERY_SERVICE_CONFIG = "query.service.config";
   private static final String QUERY_SERVICE_SERVICE_CONFIG = "service.config";
 
   private static final String DEFAULT_CLUSTER_NAME = "default-cluster";
@@ -58,6 +57,7 @@ public class FederatedService extends PlatformService {
   protected void doInit() {
     serviceName = getAppConfig().getString(SERVICE_NAME_CONFIG);
     int port = getAppConfig().getInt(PORT_PATH);
+
     final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(port);
 
     // Attribute service
@@ -100,7 +100,7 @@ public class FederatedService extends PlatformService {
 
     // start Hypertrace UI
     final Config graphQlServiceAppConfig = getServiceConfig(GRAPHQL_SERVICE_NAME);
-    hypertraceUIServer = new HypertraceUIServer(graphQlServiceAppConfig);
+    hypertraceUIServer = new HypertraceUIServer(getAppConfig(), graphQlServiceAppConfig);
   }
 
   private Config getServiceConfig(String serviceName) {
@@ -133,7 +133,7 @@ public class FederatedService extends PlatformService {
     });
 
     Thread uiThread = new Thread(() -> {
-      hypertraceUIServer.start();
+      hypertraceUIServer.startWithTimerTask();
     });
 
     grpcThread.start();
