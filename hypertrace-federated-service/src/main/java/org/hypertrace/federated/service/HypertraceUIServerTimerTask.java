@@ -32,8 +32,8 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private static final int DEFAULT_START_PERIOD = 20;
   private final HypertraceUIServer uiServer;
   private final GatewayServiceBlockingStub client;
-  private int numTries;
-  private int maxTries;
+  private int numRetries;
+  private int maxRetries;
   private int timeout;
   private long startTime;
   private long interval;
@@ -41,13 +41,13 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private String defaultTenant;
 
   public HypertraceUIServerTimerTask(Config appConfig, HypertraceUIServer uiServer, String defaultTenant) {
-    maxTries = appConfig.hasPath(RETRIES_CONFIG) ? appConfig.getInt(RETRIES_CONFIG) : DEFAULT_RETRIES;
+    maxRetries = appConfig.hasPath(RETRIES_CONFIG) ? appConfig.getInt(RETRIES_CONFIG) : DEFAULT_RETRIES;
     timeout = appConfig.hasPath(TIMEOUT_CONFIG) ? appConfig.getInt(TIMEOUT_CONFIG) : DEFAULT_TIMEOUT;
     interval = appConfig.hasPath(INTERVAL) ? appConfig.getInt(INTERVAL) : DEFAULT_INTERVAL;
     startPeriod = appConfig.hasPath(START_PERIOD) ? appConfig.getInt(START_PERIOD) : DEFAULT_START_PERIOD;
 
     this.uiServer = uiServer;
-    this.numTries = 0;
+    this.numRetries = 0;
     this.defaultTenant = defaultTenant;
     this.startTime = Instant.now().toEpochMilli();
 
@@ -68,10 +68,10 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   @Override
   public void run() {
     try {
-      if (numTries >= maxTries) {
+      if (numRetries >= maxRetries) {
         cancel();
         LOGGER.info(String.format("Max out attempts [%s] in checking bootstrapping status. Manually check " +
-                "the status of jobs [all-view-creator, config-bootstrapper].", numTries));
+                "the status of jobs [all-view-creator, config-bootstrapper].", numRetries));
         uiServer.start();
         return;
       }
@@ -79,7 +79,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
       if (executeHealthCheck()) {
         cancel();
         LOGGER.info(String.format("Stack is up after [%s] attempts, and duration [%s] in millis.",
-                numTries, Instant.now().toEpochMilli() - startTime));
+                numRetries, Instant.now().toEpochMilli() - startTime));
         uiServer.start();
         return;
       }
@@ -87,9 +87,9 @@ public class HypertraceUIServerTimerTask extends TimerTask {
     } catch (Exception ex) {
       LOGGER.warn(String.format("Finished an attempt [%s] in checking for bootstrapping status. " +
               "It seems bootstrapping jobs [all-view-creators, config-bootstrapper] have not yet finished. " +
-              "will retry after [%s] seconds", numTries, interval));
+              "will retry after [%s] seconds", numRetries, interval));
     } finally {
-      numTries++;
+      numRetries++;
     }
   }
 
