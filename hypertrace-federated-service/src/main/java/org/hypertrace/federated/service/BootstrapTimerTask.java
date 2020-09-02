@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory;
  * A bootstrap task for initializing require attributes of Hypertrace, it will retry for max
  * attempt as timer task based on fixed delay.
  */
-public class BootstarpTimerTask extends TimerTask {
-  private static final Logger LOGGER = LoggerFactory.getLogger(BootstarpTimerTask.class);
+public class BootstrapTimerTask extends TimerTask {
+  private static final Logger LOGGER = LoggerFactory.getLogger(BootstrapTimerTask.class);
 
   private static final String RETRIES_CONFIG = "hypertraceUI.bootstrap.task.retries";
   private static final int DEFAULT_RETRIES = 3;
@@ -32,7 +32,7 @@ public class BootstarpTimerTask extends TimerTask {
   private int interval;
   private boolean isDone;
 
-  public BootstarpTimerTask(Config appConfig) {
+  public BootstrapTimerTask(Config appConfig) {
     this.numRetries = 0;
     this.isDone = false;
 
@@ -86,7 +86,7 @@ public class BootstarpTimerTask extends TimerTask {
 
   private String getBasePath() {
     try {
-      URL url = BootstarpTimerTask.class.getResource("/configs/config-bootstrapper/application.conf");
+      URL url = BootstrapTimerTask.class.getResource("/configs/config-bootstrapper/application.conf");
       if (url == null) {
         throw new RuntimeException("Failed to find config-bootstapper resource");
       }
