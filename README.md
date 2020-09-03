@@ -7,7 +7,7 @@ Hypertrace federated service combines [hypertrace-ui](https://github.com/hypertr
 
 ## How federated service works?
 
-| ![space-1.jpg](https://hypertrace-docs.s3.amazonaws.com/federated-service.png) | 
+| ![space-1.jpg](https://hypertrace-docs.s3.amazonaws.com/federated-service-arch.png) | 
 |:--:| 
 | *Hypertrace Query Architecture* |
 
