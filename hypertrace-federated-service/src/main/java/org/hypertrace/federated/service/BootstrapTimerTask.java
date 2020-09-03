@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A bootstrap task for initializing require attributes of Hypertrace, it will retry for max
- * attempt as timer task based on fixed delay.
+ * A bootstrap task for initializing required attributes of Hypertrace. It will retry for max
+ * attempts based on a fixed delay.
  */
 public class BootstrapTimerTask extends TimerTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(BootstrapTimerTask.class);
