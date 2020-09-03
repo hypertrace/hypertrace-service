@@ -19,16 +19,20 @@ public class ConfigBootstrapper {
 
   public static void main(String[] args) {
     updateRuntime();
-    bootstrapper(args);
+    BootstrapArgs bootstrapArgs = BootstrapArgs.from(args);
+    bootstrapper(bootstrapArgs).execute(bootstrapArgs);
   }
 
-  private static void bootstrapper(String[] args) {
-    BootstrapArgs bootstrapArgs = BootstrapArgs.from(args);
+  /**
+   * Helps in running bootstrapping as a background task in non-concurrent mode.
+   * <p> e.g It is used in https://github.com/hypertrace/hypertrace-federated-service
+   * */
+  public static BootstrapRunner bootstrapper(BootstrapArgs bootstrapArgs) {
     Config config = ConfigFactory.parseFile(new File(bootstrapArgs.getConfigFile())).resolve();
     String dataStoreType = config.getString(DocumentStoreConfig.DATASTORE_TYPE_CONFIG_KEY);
     Datastore datastore =
         DatastoreProvider.getDatastore(dataStoreType, config.getConfig(dataStoreType));
-    new BootstrapRunner(new ConfigBootstrapStatusDao(datastore)).execute(bootstrapArgs);
+    return new BootstrapRunner(new ConfigBootstrapStatusDao(datastore));
   }
 
   private static void updateRuntime() {
