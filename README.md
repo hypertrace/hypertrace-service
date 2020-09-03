@@ -13,7 +13,7 @@ Hypertrace federated service combines [hypertrace-ui](https://github.com/hypertr
 
 In Hypertrace federated service, 
 - GraphQL service is being used by UI and attribute-service fetches all relevant attributes to the scope of what is being shown.
-- gateway-service provides single access point which routes queries to corresponding downstream service based on the source of attributes and then does appropriate type conversion of data returned by upstream services. 
+- The gateway-service provides a single access point that routes queries to corresponding downstream service based on the source of attributes and then does appropriate type conversion of data returned by upstream services. 
 - The query-service interfaces with Apache Pinot Data Store while entity-service provides CRUD operations for differently identified entities of observed applications.
 
 ## Building locally
