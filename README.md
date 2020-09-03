@@ -9,9 +9,19 @@ Hypertrace federated service combines [Hypertrace-UI](https://github.com/hypertr
 
 | ![space-1.jpg](https://hypertrace-docs.s3.amazonaws.com/federated-service.png) | 
 |:--:| 
-| *Hypertrace Federated Service* |
+| *Hypertrace Query Architecture* |
 
 In Hypertrace Federated service, 
 - GraphQL service is being used by UI and Attribute service fetches all relevant attributes to the scope of what is being shown.
-- Gateway service provides single access point which routes queries to corresponding downstream service based on the source of attributes and Attribute service then does appropriate type conversion of data returned by downstream services. 
+- Gateway service provides single access point which routes queries to corresponding downstream service based on the source of attributes and then does appropriate type conversion of data returned by downstream services. 
 - The Query Service interfaces with Apache Pinot Data Store while entity-service provides CRUD operations for differently identified entities of observed applications.
+
+## Building locally
+The `Hypertrace federated service` uses gradlew to compile/install/distribute. Gradle wrapper is already part of the source code. To build `Hypertrace federated Service`, run:
+
+```
+./gradlew clean build dockerBuildImages
+```
+
+## Docker Image Source:
+- [DockerHub > Hypertrace federated service](https://hub.docker.com/r/hypertrace/hypertrace-federated-service)
