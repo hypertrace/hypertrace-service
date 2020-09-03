@@ -129,9 +129,9 @@ tasks.test {
 }
 
 dependencies {
-  implementation("org.hypertrace.entity.service:entity-service-client:0.1.3")
-  implementation("org.hypertrace.core.documentstore:document-store:0.1.1")
-  implementation("org.hypertrace.core.attribute.service:attribute-service-client:0.1.9")
+  implementation("org.hypertrace.entity.service:entity-service-client:0.1.17")
+  implementation("org.hypertrace.core.documentstore:document-store:0.3.2")
+  implementation("org.hypertrace.core.attribute.service:attribute-service-client:0.3.0")
   implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.2.0")
 
   implementation("org.slf4j:slf4j-api:1.7.30")
@@ -152,6 +152,6 @@ dependencies {
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
   testImplementation("org.mockito:mockito-core:3.3.3")
 
-  integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.3")
+  integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.13")
   integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
 }
