@@ -133,7 +133,7 @@ public class FederatedService extends PlatformService {
     });
 
     Thread uiThread = new Thread(() -> {
-      hypertraceUIServer.startWithTimerTask();
+      hypertraceUIServer.startWithTimerTasks();
     });
 
     grpcThread.start();

@@ -19,6 +19,7 @@ dependencies {
   implementation("org.hypertrace.gateway.service:gateway-service")
   implementation("org.hypertrace.gateway.service:gateway-service-impl")
   implementation("org.hypertrace.graphql:hypertrace-graphql-service")
+  implementation("org.hypertrace.core.bootstrapper:config-bootstrapper")
 
   implementation("org.eclipse.jetty:jetty-server:9.4.30.v20200611")
   implementation("org.eclipse.jetty:jetty-servlet:9.4.30.v20200611")
@@ -57,6 +58,7 @@ tasks.run<JavaExec> {
 
 tasks.processResources {
   dependsOn("copyServiceConfigs");
+  dependsOn("copyBootstrapConfigs")
 }
 
 tasks.register<Copy>("copyServiceConfigs") {
@@ -69,10 +71,24 @@ tasks.register<Copy>("copyServiceConfigs") {
   ).into("./build/resources/main/configs/")
 }
 
+tasks.register<Copy>("copyBootstrapConfigs") {
+  with(
+      createBootstrapCopySpec("config-bootstrapper", "config-bootstrapper")
+  ).into("./build/resources/main/configs/")
+}
+
 fun createCopySpec(projectName: String, serviceName: String): CopySpec {
   return copySpec {
     from("../${projectName}/${serviceName}/src/main/resources/configs/common") {
       include("application.conf")
+      into("${serviceName}")
+    }
+  }
+}
+
+fun createBootstrapCopySpec(projectName: String, serviceName: String): CopySpec {
+  return copySpec {
+    from("../${projectName}/${serviceName}/src/main/resources/configs/${serviceName}") {
       into("${serviceName}")
     }
   }

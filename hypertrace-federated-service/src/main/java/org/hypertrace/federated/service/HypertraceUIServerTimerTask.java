@@ -71,7 +71,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
       if (numRetries >= maxRetries) {
         cancel();
         LOGGER.info(String.format("Max out attempts [%s] in checking bootstrapping status. Manually check " +
-                "the status of jobs [all-view-creator, config-bootstrapper].", numRetries));
+                "the status of data service [pinot].", numRetries));
         uiServer.start();
         return;
       }
@@ -86,7 +86,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
 
     } catch (Exception ex) {
       LOGGER.warn(String.format("Finished an attempt [%s] in checking for bootstrapping status. " +
-              "It seems bootstrapping jobs [all-view-creators, config-bootstrapper] have not yet finished. " +
+              "It seems dependent data service [pinot] is not yet up. " +
               "will retry after [%s] seconds", numRetries, interval));
     } finally {
       numRetries++;

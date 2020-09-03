@@ -93,7 +93,10 @@ public class HypertraceUIServer {
     }
   }
 
-  public void startWithTimerTask() {
+  public void startWithTimerTasks() {
+    BootstrapTimerTask bootstrapTimerTask = new BootstrapTimerTask(appConfig);
+    new Timer().scheduleAtFixedRate(bootstrapTimerTask, 0, bootstrapTimerTask.getInterval() * 1000);
+
     String defaultTenant = graphQlServiceAppConfig.getString(DEFAULT_TENANT_ID_CONFIG);
     HypertraceUIServerTimerTask timerTask = new HypertraceUIServerTimerTask(appConfig,
             this, defaultTenant);
