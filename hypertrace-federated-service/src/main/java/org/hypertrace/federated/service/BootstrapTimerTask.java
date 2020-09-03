@@ -72,7 +72,7 @@ public class BootstrapTimerTask extends TimerTask {
     }
 
     try {
-      LOGGER.info(String.format("Staring an attempt [%s] for bootrapping attributes", numRetries));
+      LOGGER.info(String.format("Starting an attempt [%s] for bootrapping attributes", numRetries));
       bootstrapRunner.execute(bootstrapArgs);
       LOGGER.info("Successfully finished bootstrapping of attributes!!");
       isDone = true;
