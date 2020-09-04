@@ -1,13 +1,11 @@
 package org.hypertrace.federated.service;
 
-import com.google.common.base.Strings;
 import com.typesafe.config.Config;
 import io.grpc.Deadline;
 import io.grpc.ManagedChannelBuilder;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.util.TimerTask;
@@ -148,12 +146,11 @@ public class HypertraceUIServerTimerTask extends TimerTask {
       con.connect();
       int status = con.getResponseCode();
 
-      if (status >= 200 && status <= 206) {
-          return true;
-      }
-      return false;
+      return status >= 200 && status <= 206;
     } finally {
-      if (con != null) { con.disconnect(); }
+      if (con != null) {
+        con.disconnect();
+      }
     }
   }
 
@@ -178,13 +175,13 @@ public class HypertraceUIServerTimerTask extends TimerTask {
         }
         in.close();
         String trimmed = content.toString().trim();
-        if (trimmed != null && trimmed.contains("DefaultTenant")) {
-          return true;
-        }
+        return trimmed != null && trimmed.contains("DefaultTenant");
       }
       return false;
     } finally {
-      if (con != null) { con.disconnect(); }
+      if (con != null) {
+        con.disconnect();
+      }
     }
   }
 }
