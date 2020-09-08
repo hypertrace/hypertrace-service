@@ -1,4 +1,4 @@
-package org.hypertrace.federated.service;
+package org.hypertrace.service;
 
 import com.typesafe.config.Config;
 import io.grpc.Server;
@@ -23,9 +23,9 @@ import org.hypertrace.gateway.service.entity.config.InteractionConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FederatedService extends PlatformService {
+public class HypertraceService extends PlatformService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(FederatedService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HypertraceService.class);
 
   private static final String SERVICE_NAME_CONFIG = "service.name";
   private static final String PORT_PATH = "service.port";
@@ -49,7 +49,7 @@ public class FederatedService extends PlatformService {
   private Server server;
   private HypertraceUIServer hypertraceUIServer;
 
-  public FederatedService(ConfigClient configClient) {
+  public HypertraceService(ConfigClient configClient) {
     super(configClient);
   }
 

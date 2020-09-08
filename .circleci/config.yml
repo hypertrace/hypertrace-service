@@ -10,7 +10,7 @@ executors:
       - image: cimg/openjdk:11.0
   helm:
     docker:
-      - image: hypertrace/helm-gcs-packager:0.1.1
+      - image: hypertrace/helm-gcs-packager:0.3.0
 
 commands:
   gradle:
@@ -64,7 +64,10 @@ jobs:
     executor: gradle_docker
     steps:
       - setup_build_environment
-      - setup_remote_docker
+      # The remote docker version is independent from what's installed in the gradle_docker image and defaults to Docker 17.
+      #   Use the latest value from https://circleci.com/docs/2.0/building-docker-images/#docker-version
+      - setup_remote_docker: &latest_remote_docker
+          version: 19.03.12
       - populate_and_save_cache
       - gradle:
           args: build dockerBuildImages
@@ -72,17 +75,16 @@ jobs:
           args: jacocoTestReport
       - codecov/upload:
           flags: unit
-  publish:
+  merge-publish:
     executor: gradle_docker
     steps:
       - setup_build_environment
-      - setup_remote_docker
       - gradle:
-          args: :tag -Prelease
-      - add_ssh_keys:
-          fingerprints:
-            - '89:21:66:64:b1:9e:5a:a6:7e:8c:67:f8:9a:3c:90:7b'
-      - run: git push origin $(./gradlew -q :printVersion)
+          args: dockerPushImages
+  release-publish:
+    executor: gradle_docker
+    steps:
+      - setup_build_environment
       - gradle:
           args: dockerPushImages
   validate-charts:
@@ -103,12 +105,22 @@ jobs:
       - setup_build_environment
       - snyk/scan:
           additional-arguments: --all-sub-projects --policy-path=.snyk
-  package-charts:
+  release-charts:
     executor: helm
     steps:
       - checkout
       - run:
+          name: Add release tag
+          command: |
+            git config --global user.email "${CIRCLE_USERNAME}@hypertrace.org"
+            git config --global user.name "$CIRCLE_USERNAME"
+            git tag -am "Released by $CIRCLE_USERNAME" $(git describe --abbrev=0 --tags | sed 's/^release-//')
+      - run:
+          name: Remove trigger tag
+          command: git tag -d release-$(git describe --abbrev=0)
+      - run:
           name: Package and Publish Helm Charts
+          # Read the "name:" from Chart.yaml. The chart version is <chart-name>-<semver git tag>
           command: |
             CHART_VERSION=$(git describe --abbrev=0)
             CHART_NAME=$(awk '/^name:/ {print $2}' ./helm/Chart.yaml)
@@ -117,6 +129,12 @@ jobs:
             helm repo add helm-gcs ${HELM_GCS_REPOSITORY}
             helm package --version ${CHART_VERSION} --app-version ${CHART_VERSION} ./helm/
             helm gcs push ${CHART_NAME}-${CHART_VERSION}.tgz helm-gcs --public --retry
+      - add_ssh_keys:
+          fingerprints:
+            - '89:21:66:64:b1:9e:5a:a6:7e:8c:67:f8:9a:3c:90:7b'
+      - run:
+          name: Update remote tags
+          command: git push origin refs/tags/$(git describe --abbrev=0) :refs/tags/release-$(git describe --abbrev=0)
 
 workflows:
   version: 2
@@ -126,7 +144,7 @@ workflows:
       - validate-charts
       - snyk-scan:
           context: hypertrace-vulnerability-scanning
-      - publish:
+      - merge-publish:
           context: hypertrace-publishing
           requires:
             - build
@@ -136,11 +154,19 @@ workflows:
             branches:
               only:
                 - main
-      - package-charts:
+      - release-publish:
           context: hypertrace-publishing
-          requires:
-            - publish
           filters:
             branches:
-              only:
-                - main
+              ignore: /.*/
+            tags:
+              only: /^release-.*/
+      - release-charts:
+          context: hypertrace-publishing
+          requires:
+            - release-publish
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^release-.*/

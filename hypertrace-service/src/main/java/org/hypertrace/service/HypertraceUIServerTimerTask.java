@@ -1,4 +1,4 @@
-package org.hypertrace.federated.service;
+package org.hypertrace.service;
 
 import com.typesafe.config.Config;
 import io.grpc.Deadline;
