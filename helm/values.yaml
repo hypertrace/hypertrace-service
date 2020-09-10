@@ -5,7 +5,7 @@ replicaCount: 1
 maxUnavailable: 0
 
 image:
-  repository: hypertrace/hypertrace-federated-service
+  repository: hypertrace/hypertrace
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -35,16 +35,16 @@ resources:
     memory: 768Mi
 
 deploymentLabels:
-  app: hypertrace-federated-service
+  app: hypertrace
 
 podLabels:
-  app: hypertrace-federated-service
+  app: hypertrace
 
 deploymentSelectorMatchLabels:
-  app: hypertrace-federated-service
+  app: hypertrace
 
 logConfig:
-  name: hypertrace-federated-service-log-config
+  name: hypertrace-log-config
   monitorInterval: 30
   rootLogger:
     level: INFO

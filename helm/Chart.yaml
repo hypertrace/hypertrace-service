@@ -3,8 +3,8 @@
 # Command to package:
 # helm package --version <chart version> --app-version <app version> <folder containing Chart.yaml>
 apiVersion: v2
-name: hypertrace-federated-service
-description: Hypertrace Federated Service
+name: hypertrace
+description: Hypertrace Service
 
 # A chart can be either an 'application' or a 'library' chart.
 #

@@ -1,4 +1,4 @@
-rootProject.name = "hypertrace-federated-service"
+rootProject.name = "hypertrace-service"
 
 pluginManagement {
   repositories {
@@ -20,4 +20,4 @@ includeBuild("./hypertrace-graphql")
 includeBuild("./hypertrace-graphql/hypertrace-core-graphql")
 includeBuild("./config-bootstrapper")
 
-include(":hypertrace-federated-service")
+include(":hypertrace-service")

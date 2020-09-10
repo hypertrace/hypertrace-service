@@ -46,6 +46,7 @@ application {
 
 hypertraceDocker {
   defaultImage {
+    imageName.set("hypertrace")
     buildArgs.put("HYPERTRACE_UI_VERSION", hypertraceUiVersion)
     dockerFile.set(file("Dockerfile"))
   }
