@@ -17,6 +17,8 @@ public interface CachingAttributeClient {
 
   Single<AttributeMetadata> get(String scope, String key);
 
+  Single<AttributeMetadata> get(String attributeId);
+
   Single<List<AttributeMetadata>> getAll();
 
   static Builder builder() {
@@ -98,8 +100,7 @@ public interface CachingAttributeClient {
      * @param callCredentials
      * @return
      */
-    public Builder withCallCredentials(
-        @Nonnull CallCredentials callCredentials) {
+    public Builder withCallCredentials(@Nonnull CallCredentials callCredentials) {
       this.callCredentials = callCredentials;
       return this;
     }
@@ -111,8 +112,7 @@ public interface CachingAttributeClient {
      * @param attributeFilter
      * @return
      */
-    public Builder withAttributeFilter(
-        @Nonnull AttributeMetadataFilter attributeFilter) {
+    public Builder withAttributeFilter(@Nonnull AttributeMetadataFilter attributeFilter) {
       this.attributeFilter = attributeFilter;
       return this;
     }

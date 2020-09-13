@@ -1,5 +1,6 @@
 package org.hypertrace.core.attribute.service.cachingclient;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -25,6 +26,7 @@ class DefaultCachingAttributeClient implements CachingAttributeClient {
   private final LoadingCache<
           AttributeCacheContextKey, Single<Table<String, String, AttributeMetadata>>>
       cache;
+  private final Cache<String, AttributeScopeAndKey> scopeAndKeyLookup;
   private final AttributeMetadataFilter attributeFilter;
 
   DefaultCachingAttributeClient(
@@ -42,6 +44,7 @@ class DefaultCachingAttributeClient implements CachingAttributeClient {
             .maximumSize(maxCacheContexts)
             .expireAfterWrite(cacheExpiration)
             .build(CacheLoader.from(this::loadTable));
+    this.scopeAndKeyLookup = CacheBuilder.newBuilder().expireAfterWrite(cacheExpiration).build();
   }
 
   @Override
@@ -49,6 +52,16 @@ class DefaultCachingAttributeClient implements CachingAttributeClient {
     return this.getOrInvalidate(AttributeCacheContextKey.forCurrentContext())
         .mapOptional(table -> Optional.ofNullable(table.get(scope, key)))
         .switchIfEmpty(Single.error(this.buildErrorForMissingAttribute(scope, key)));
+  }
+
+  @Override
+  public Single<AttributeMetadata> get(String attributeId) {
+    return this.getOrInvalidate(AttributeCacheContextKey.forCurrentContext())
+        .mapOptional(
+            table ->
+                Optional.ofNullable(this.scopeAndKeyLookup.getIfPresent(attributeId))
+                    .map(scopeAndKey -> table.get(scopeAndKey.scope, scopeAndKey.key)))
+        .switchIfEmpty(Single.error(this.buildErrorForMissingAttribute(attributeId)));
   }
 
   @Override
@@ -61,6 +74,7 @@ class DefaultCachingAttributeClient implements CachingAttributeClient {
     return key.getExecutionContext().<AttributeMetadata>stream(
             streamObserver ->
                 this.attributeServiceClient.findAttributes(this.attributeFilter, streamObserver))
+        .doOnNext(this::loadScopeAndKeyCache)
         .toList()
         .map(this::buildTable)
         .cache();
@@ -83,5 +97,26 @@ class DefaultCachingAttributeClient implements CachingAttributeClient {
   private NoSuchElementException buildErrorForMissingAttribute(String scope, String key) {
     return new NoSuchElementException(
         String.format("No attribute available for scope '%s' and key '%s'", scope, key));
+  }
+
+  private NoSuchElementException buildErrorForMissingAttribute(String attributeId) {
+    return new NoSuchElementException(
+        String.format("No attribute available for id '%s'", attributeId));
+  }
+
+  private void loadScopeAndKeyCache(AttributeMetadata attributeMetadata) {
+    this.scopeAndKeyLookup.put(
+        attributeMetadata.getId(),
+        new AttributeScopeAndKey(attributeMetadata.getScope().name(), attributeMetadata.getKey()));
+  }
+
+  private static final class AttributeScopeAndKey {
+    private final String scope;
+    private final String key;
+
+    private AttributeScopeAndKey(String scope, String key) {
+      this.scope = scope;
+      this.key = key;
+    }
   }
 }

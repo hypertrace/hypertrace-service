@@ -41,9 +41,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class CachingAttributeClientTest {
 
   AttributeMetadata metadata1 =
-      AttributeMetadata.newBuilder().setScope(AttributeScope.EVENT).setKey("first").build();
+      AttributeMetadata.newBuilder()
+          .setScope(AttributeScope.EVENT)
+          .setKey("first")
+          .setId("first-id")
+          .build();
   AttributeMetadata metadata2 =
-      AttributeMetadata.newBuilder().setScope(AttributeScope.EVENT).setKey("second").build();
+      AttributeMetadata.newBuilder()
+          .setScope(AttributeScope.EVENT)
+          .setKey("second")
+          .setId("second-id")
+          .build();
 
   @Mock RequestContext mockContext;
 
@@ -207,5 +215,36 @@ class CachingAttributeClientTest {
             .build();
     this.grpcTestContext.call(() -> this.attributeClient.get("EVENT", "first").blockingGet());
     verify(this.mockAttributeService, times(1)).findAttributes(eq(attributeMetadataFilter), any());
+  }
+
+  @Test
+  void supportsCachedLookupById() throws Exception {
+    assertSame(
+        this.metadata1,
+        this.grpcTestContext.call(() -> this.attributeClient.get("first-id").blockingGet()));
+    verify(this.mockAttributeService, times(1)).findAttributes(any(), any());
+    verifyNoMoreInteractions(this.mockAttributeService);
+    assertSame(
+        this.metadata2,
+        this.grpcTestContext.call(() -> this.attributeClient.get("second-id").blockingGet()));
+  }
+
+  @Test
+  void sharesIdAndKeyCache() throws Exception {
+    assertSame(
+        this.metadata1,
+        this.grpcTestContext.call(() -> this.attributeClient.get("first-id").blockingGet()));
+    verify(this.mockAttributeService, times(1)).findAttributes(any(), any());
+    verifyNoMoreInteractions(this.mockAttributeService);
+    assertSame(
+        this.metadata1,
+        this.grpcTestContext.call(() -> this.attributeClient.get("EVENT", "first").blockingGet()));
+  }
+
+  @Test
+  void throwsErrorIfNoIdMatch() {
+    assertThrows(
+        NoSuchElementException.class,
+        () -> this.grpcTestContext.run(() -> this.attributeClient.get("fakeId").blockingGet()));
   }
 }
