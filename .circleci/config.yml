@@ -79,12 +79,14 @@ jobs:
     executor: gradle_docker
     steps:
       - setup_build_environment
+      - setup_remote_docker: *latest_remote_docker
       - gradle:
           args: dockerPushImages
   release-publish:
     executor: gradle_docker
     steps:
       - setup_build_environment
+      - setup_remote_docker: *latest_remote_docker
       - gradle:
           args: dockerPushImages
   validate-charts:
