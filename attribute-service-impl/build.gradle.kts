@@ -19,6 +19,7 @@ dependencies {
   implementation("com.fasterxml.jackson.core:jackson-databind:2.9.5")
   implementation("com.typesafe:config:1.3.2")
   implementation("org.slf4j:slf4j-api:1.7.25")
+  implementation("com.google.protobuf:protobuf-java-util:3.13.0")
 
   testImplementation("org.mockito:mockito-core:3.3.3")
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")

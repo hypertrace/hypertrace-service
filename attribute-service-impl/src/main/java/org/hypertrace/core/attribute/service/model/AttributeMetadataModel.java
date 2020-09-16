@@ -1,9 +1,19 @@
 package org.hypertrace.core.attribute.service.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.protobuf.Message;
+import com.google.protobuf.util.JsonFormat;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.hypertrace.core.attribute.service.v1.AggregateFunction;
+import org.hypertrace.core.attribute.service.v1.AttributeDefinition;
 import org.hypertrace.core.attribute.service.v1.AttributeKind;
 import org.hypertrace.core.attribute.service.v1.AttributeMetadata;
 import org.hypertrace.core.attribute.service.v1.AttributeScope;
@@ -54,6 +65,10 @@ public class AttributeMetadataModel implements Document {
   private List<AttributeSource> sources = Collections.emptyList();
   private Map<String, Map<String, String>> metadata = Collections.emptyMap();
 
+  @JsonSerialize(using = ProtobufMessageSerializer.class)
+  @JsonDeserialize(using = AttributeDefinitionDeserializer.class)
+  private AttributeDefinition definition = AttributeDefinition.getDefaultInstance();
+
   public AttributeMetadataModel() {}
 
   public static AttributeMetadataModel fromDTO(AttributeMetadata attributeMetadata) {
@@ -73,6 +88,7 @@ public class AttributeMetadataModel implements Document {
         attributeMetadata.getOnlyAggregationsAllowed());
     attributeMetadataModel.setSources(attributeMetadata.getSourcesList());
     attributeMetadataModel.setGroupable(attributeMetadata.getGroupable());
+    attributeMetadataModel.setDefinition(attributeMetadata.getDefinition());
     attributeMetadataModel.setMetadata(
         attributeMetadata.getMetadataMap().entrySet().stream()
             .collect(
@@ -209,6 +225,14 @@ public class AttributeMetadataModel implements Document {
     this.metadata = metadata;
   }
 
+  public AttributeDefinition getDefinition() {
+    return definition;
+  }
+
+  public void setDefinition(AttributeDefinition definition) {
+    this.definition = definition;
+  }
+
   public AttributeMetadata toDTO() {
     return toDTOBuilder().build();
   }
@@ -237,7 +261,8 @@ public class AttributeMetadataModel implements Document {
                             stringMapEntry ->
                                 AttributeSourceMetadata.newBuilder()
                                     .putAllSourceMetadata(stringMapEntry.getValue())
-                                    .build())));
+                                    .build())))
+            .setDefinition(this.definition);
 
     if (unit != null) {
       builder.setUnit(unit);
@@ -320,7 +345,8 @@ public class AttributeMetadataModel implements Document {
         && Objects.equals(groupable, that.groupable)
         && Objects.equals(supportedAggregations, that.supportedAggregations)
         && Objects.equals(sources, that.sources)
-        && Objects.equals(metadata, that.metadata);
+        && Objects.equals(metadata, that.metadata)
+        && Objects.equals(definition, that.definition);
   }
 
   @Override
@@ -340,6 +366,30 @@ public class AttributeMetadataModel implements Document {
         supportedAggregations,
         onlyAggregationsAllowed,
         sources,
-        metadata);
+        metadata,
+        definition);
+  }
+
+  private static class ProtobufMessageSerializer extends JsonSerializer<Message> {
+    private static final JsonFormat.Printer PRINTER =
+        JsonFormat.printer().omittingInsignificantWhitespace();
+
+    @Override
+    public void serialize(Message message, JsonGenerator generator, SerializerProvider serializers)
+        throws IOException {
+      generator.writeRawValue(PRINTER.print(message));
+    }
+  }
+
+  private static class AttributeDefinitionDeserializer extends JsonDeserializer<Message> {
+    private static final JsonFormat.Parser PARSER = JsonFormat.parser();
+
+    @Override
+    public Message deserialize(JsonParser parser, DeserializationContext context)
+        throws IOException {
+      AttributeDefinition.Builder builder = AttributeDefinition.newBuilder();
+      PARSER.merge(parser.readValueAsTree().toString(), builder);
+      return builder.build();
+    }
   }
 }

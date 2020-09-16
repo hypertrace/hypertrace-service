@@ -18,3 +18,6 @@ include(":attribute-service-impl")
 include(":attribute-service")
 include(":attribute-service-tenant-api")
 include(":caching-attribute-service-client")
+include(":attribute-projection-functions")
+include(":attribute-projection-registry")
+

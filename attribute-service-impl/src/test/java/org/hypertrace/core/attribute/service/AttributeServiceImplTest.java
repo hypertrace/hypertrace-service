@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hypertrace.core.attribute.service.v1.AggregateFunction;
+import org.hypertrace.core.attribute.service.v1.AttributeDefinition;
 import org.hypertrace.core.attribute.service.v1.AttributeKind;
 import org.hypertrace.core.attribute.service.v1.AttributeMetadata;
 import org.hypertrace.core.attribute.service.v1.AttributeMetadataFilter;
@@ -84,6 +85,7 @@ public class AttributeServiceImplTest {
               .setScope(AttributeScope.EVENT)
               .setDisplayName("EVENT name")
               .setValueKind(AttributeKind.TYPE_STRING)
+              .setDefinition(AttributeDefinition.getDefaultInstance())
               .setGroupable(true)
               .setType(AttributeType.ATTRIBUTE)
               // Add default aggregations. See SupportedAggregationsDecorator
@@ -97,6 +99,7 @@ public class AttributeServiceImplTest {
               .setScope(AttributeScope.EVENT)
               .setDisplayName("EVENT duration")
               .setGroupable(false)
+              .setDefinition(AttributeDefinition.getDefaultInstance())
               .setValueKind(AttributeKind.TYPE_INT64)
               .setType(AttributeType.METRIC)
               // Add default aggregations. See SupportedAggregationsDecorator
@@ -241,6 +244,7 @@ public class AttributeServiceImplTest {
               .setScope(AttributeScope.EVENT)
               .setDisplayName("EVENT name")
               .setValueKind(AttributeKind.TYPE_STRING)
+              .setDefinition(AttributeDefinition.getDefaultInstance())
               .setGroupable(true)
               .setType(AttributeType.ATTRIBUTE)
               // Add default aggregations. See SupportedAggregationsDecorator
@@ -255,6 +259,7 @@ public class AttributeServiceImplTest {
               .setDisplayName("EVENT duration")
               .setGroupable(false)
               .setValueKind(AttributeKind.TYPE_INT64)
+              .setDefinition(AttributeDefinition.getDefaultInstance())
               .setType(AttributeType.METRIC)
               // Add default aggregations. See SupportedAggregationsDecorator
               .addAllSupportedAggregations(
