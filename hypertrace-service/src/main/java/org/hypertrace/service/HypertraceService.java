@@ -8,8 +8,7 @@ import org.hypertrace.core.attribute.service.AttributeServiceImpl;
 import org.hypertrace.core.documentstore.Datastore;
 import org.hypertrace.core.documentstore.DatastoreProvider;
 import org.hypertrace.core.grpcutils.server.InterceptorUtil;
-import org.hypertrace.core.query.service.QueryServiceImpl;
-import org.hypertrace.core.query.service.QueryServiceImplConfig;
+import org.hypertrace.core.query.service.QueryServiceFactory;
 import org.hypertrace.core.serviceframework.PlatformService;
 import org.hypertrace.core.serviceframework.config.ConfigClient;
 import org.hypertrace.core.serviceframework.config.ConfigUtils;
@@ -80,12 +79,10 @@ public class HypertraceService extends PlatformService {
                     .wrapInterceptors(new EntityQueryServiceImpl(datastore, entityServiceAppConfig)));
 
     // Query service
-    final Config queryServiceAppConfig = getServiceConfig(QUERY_SERVICE_NAME);
-    final QueryServiceImplConfig queryServiceImplConfig =
-            QueryServiceImplConfig.parse(queryServiceAppConfig.getConfig(QUERY_SERVICE_SERVICE_CONFIG));
-
-    serverBuilder
-            .addService(InterceptorUtil.wrapInterceptors(new QueryServiceImpl(queryServiceImplConfig)));
+    serverBuilder.addService(
+        InterceptorUtil.wrapInterceptors(
+            QueryServiceFactory.build(
+                getServiceConfig(QUERY_SERVICE_NAME).getConfig(QUERY_SERVICE_SERVICE_CONFIG))));
 
     // Gateway service
     final Config gatewayServiceAppConfig = getServiceConfig(GATEWAY_SERVICE_NAME);
@@ -109,10 +106,11 @@ public class HypertraceService extends PlatformService {
       clusterName = DEFAULT_CLUSTER_NAME;
     }
 
-    return configClient.getConfig(serviceName, clusterName,
-            ConfigUtils.getEnvironmentProperty(POD_NAME),
-            ConfigUtils.getEnvironmentProperty(CONTAINER_NAME)
-    );
+    return configClient.getConfig(
+        serviceName,
+        clusterName,
+        ConfigUtils.getEnvironmentProperty(POD_NAME),
+        ConfigUtils.getEnvironmentProperty(CONTAINER_NAME));
   }
 
   @Override
