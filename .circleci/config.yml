@@ -38,7 +38,7 @@ commands:
           name: Ensure submodules point to commit from main branch
           command: git submodule foreach "git merge-base --is-ancestor HEAD origin/main"
   setup_build_environment:
-    description: 'Generates cache key from a hash of all gradle files'
+    description: 'Checkout, update submodules, restore the cache, and setup docker'
     steps:
       - checkout
       - update-submodule
@@ -50,6 +50,10 @@ commands:
             - v1-dependencies-{{ checksum "/tmp/checksum.txt" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
+      # The remote docker version is independent from what's installed in the gradle_docker image and defaults to Docker 17.
+      #   Use the latest value from https://circleci.com/docs/2.0/building-docker-images/#docker-version
+      - setup_remote_docker:
+          version: 19.03.12
   populate_and_save_cache:
     description: 'Downloads all gradle dependencies and uploads cache for later use'
     steps:
@@ -64,10 +68,6 @@ jobs:
     executor: gradle_docker
     steps:
       - setup_build_environment
-      # The remote docker version is independent from what's installed in the gradle_docker image and defaults to Docker 17.
-      #   Use the latest value from https://circleci.com/docs/2.0/building-docker-images/#docker-version
-      - setup_remote_docker: &latest_remote_docker
-          version: 19.03.12
       - populate_and_save_cache
       - gradle:
           args: build dockerBuildImages
@@ -79,14 +79,12 @@ jobs:
     executor: gradle_docker
     steps:
       - setup_build_environment
-      - setup_remote_docker: *latest_remote_docker
       - gradle:
           args: dockerPushImages
   release-publish:
     executor: gradle_docker
     steps:
       - setup_build_environment
-      - setup_remote_docker: *latest_remote_docker
       - gradle:
           args: dockerPushImages
   validate-charts:
