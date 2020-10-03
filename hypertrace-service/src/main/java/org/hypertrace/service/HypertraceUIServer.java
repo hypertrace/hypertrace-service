@@ -4,22 +4,10 @@ import com.typesafe.config.Config;
 import java.net.URI;
 import java.net.URL;
 import java.util.Timer;
-import javax.servlet.Filter;
-import org.eclipse.jetty.rewrite.handler.RewriteHandler;
-import org.eclipse.jetty.rewrite.handler.RewritePatternRule;
-import org.eclipse.jetty.rewrite.handler.RewriteRegexRule;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 import org.hypertrace.graphql.service.GraphQlServiceImpl;
 import org.slf4j.Logger;
@@ -29,6 +17,7 @@ import org.slf4j.LoggerFactory;
  * Serves both the Hypertrace UI and GraphQL APIs used by it.
  */
 public class HypertraceUIServer {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(HypertraceUIServer.class);
 
   private static final String PORT_CONFIG = "hypertraceUI.port";
@@ -51,7 +40,7 @@ public class HypertraceUIServer {
 
     ServletContextHandler servletContextHandler = graphQlService.getContextHandler();
     servletContextHandler.setBaseResource(getBaseResource());
-    servletContextHandler.setWelcomeFiles(new String[] { "index.html" });
+    servletContextHandler.setWelcomeFiles(new String[]{"index.html"});
     servletContextHandler.addServlet(DefaultServlet.class, "/");
 
     ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();
@@ -82,11 +71,12 @@ public class HypertraceUIServer {
 
     String defaultTenant = graphQlServiceAppConfig.getString(DEFAULT_TENANT_ID_CONFIG);
     HypertraceUIServerTimerTask timerTask = new HypertraceUIServerTimerTask(appConfig,
-            this, defaultTenant);
-    LOGGER.info(String.format("Starting a timer task for checking health for bootstrapping process, " +
+        this, defaultTenant);
+    LOGGER.info(
+        String.format("Starting a timer task for checking health for bootstrapping process, " +
             "will try first attempt after [%s] seconds", timerTask.getStartPeriod()));
     new Timer().scheduleAtFixedRate(timerTask, timerTask.getStartPeriod() * 1000,
-            timerTask.getInterval() * 1000);
+        timerTask.getInterval() * 1000);
   }
 
   public void start() {
