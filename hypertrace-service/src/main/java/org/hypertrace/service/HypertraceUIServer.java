@@ -4,11 +4,10 @@ import com.typesafe.config.Config;
 import java.net.URI;
 import java.net.URL;
 import java.util.Timer;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.hypertrace.graphql.service.GraphQlServiceImpl;
 import org.slf4j.Logger;
@@ -38,44 +37,16 @@ public class HypertraceUIServer {
     server = new Server(port);
     graphQlService = new GraphQlServiceImpl(graphQlServiceAppConfig);
 
-    ResourceHandler resourceHandler = new ResourceHandler();
-    resourceHandler.setBaseResource(getBaseResource());
+    ServletContextHandler servletContextHandler = graphQlService.getContextHandler();
+    servletContextHandler.setBaseResource(getBaseResource());
+    servletContextHandler.setWelcomeFiles(new String[]{"index.html"});
+    servletContextHandler.addServlet(DefaultServlet.class, "/");
 
-    ContextHandler baseContextHandler = new ContextHandler();
-    baseContextHandler.setContextPath("/");
-    baseContextHandler.setHandler(resourceHandler);
+    ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();
+    errorHandler.addErrorPage(404, "/"); // return root ... being index.html
+    servletContextHandler.setErrorHandler(errorHandler);
 
-    ContextHandler homeContextHandler = new ContextHandler();
-    homeContextHandler.setContextPath("/home");
-    homeContextHandler.setHandler(resourceHandler);
-
-    ContextHandler applicationFlowContextHandler = new ContextHandler();
-    applicationFlowContextHandler.setContextPath("/application-flow");
-    applicationFlowContextHandler.setHandler(resourceHandler);
-
-    ContextHandler servicesContextHandler = new ContextHandler();
-    servicesContextHandler.setContextPath("/services");
-    servicesContextHandler.setHandler(resourceHandler);
-
-    ContextHandler backendsContextHandler = new ContextHandler();
-    backendsContextHandler.setContextPath("/backends");
-    backendsContextHandler.setHandler(resourceHandler);
-
-    ContextHandler explorerContextHandler = new ContextHandler();
-    explorerContextHandler.setContextPath("/explorer");
-    explorerContextHandler.setHandler(resourceHandler);
-
-    ContextHandlerCollection contexts = new ContextHandlerCollection();
-    contexts.setHandlers(new Handler[]{
-            baseContextHandler,
-            homeContextHandler,
-            applicationFlowContextHandler,
-            servicesContextHandler,
-            backendsContextHandler,
-            explorerContextHandler,
-            graphQlService.getContextHandler()});
-
-    server.setHandler(contexts);
+    server.setHandler(servletContextHandler);
     server.setStopAtShutdown(true);
   }
 
