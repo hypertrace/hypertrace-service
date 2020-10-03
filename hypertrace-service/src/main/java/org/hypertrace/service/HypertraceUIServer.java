@@ -4,6 +4,7 @@ import com.typesafe.config.Config;
 import java.net.URI;
 import java.net.URL;
 import java.util.Timer;
+import javax.servlet.Filter;
 import org.eclipse.jetty.rewrite.handler.RewriteHandler;
 import org.eclipse.jetty.rewrite.handler.RewritePatternRule;
 import org.eclipse.jetty.rewrite.handler.RewriteRegexRule;
@@ -14,7 +15,11 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 import org.hypertrace.graphql.service.GraphQlServiceImpl;
 import org.slf4j.Logger;
@@ -44,59 +49,16 @@ public class HypertraceUIServer {
     server = new Server(port);
     graphQlService = new GraphQlServiceImpl(graphQlServiceAppConfig);
 
-    ResourceHandler resourceHandler = new ResourceHandler();
-    resourceHandler.setBaseResource(getBaseResource());
+    ServletContextHandler servletContextHandler = graphQlService.getContextHandler();
+    servletContextHandler.setBaseResource(getBaseResource());
+    servletContextHandler.setWelcomeFiles(new String[] { "index.html" });
+    servletContextHandler.addServlet(DefaultServlet.class, "/");
 
-    ResourceRequestHandler resourceRequestHandler = new ResourceRequestHandler();
-    resourceRequestHandler.setHandler(resourceHandler);
+    ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();
+    errorHandler.addErrorPage(404, "/"); // return root ... being index.html
+    servletContextHandler.setErrorHandler(errorHandler);
 
-    ContextHandler baseContextHandler = new ContextHandler();
-    baseContextHandler.setContextPath("/");
-    baseContextHandler.setHandler(resourceHandler);
-//
-//    ContextHandler homeContextHandler = new ContextHandler();
-//    homeContextHandler.setContextPath("/home");
-//    homeContextHandler.setHandler(resourceHandler);
-//
-//    ContextHandler applicationFlowContextHandler = new ContextHandler();
-//    applicationFlowContextHandler.setContextPath("/application-flow");
-//    applicationFlowContextHandler.setHandler(resourceHandler);
-//
-//    ContextHandler servicesContextHandler = new ContextHandler();
-//    servicesContextHandler.setContextPath("/services");
-//    servicesContextHandler.setHandler(resourceHandler);
-//
-//    ContextHandler backendsContextHandler = new ContextHandler();
-//    backendsContextHandler.setContextPath("/backends");
-//    backendsContextHandler.setHandler(resourceHandler);
-//
-//    ContextHandler explorerContextHandler = new ContextHandler();
-//    explorerContextHandler.setContextPath("/explorer");
-//    explorerContextHandler.setHandler(resourceHandler);
-//
-//    RewriteHandler rewriteHandler = new RewriteHandler();
-//    rewriteHandler.setRewriteRequestURI(true);
-//    rewriteHandler.setRewritePathInfo(false);
-//    RewriteRegexRule rule = new RewriteRegexRule();
-//    rule.setRegex("/services/(.*)");
-//    rule.setReplacement("/services/$1/");
-//    rewriteHandler.addRule(rule);
-//    rewriteHandler.setHandler(resourceHandler);
-
-    //ContextHandlerCollection contexts = new ContextHandlerCollection();
-    HandlerList lists = new HandlerList(new Handler[]{
-        resourceRequestHandler,
-        graphQlService.getContextHandler()});
-
-//    contexts.setHandlers(new Handler[]{
-//            baseContextHandler,
-//            homeContextHandler,
-//            applicationFlowContextHandler,
-//            backendsContextHandler,
-//            explorerContextHandler,
-//            graphQlService.getContextHandler()});
-
-    server.setHandler(lists);
+    server.setHandler(graphQlService.getContextHandler());
     server.setStopAtShutdown(true);
   }
 
