@@ -4,11 +4,11 @@ import com.typesafe.config.Config;
 import java.net.URI;
 import java.net.URL;
 import java.util.Timer;
-import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.rewrite.handler.RewriteHandler;
+import org.eclipse.jetty.rewrite.handler.RewriteRegexRule;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.hypertrace.graphql.service.GraphQlServiceImpl;
 import org.slf4j.Logger;
@@ -38,44 +38,24 @@ public class HypertraceUIServer {
     server = new Server(port);
     graphQlService = new GraphQlServiceImpl(graphQlServiceAppConfig);
 
-    ResourceHandler resourceHandler = new ResourceHandler();
-    resourceHandler.setBaseResource(getBaseResource());
+    ServletContextHandler servletContextHandler = graphQlService.getContextHandler();
+    servletContextHandler.setBaseResource(getBaseResource());
+    servletContextHandler.setWelcomeFiles(new String[] {"index.html"});
+    servletContextHandler.addServlet(DefaultServlet.class, "/");
 
-    ContextHandler baseContextHandler = new ContextHandler();
-    baseContextHandler.setContextPath("/");
-    baseContextHandler.setHandler(resourceHandler);
+    RewriteHandler rewriteHandler = new RewriteHandler();
+    rewriteHandler.setRewriteRequestURI(true);
+    rewriteHandler.setRewritePathInfo(false);
+    rewriteHandler.setOriginalPathAttribute("requestedPath");
 
-    ContextHandler homeContextHandler = new ContextHandler();
-    homeContextHandler.setContextPath("/home");
-    homeContextHandler.setHandler(resourceHandler);
+    String graphqlPath = this.graphQlService.getGraphQlServiceConfig().getGraphqlUrlPath();
 
-    ContextHandler applicationFlowContextHandler = new ContextHandler();
-    applicationFlowContextHandler.setContextPath("/application-flow");
-    applicationFlowContextHandler.setHandler(resourceHandler);
+    // Doesn't start with the graphql root, /assets/, or end with .png, .css,  or .js
+    String matchRegex = "^(?!" + graphqlPath + "|/assets/).*(?<!\\.png|\\.css|\\.js)$";
+    rewriteHandler.addRule(new RewriteRegexRule(matchRegex, "/index.html"));
 
-    ContextHandler servicesContextHandler = new ContextHandler();
-    servicesContextHandler.setContextPath("/services");
-    servicesContextHandler.setHandler(resourceHandler);
-
-    ContextHandler backendsContextHandler = new ContextHandler();
-    backendsContextHandler.setContextPath("/backends");
-    backendsContextHandler.setHandler(resourceHandler);
-
-    ContextHandler explorerContextHandler = new ContextHandler();
-    explorerContextHandler.setContextPath("/explorer");
-    explorerContextHandler.setHandler(resourceHandler);
-
-    ContextHandlerCollection contexts = new ContextHandlerCollection();
-    contexts.setHandlers(new Handler[]{
-            baseContextHandler,
-            homeContextHandler,
-            applicationFlowContextHandler,
-            servicesContextHandler,
-            backendsContextHandler,
-            explorerContextHandler,
-            graphQlService.getContextHandler()});
-
-    server.setHandler(contexts);
+    rewriteHandler.setHandler(servletContextHandler);
+    server.setHandler(rewriteHandler);
     server.setStopAtShutdown(true);
   }
 

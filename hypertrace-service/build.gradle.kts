@@ -19,10 +19,12 @@ dependencies {
   implementation("org.hypertrace.gateway.service:gateway-service")
   implementation("org.hypertrace.gateway.service:gateway-service-impl")
   implementation("org.hypertrace.graphql:hypertrace-graphql-service")
+  implementation("org.hypertrace.core.graphql:hypertrace-core-graphql-spi")
   implementation("org.hypertrace.core.bootstrapper:config-bootstrapper")
 
   implementation("org.eclipse.jetty:jetty-server:9.4.30.v20200611")
   implementation("org.eclipse.jetty:jetty-servlet:9.4.30.v20200611")
+  implementation("org.eclipse.jetty:jetty-rewrite:9.4.30.v20200611")
 
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.4")
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.1.3")
