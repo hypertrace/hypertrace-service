@@ -4,9 +4,10 @@ import com.typesafe.config.Config;
 import java.net.URI;
 import java.net.URL;
 import java.util.Timer;
+import org.eclipse.jetty.rewrite.handler.RewriteHandler;
+import org.eclipse.jetty.rewrite.handler.RewriteRegexRule;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.hypertrace.graphql.service.GraphQlServiceImpl;
@@ -39,14 +40,22 @@ public class HypertraceUIServer {
 
     ServletContextHandler servletContextHandler = graphQlService.getContextHandler();
     servletContextHandler.setBaseResource(getBaseResource());
-    servletContextHandler.setWelcomeFiles(new String[]{"index.html"});
+    servletContextHandler.setWelcomeFiles(new String[] {"index.html"});
     servletContextHandler.addServlet(DefaultServlet.class, "/");
 
-    ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();
-    errorHandler.addErrorPage(404, "/"); // return root ... being index.html
-    servletContextHandler.setErrorHandler(errorHandler);
+    RewriteHandler rewriteHandler = new RewriteHandler();
+    rewriteHandler.setRewriteRequestURI(true);
+    rewriteHandler.setRewritePathInfo(false);
+    rewriteHandler.setOriginalPathAttribute("requestedPath");
 
-    server.setHandler(servletContextHandler);
+    String graphqlPath = this.graphQlService.getGraphQlServiceConfig().getGraphqlUrlPath();
+
+    // Doesn't start with the graphql root, /assets/, or end with .png, .css,  or .js
+    String matchRegex = "^(?!" + graphqlPath + "|/assets/).*(?<!\\.png|\\.css|\\.js)$";
+    rewriteHandler.addRule(new RewriteRegexRule(matchRegex, "/index.html"));
+
+    rewriteHandler.setHandler(servletContextHandler);
+    server.setHandler(rewriteHandler);
     server.setStopAtShutdown(true);
   }
 
