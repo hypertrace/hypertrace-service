@@ -76,7 +76,7 @@ class CachingAttributeClientTest {
             .start();
     this.grpcChannel = InProcessChannelBuilder.forName(uniqueName).directExecutor().build();
     this.attributeClient =
-        CachingAttributeClient.builder().withExistingChannel(this.grpcChannel).build();
+        CachingAttributeClient.builder(this.grpcChannel).build();
     when(this.mockContext.getTenantId()).thenReturn(Optional.of("default tenant"));
     this.grpcTestContext = Context.current().withValue(RequestContext.CURRENT, this.mockContext);
     this.responseMetadata = List.of(this.metadata1, this.metadata2);
@@ -185,8 +185,7 @@ class CachingAttributeClientTest {
   @Test
   void hasConfigurableCacheSize() throws Exception {
     this.attributeClient =
-        CachingAttributeClient.builder()
-            .withExistingChannel(this.grpcChannel)
+        CachingAttributeClient.builder(this.grpcChannel)
             .withMaximumCacheContexts(1)
             .build();
 
@@ -209,8 +208,7 @@ class CachingAttributeClientTest {
     AttributeMetadataFilter attributeMetadataFilter =
         AttributeMetadataFilter.newBuilder().addScope(AttributeScope.EVENT).build();
     this.attributeClient =
-        CachingAttributeClient.builder()
-            .withExistingChannel(this.grpcChannel)
+        CachingAttributeClient.builder(this.grpcChannel)
             .withAttributeFilter(attributeMetadataFilter)
             .build();
     this.grpcTestContext.call(() -> this.attributeClient.get("EVENT", "first").blockingGet());

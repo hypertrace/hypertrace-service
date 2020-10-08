@@ -141,7 +141,7 @@ message Empty {
 message AttributeDefinition {
   oneof value {
     Projection projection = 1;
-    // TODO  non-projected attributes
+    string source_path = 2;
   }
 }
 
