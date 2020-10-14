@@ -1,6 +1,5 @@
 package org.hypertrace.core.bootstrapper;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
@@ -33,8 +32,11 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Main runner class that parses the bootstrap arguments and performs an upgrade or rollback */
+/**
+ * Main runner class that parses the bootstrap arguments and performs an upgrade or rollback
+ */
 public class BootstrapRunner {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(BootstrapRunner.class);
   private final ConfigBootstrapStatusDao configBootstrapStatusDao;
   private final Map<String, Class> commandNameToClassMap;
@@ -44,25 +46,31 @@ public class BootstrapRunner {
     this.commandNameToClassMap =
         new Reflections("org.hypertrace")
             .getTypesAnnotatedWith(CommandType.class).stream()
-                .collect(
-                    Collectors.toMap(
-                        clazz -> clazz.getAnnotation(CommandType.class).type(),
-                        Function.identity()));
+            .collect(
+                Collectors.toMap(
+                    clazz -> clazz.getAnnotation(CommandType.class).type(),
+                    Function.identity()));
   }
 
-  /** Executes the bootstrap commands based on the passed arguments */
+  /**
+   * Executes the bootstrap commands based on the passed arguments
+   */
   public void execute(BootstrapArgs bootstrapArgs) {
     BootstrapContext bootstrapContext =
         BootstrapContext.buildFrom(
             ConfigFactory.parseFile(new File(bootstrapArgs.getConfigFile())).resolve());
-    if (bootstrapArgs.isValidate()) {
-      validate(bootstrapContext, bootstrapArgs);
-    }
-    if (bootstrapArgs.isUpgrade()) {
-      upgrade(bootstrapContext, bootstrapArgs);
-    }
-    if (bootstrapArgs.isRollback()) {
-      rollback(bootstrapContext, bootstrapArgs);
+    try {
+      if (bootstrapArgs.isValidate()) {
+        validate(bootstrapContext, bootstrapArgs);
+      }
+      if (bootstrapArgs.isUpgrade()) {
+        upgrade(bootstrapContext, bootstrapArgs);
+      }
+      if (bootstrapArgs.isRollback()) {
+        rollback(bootstrapContext, bootstrapArgs);
+      }
+    } finally {
+      bootstrapContext.close();
     }
   }
 
@@ -71,7 +79,7 @@ public class BootstrapRunner {
         "Starting validate with args:{} at time:{}", bootstrapArgs, System.currentTimeMillis());
     File commandsResource = new File(bootstrapArgs.getCommandResource());
     File[] commandFiles =
-        (commandsResource.isFile()) ? new File[] {commandsResource} :
+        (commandsResource.isFile()) ? new File[]{commandsResource} :
             FileUtils.listFiles(commandsResource, null, true).toArray(File[]::new);
     Map<ConfigBootstrapStatusKey, Config> bootstrapStatusKeyConfigMap =
         groupConfigsByKey(commandFiles);
@@ -89,9 +97,9 @@ public class BootstrapRunner {
         "Starting upgrade with args:{} at time:{}", bootstrapArgs, System.currentTimeMillis());
     File commandsResource = new File(bootstrapArgs.getCommandResource());
     File[] commandFiles =
-        (commandsResource.isFile()) ? new File[] {commandsResource} :
+        (commandsResource.isFile()) ? new File[]{commandsResource} :
             FileUtils.listFiles(commandsResource, null, true).toArray(File[]::new);
-    for (File f: commandFiles) {
+    for (File f : commandFiles) {
       LOGGER.info("Reading config file:{}", f.getAbsolutePath());
     }
     Map<ConfigBootstrapStatusKey, Config> bootstrapStatusKeyConfigMap =
@@ -186,8 +194,8 @@ public class BootstrapRunner {
                 (c1, c2) -> {
                   List<? extends ConfigObject> configList =
                       Stream.concat(
-                              c1.getObjectList(BootstrapConstants.COMMANDS).stream(),
-                              c2.getObjectList(BootstrapConstants.COMMANDS).stream())
+                          c1.getObjectList(BootstrapConstants.COMMANDS).stream(),
+                          c2.getObjectList(BootstrapConstants.COMMANDS).stream())
                           .collect(Collectors.toList());
                   return ConfigFactory.parseMap(Map.of(BootstrapConstants.COMMANDS, configList));
                 },

@@ -129,16 +129,16 @@ tasks.test {
 }
 
 dependencies {
-  implementation("org.hypertrace.entity.service:entity-service-client:0.1.17")
+  implementation("org.hypertrace.entity.service:entity-service-client:0.1.25")
   implementation("org.hypertrace.core.documentstore:document-store:0.3.2")
-  implementation("org.hypertrace.core.attribute.service:attribute-service-client:0.3.0")
+  implementation("org.hypertrace.core.attribute.service:attribute-service-client:0.4.3")
   implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.2.0")
 
   implementation("org.slf4j:slf4j-api:1.7.30")
   implementation("org.apache.logging.log4j:log4j-api:2.13.3")
   implementation("org.apache.logging.log4j:log4j-core:2.13.3")
   implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.13.3")
-  implementation("org.apache.httpcomponents:httpclient:4.5.10")
+  implementation("org.apache.httpcomponents:httpclient:4.5.13")
   implementation ("commons-io:commons-io:2.6")
   implementation("com.typesafe:config:1.4.0")
   implementation("com.google.protobuf:protobuf-java:3.12.2")
