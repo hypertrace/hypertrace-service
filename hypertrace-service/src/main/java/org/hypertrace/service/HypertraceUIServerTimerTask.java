@@ -107,9 +107,11 @@ public class HypertraceUIServerTimerTask extends TimerTask {
       }
 
       /**
-       * First we will check for pinot, and in follow up run, we will try out span requests.
-       * Once brokers are up, and register with controller, it also has to updated in
-       * zookeeper.
+       * We will check for e2e spans request in the next time cycle after the pinot is up. We are
+       * using a zookeeper based pinot client in query service which needs to brokers to be registered.
+       * So, instead of checking immediately after the pinot is up, we are adding buffer time for
+       * it to be fully functional. This avoids any confusion between any pre-configured errors
+       * messages during start time, see an issue - https://github.com/hypertrace/query-service/issues/29
        * */
       if (!isPinotUp && executePinotHealthCheck() && executeBrokerRegistrationCheck()) {
         isPinotUp = true;
