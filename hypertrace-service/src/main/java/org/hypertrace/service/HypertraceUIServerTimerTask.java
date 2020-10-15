@@ -41,6 +41,9 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private static final String PINOT_CONTROLLER_PORT = "pinot.controller_port";
   private static final int DEFAULT_PINOT_CONTROLLER_PORT = 9000;
 
+  private static final String PINOT_BROKER_PORT = "pinot.broker_port";
+  private static final int DEFAULT_PINOT_BROKER_PORT = 8099;
+
   private final HypertraceUIServer uiServer;
   private final GatewayServiceBlockingStub client;
   private int numRetries;
@@ -53,6 +56,8 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private String pinotSeverHost;
   private int pinotServerPort;
   private int pinotControllerPort;
+  private boolean isPinotUp;
+  private int afterPinotUpCount;
 
 
   public HypertraceUIServerTimerTask(Config appConfig, HypertraceUIServer uiServer, String defaultTenant) {
@@ -72,6 +77,8 @@ public class HypertraceUIServerTimerTask extends TimerTask {
     this.numRetries = 0;
     this.defaultTenant = defaultTenant;
     this.startTime = Instant.now().toEpochMilli();
+    this.isPinotUp = false;
+    this.afterPinotUpCount = 0;
 
     client = GatewayServiceGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(
             "localhost", appConfig.getInt("service.port")).usePlaintext().build())
@@ -98,7 +105,23 @@ public class HypertraceUIServerTimerTask extends TimerTask {
         return;
       }
 
-      if (executePinotHealthCheck() && executeBrokerRegistrationCheck() && executeHealthCheck()) {
+      if (executePinotHealthCheck()
+          && executePinotControllerHealthCheck()
+          && executePinotBrokerHealthCheck()
+          && executeBrokerRegistrationCheck()) {
+        isPinotUp = true;
+        afterPinotUpCount++;
+        LOGGER.warn(String.format("Finished an attempt [%s] in checking for bootstrapping status. " +
+            "It seems dependent data service [pinot] is up. " +
+            "will check for span status after [%s] seconds", numRetries, interval));
+      } else {
+        LOGGER.warn(String.format("Finished an attempt [%s] in checking for bootstrapping status. " +
+            "It seems dependent data service [pinot] is not yet up. " +
+            "will retry after [%s] seconds", numRetries, interval));
+        return;
+      }
+
+      if (afterPinotUpCount > 1 && executeHealthCheck()) {
         cancel();
         LOGGER.info(String.format("Stack is up after [%s] attempts, and duration [%s] in millis.",
                 numRetries, Instant.now().toEpochMilli() - startTime));
@@ -139,6 +162,47 @@ public class HypertraceUIServerTimerTask extends TimerTask {
     HttpURLConnection con = null;
     try {
       URL url = new URL(String.format("http://%s:%s/health", pinotSeverHost, pinotServerPort));
+      LOGGER.info("checking pinot server health:{}", url.toString());
+      con = (HttpURLConnection) url.openConnection();
+      con.setRequestMethod("GET");
+      con.setConnectTimeout(timeout * 1000);
+      con.setReadTimeout(timeout * 1000);
+      con.connect();
+      int status = con.getResponseCode();
+
+      return status >= 200 && status <= 206;
+    } finally {
+      if (con != null) {
+        con.disconnect();
+      }
+    }
+  }
+
+  private boolean executePinotControllerHealthCheck() throws Exception {
+    HttpURLConnection con = null;
+    try {
+      URL url = new URL(String.format("http://%s:%s/pinot-controller/admin", pinotSeverHost, pinotControllerPort));
+      LOGGER.info("checking pinot controller health:{}", url.toString());
+      con = (HttpURLConnection) url.openConnection();
+      con.setRequestMethod("GET");
+      con.setConnectTimeout(timeout * 1000);
+      con.setReadTimeout(timeout * 1000);
+      con.connect();
+      int status = con.getResponseCode();
+
+      return status >= 200 && status <= 206;
+    } finally {
+      if (con != null) {
+        con.disconnect();
+      }
+    }
+  }
+
+  private boolean executePinotBrokerHealthCheck() throws Exception {
+    HttpURLConnection con = null;
+    try {
+      URL url = new URL(String.format("http://%s:%s/health", pinotSeverHost, DEFAULT_PINOT_BROKER_PORT));
+      LOGGER.info("checking pinot broker health:{}", url.toString());
       con = (HttpURLConnection) url.openConnection();
       con.setRequestMethod("GET");
       con.setConnectTimeout(timeout * 1000);
@@ -158,6 +222,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
     HttpURLConnection con = null;
     try {
       URL url = new URL(String.format("http://%s:%s/brokers/tenants", pinotSeverHost, pinotControllerPort));
+      LOGGER.info("checking pinot broker registration health:{}", url.toString());
       con = (HttpURLConnection) url.openConnection();
       con.setRequestMethod("GET");
       con.setConnectTimeout(timeout * 1000);
