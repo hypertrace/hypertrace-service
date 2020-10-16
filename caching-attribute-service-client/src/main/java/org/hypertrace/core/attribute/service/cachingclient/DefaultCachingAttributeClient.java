@@ -65,6 +65,12 @@ class DefaultCachingAttributeClient implements CachingAttributeClient {
   }
 
   @Override
+  public Single<List<AttributeMetadata>> getAllInScope(String scope) {
+    return this.getOrInvalidate(AttributeCacheContextKey.forCurrentContext())
+        .map(table -> List.copyOf(table.row(scope).values()));
+  }
+
+  @Override
   public Single<List<AttributeMetadata>> getAll() {
     return this.getOrInvalidate(AttributeCacheContextKey.forCurrentContext())
         .map(table -> List.copyOf(table.values()));

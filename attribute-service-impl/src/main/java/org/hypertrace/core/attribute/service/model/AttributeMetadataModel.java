@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hypertrace.core.attribute.service.v1.AggregateFunction;
 import org.hypertrace.core.attribute.service.v1.AttributeDefinition;
@@ -50,6 +51,10 @@ public class AttributeMetadataModel implements Document {
   private String displayName;
 
   private AttributeScope scope;
+
+  @JsonProperty(value = "scope_string")
+  private String scopeString;
+
   private boolean materialized;
   private String unit;
   private AttributeType type;
@@ -69,7 +74,7 @@ public class AttributeMetadataModel implements Document {
   @JsonDeserialize(using = AttributeDefinitionDeserializer.class)
   private AttributeDefinition definition = AttributeDefinition.getDefaultInstance();
 
-  public AttributeMetadataModel() {}
+  protected AttributeMetadataModel() {}
 
   public static AttributeMetadataModel fromDTO(AttributeMetadata attributeMetadata) {
     AttributeMetadataModel attributeMetadataModel = new AttributeMetadataModel();
@@ -79,6 +84,10 @@ public class AttributeMetadataModel implements Document {
     attributeMetadataModel.setUnit(attributeMetadata.getUnit());
     attributeMetadataModel.setType(attributeMetadata.getType());
     attributeMetadataModel.setScope(attributeMetadata.getScope());
+    attributeMetadataModel.setScopeString(
+        attributeMetadata.getScopeString().isEmpty()
+            ? attributeMetadata.getScope().name()
+            : attributeMetadata.getScopeString());
     attributeMetadataModel.setMaterialized(attributeMetadata.getMaterialized());
     attributeMetadataModel.setDisplayName(attributeMetadata.getDisplayName());
     attributeMetadataModel.setLabels(attributeMetadata.getLabelsList());
@@ -145,6 +154,16 @@ public class AttributeMetadataModel implements Document {
 
   public void setScope(AttributeScope scope) {
     this.scope = scope;
+  }
+
+  public String getScopeString() {
+    return Optional.ofNullable(this.scopeString)
+        .or(() -> Optional.ofNullable(this.getScope()).map(Enum::name))
+        .orElse(null);
+  }
+
+  public void setScopeString(String scope) {
+    this.scopeString = scope;
   }
 
   public boolean isMaterialized() {
@@ -244,6 +263,7 @@ public class AttributeMetadataModel implements Document {
             .setId(getId())
             .setKey(key)
             .setScope(scope)
+            .setScopeString(getScopeString())
             .setValueKind(valueKind)
             .setDisplayName(displayName)
             .setMaterialized(materialized)

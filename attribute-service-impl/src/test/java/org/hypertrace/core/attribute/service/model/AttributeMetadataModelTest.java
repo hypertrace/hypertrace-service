@@ -28,6 +28,7 @@ public class AttributeMetadataModelTest {
     attributeMetadataModel.setMaterialized(true);
     attributeMetadataModel.setGroupable(true);
     attributeMetadataModel.setScope(AttributeScope.EVENT);
+    attributeMetadataModel.setScopeString(AttributeScope.EVENT.name());
     attributeMetadataModel.setType(AttributeType.ATTRIBUTE);
     attributeMetadataModel.setUnit("ms");
     attributeMetadataModel.setValueKind(AttributeKind.TYPE_STRING);
@@ -55,6 +56,7 @@ public class AttributeMetadataModelTest {
             + "\"id\":\"EVENT.key\","
             + "\"value_kind\":\"TYPE_STRING\","
             + "\"display_name\":\"Some Name\","
+            + "\"scope_string\":\"EVENT\","
             + "\"tenant_id\":\"tenantId\""
             + "}";
     Assertions.assertEquals(expectedJson, json);
@@ -73,6 +75,7 @@ public class AttributeMetadataModelTest {
             .setDisplayName("Some Name")
             .setMaterialized(true)
             .setScope(AttributeScope.EVENT)
+            .setScopeString(AttributeScope.EVENT.name())
             .setType(AttributeType.ATTRIBUTE)
             .setUnit("ms")
             .setValueKind(AttributeKind.TYPE_STRING)
@@ -249,6 +252,7 @@ public class AttributeMetadataModelTest {
             + "\"id\":\"EVENT.key\","
             + "\"value_kind\":\"TYPE_STRING\","
             + "\"display_name\":\"Display\","
+            + "\"scope_string\":\"EVENT\","
             + "\"tenant_id\":null}";
     Assertions.assertEquals(expectedJson, modelFromMetadataWithoutDefinition.toJson());
   }

@@ -20,6 +20,8 @@ public interface CachingAttributeClient {
 
   Single<List<AttributeMetadata>> getAll();
 
+  Single<List<AttributeMetadata>> getAllInScope(String scope);
+
   static Builder builder(@Nonnull Channel channel) {
     return new Builder(Objects.requireNonNull(channel));
   }

@@ -1,5 +1,7 @@
 package org.hypertrace.core.attribute.service.cachingclient;
 
+import static java.util.Collections.emptyList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -75,8 +77,7 @@ class CachingAttributeClientTest {
             .build()
             .start();
     this.grpcChannel = InProcessChannelBuilder.forName(uniqueName).directExecutor().build();
-    this.attributeClient =
-        CachingAttributeClient.builder(this.grpcChannel).build();
+    this.attributeClient = CachingAttributeClient.builder(this.grpcChannel).build();
     when(this.mockContext.getTenantId()).thenReturn(Optional.of("default tenant"));
     this.grpcTestContext = Context.current().withValue(RequestContext.CURRENT, this.mockContext);
     this.responseMetadata = List.of(this.metadata1, this.metadata2);
@@ -185,9 +186,7 @@ class CachingAttributeClientTest {
   @Test
   void hasConfigurableCacheSize() throws Exception {
     this.attributeClient =
-        CachingAttributeClient.builder(this.grpcChannel)
-            .withMaximumCacheContexts(1)
-            .build();
+        CachingAttributeClient.builder(this.grpcChannel).withMaximumCacheContexts(1).build();
 
     RequestContext otherMockContext = mock(RequestContext.class);
     when(otherMockContext.getTenantId()).thenReturn(Optional.of("other tenant"));
@@ -244,5 +243,17 @@ class CachingAttributeClientTest {
     assertThrows(
         NoSuchElementException.class,
         () -> this.grpcTestContext.run(() -> this.attributeClient.get("fakeId").blockingGet()));
+  }
+
+  @Test
+  void getsAllAttributesInScope() throws Exception {
+    assertEquals(
+        this.responseMetadata,
+        this.grpcTestContext.call(() -> this.attributeClient.getAllInScope("EVENT").blockingGet()));
+
+    assertEquals(
+        emptyList(),
+        this.grpcTestContext.call(
+            () -> this.attributeClient.getAllInScope("DOESNT_EXIST").blockingGet()));
   }
 }

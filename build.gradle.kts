@@ -10,7 +10,7 @@ plugins {
 }
 
 subprojects {
-  group = "org.hypertrace.core.query.service"
+  group = "org.hypertrace.core.attribute.service"
   pluginManager.withPlugin("org.hypertrace.publish-plugin") {
     configure<HypertracePublishExtension> {
       license.set(License.APACHE_2_0)
@@ -23,8 +23,4 @@ subprojects {
       targetCompatibility = JavaVersion.VERSION_11
     }
   }
-}
-
-subprojects {
-  group = "org.hypertrace.core.attribute.service"
 }
