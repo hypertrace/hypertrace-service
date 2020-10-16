@@ -118,7 +118,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
         LOGGER
             .warn(String.format("Finished an attempt [%s] in checking for bootstrapping status. " +
                 "It seems dependent data service [pinot] is up now. " +
-                "will check for span status after [%s] seconds", numRetries, interval));
+                "Will check for span status after [%s] seconds", numRetries, interval));
         return;
       } else if (!isPinotUp) {
         LOGGER
