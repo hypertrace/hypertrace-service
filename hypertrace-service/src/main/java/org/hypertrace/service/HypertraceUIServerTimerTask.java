@@ -100,7 +100,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
       if (numRetries >= maxRetries) {
         cancel();
         LOGGER.info(String
-            .format("Max out attempts [%s] in checking bootstrapping status. Manually check " +
+            .format("Exhausted maximum attempts [%s] in checking bootstrapping status. Manually check " +
                 "the status of data service [pinot].", numRetries));
         uiServer.start();
         return;
