@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Spliterators;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.hypertrace.core.attribute.service.decorator.SupportedAggregationsDecorator;
 import org.hypertrace.core.attribute.service.model.AttributeMetadataDocKey;
@@ -45,6 +46,7 @@ public class AttributeServiceImpl extends AttributeServiceGrpc.AttributeServiceI
   private static final Logger LOGGER = LoggerFactory.getLogger(AttributeServiceImpl.class);
   private static final String ATTRIBUTE_FQN_KEY = "fqn";
   private static final String ATTRIBUTE_SCOPE_KEY = "scope";
+  private static final String ATTRIBUTE_SCOPE_STRING_KEY = "scope_string";
   private static final String ATTRIBUTE_KEY_KEY = "key";
   private static final String DOC_STORE_CONFIG_KEY = "document.store";
   private static final String DATA_STORE_TYPE = "dataStoreType";
@@ -95,7 +97,9 @@ public class AttributeServiceImpl extends AttributeServiceGrpc.AttributeServiceI
       attributeMetadataModel.setTenantId(tenantId.get());
       attributeDocs.put(
           new AttributeMetadataDocKey(
-              tenantId.get(), attributeMetadataModel.getScope(), attributeMetadataModel.getKey()),
+              tenantId.get(),
+              attributeMetadataModel.getScopeString(),
+              attributeMetadataModel.getKey()),
           attributeMetadataModel);
     }
     boolean status = collection.bulkUpsert(attributeDocs);
@@ -328,7 +332,11 @@ public class AttributeServiceImpl extends AttributeServiceGrpc.AttributeServiceI
 
   private Query getQueryForFilter(
       String tenantId, AttributeMetadataFilter attributeMetadataFilter) {
-    List<AttributeScope> scopeFilterRequest = attributeMetadataFilter.getScopeList();
+    List<String> scopeFilterList =
+        Stream.concat(
+                attributeMetadataFilter.getScopeStringList().stream(),
+                attributeMetadataFilter.getScopeList().stream().map(AttributeScope::name))
+            .collect(Collectors.toUnmodifiableList());
     List<String> keyFilterRequest = attributeMetadataFilter.getKeyList();
     List<String> fqnFilterRequest = attributeMetadataFilter.getFqnList();
     List<Filter> andFilters = new ArrayList<>();
@@ -339,12 +347,10 @@ public class AttributeServiceImpl extends AttributeServiceGrpc.AttributeServiceI
       andFilters.add(new Filter(Filter.Op.IN, ATTRIBUTE_FQN_KEY, fqnFilterRequest));
     }
 
-    if (!scopeFilterRequest.isEmpty()) {
+    if (!scopeFilterList.isEmpty()) {
       andFilters.add(
-          new Filter(
-              Filter.Op.IN,
-              ATTRIBUTE_SCOPE_KEY,
-              scopeFilterRequest.stream().map(AttributeScope::name).collect(Collectors.toList())));
+          new Filter(Filter.Op.IN, ATTRIBUTE_SCOPE_STRING_KEY, scopeFilterList)
+              .or(new Filter(Filter.Op.IN, ATTRIBUTE_SCOPE_KEY, scopeFilterList)));
     }
 
     if (!keyFilterRequest.isEmpty()) {

@@ -1,5 +1,7 @@
 package org.hypertrace.core.attribute.service;
 
+import static org.hypertrace.core.attribute.service.util.AttributeScopeUtil.resolveScopeString;
+
 import com.google.common.base.Strings;
 import java.util.AbstractMap;
 import java.util.List;
@@ -19,13 +21,13 @@ public class AttributeMetadataValidator {
     attributeCreateRequest.getAttributesList().forEach(AttributeMetadataValidator::validate);
 
     // Ensure Scope + Key is unique
-    List<Map.Entry<AttributeScope, String>> duplicateScopeKeys =
+    List<Map.Entry<String, String>> duplicateScopeKeys =
         attributeCreateRequest.getAttributesList().stream()
             .collect(
                 Collectors.groupingBy(
                     attributeMetadata ->
                         new AbstractMap.SimpleEntry<>(
-                            attributeMetadata.getScope(), attributeMetadata.getKey())))
+                            resolveScopeString(attributeMetadata), attributeMetadata.getKey())))
             .entrySet()
             .stream()
             .filter(attributeMetadataList -> attributeMetadataList.getValue().size() > 1)
@@ -37,13 +39,13 @@ public class AttributeMetadataValidator {
     }
 
     // Ensure Scope + FQN is unique
-    List<Map.Entry<AttributeScope, String>> duplicateScopeFQNs =
+    List<Map.Entry<String, String>> duplicateScopeFQNs =
         attributeCreateRequest.getAttributesList().stream()
             .collect(
                 Collectors.groupingBy(
                     attributeMetadata ->
                         new AbstractMap.SimpleEntry<>(
-                            attributeMetadata.getScope(), attributeMetadata.getFqn())))
+                            resolveScopeString(attributeMetadata), attributeMetadata.getFqn())))
             .entrySet()
             .stream()
             .filter(attributeMetadataList -> attributeMetadataList.getValue().size() > 1)
@@ -56,8 +58,7 @@ public class AttributeMetadataValidator {
   }
 
   private static void validate(AttributeMetadata attributeMetadata) {
-    if (attributeMetadata.getScope().equals(AttributeScope.UNRECOGNIZED)
-        || attributeMetadata.getScope().equals(AttributeScope.SCOPE_UNDEFINED)
+    if (resolveScopeString(attributeMetadata).equals(AttributeScope.SCOPE_UNDEFINED.name())
         || Strings.isNullOrEmpty(attributeMetadata.getKey())
         || Strings.isNullOrEmpty(attributeMetadata.getFqn())
         || attributeMetadata.getValueKind().equals(AttributeKind.KIND_UNDEFINED)

@@ -1,5 +1,8 @@
 package org.hypertrace.core.attribute.service.model;
 
+import static org.hypertrace.core.attribute.service.util.AttributeScopeUtil.resolveScope;
+import static org.hypertrace.core.attribute.service.util.AttributeScopeUtil.resolveScopeString;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -19,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.hypertrace.core.attribute.service.v1.AggregateFunction;
 import org.hypertrace.core.attribute.service.v1.AttributeDefinition;
@@ -49,8 +51,6 @@ public class AttributeMetadataModel implements Document {
 
   @JsonProperty(value = "display_name")
   private String displayName;
-
-  private AttributeScope scope;
 
   @JsonProperty(value = "scope_string")
   private String scopeString;
@@ -83,11 +83,7 @@ public class AttributeMetadataModel implements Document {
     attributeMetadataModel.setKey(attributeMetadata.getKey());
     attributeMetadataModel.setUnit(attributeMetadata.getUnit());
     attributeMetadataModel.setType(attributeMetadata.getType());
-    attributeMetadataModel.setScope(attributeMetadata.getScope());
-    attributeMetadataModel.setScopeString(
-        attributeMetadata.getScopeString().isEmpty()
-            ? attributeMetadata.getScope().name()
-            : attributeMetadata.getScopeString());
+    attributeMetadataModel.setScopeString(resolveScopeString(attributeMetadata));
     attributeMetadataModel.setMaterialized(attributeMetadata.getMaterialized());
     attributeMetadataModel.setDisplayName(attributeMetadata.getDisplayName());
     attributeMetadataModel.setLabels(attributeMetadata.getLabelsList());
@@ -113,7 +109,7 @@ public class AttributeMetadataModel implements Document {
   }
 
   public String getId() {
-    return scope + "." + key;
+    return this.getScopeString() + "." + key;
   }
 
   public String getFqn() {
@@ -148,22 +144,17 @@ public class AttributeMetadataModel implements Document {
     this.displayName = displayName;
   }
 
-  public AttributeScope getScope() {
-    return scope;
-  }
-
-  public void setScope(AttributeScope scope) {
-    this.scope = scope;
-  }
-
   public String getScopeString() {
-    return Optional.ofNullable(this.scopeString)
-        .or(() -> Optional.ofNullable(this.getScope()).map(Enum::name))
-        .orElse(null);
+    return this.scopeString;
   }
 
-  public void setScopeString(String scope) {
-    this.scopeString = scope;
+  public void setScopeString(String scopeString) {
+    this.scopeString = scopeString;
+  }
+
+  @JsonProperty // Retain for backwards compat with existing JSON docs
+  private void setScope(AttributeScope scope) {
+    this.scopeString = resolveScopeString(scope);
   }
 
   public boolean isMaterialized() {
@@ -262,7 +253,7 @@ public class AttributeMetadataModel implements Document {
             .setFqn(fqn)
             .setId(getId())
             .setKey(key)
-            .setScope(scope)
+            .setScope(resolveScope(scopeString))
             .setScopeString(getScopeString())
             .setValueKind(valueKind)
             .setDisplayName(displayName)
@@ -315,8 +306,9 @@ public class AttributeMetadataModel implements Document {
         + ", displayName='"
         + displayName
         + '\''
-        + ", scope="
-        + scope
+        + ", scopeString='"
+        + scopeString
+        + '\''
         + ", materialized="
         + materialized
         + ", unit='"
@@ -357,7 +349,6 @@ public class AttributeMetadataModel implements Document {
         && valueKind == that.valueKind
         && Objects.equals(key, that.key)
         && Objects.equals(displayName, that.displayName)
-        && scope == that.scope
         && Objects.equals(unit, that.unit)
         && type == that.type
         && Objects.equals(labels, that.labels)
@@ -366,7 +357,8 @@ public class AttributeMetadataModel implements Document {
         && Objects.equals(supportedAggregations, that.supportedAggregations)
         && Objects.equals(sources, that.sources)
         && Objects.equals(metadata, that.metadata)
-        && Objects.equals(definition, that.definition);
+        && Objects.equals(definition, that.definition)
+        && Objects.equals(scopeString, that.scopeString);
   }
 
   @Override
@@ -376,7 +368,6 @@ public class AttributeMetadataModel implements Document {
         valueKind,
         key,
         displayName,
-        scope,
         materialized,
         unit,
         type,
@@ -387,7 +378,8 @@ public class AttributeMetadataModel implements Document {
         onlyAggregationsAllowed,
         sources,
         metadata,
-        definition);
+        definition,
+        scopeString);
   }
 
   private static class ProtobufMessageSerializer extends JsonSerializer<Message> {

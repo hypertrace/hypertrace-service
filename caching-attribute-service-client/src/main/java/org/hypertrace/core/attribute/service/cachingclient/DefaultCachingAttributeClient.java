@@ -90,7 +90,7 @@ class DefaultCachingAttributeClient implements CachingAttributeClient {
     return attributes.stream()
         .collect(
             ImmutableTable.toImmutableTable(
-                attribute -> attribute.getScope().name(),
+                AttributeMetadata::getScopeString,
                 AttributeMetadata::getKey,
                 Function.identity()));
   }
@@ -113,7 +113,7 @@ class DefaultCachingAttributeClient implements CachingAttributeClient {
   private void loadScopeAndKeyCache(AttributeMetadata attributeMetadata) {
     this.scopeAndKeyLookup.put(
         attributeMetadata.getId(),
-        new AttributeScopeAndKey(attributeMetadata.getScope().name(), attributeMetadata.getKey()));
+        new AttributeScopeAndKey(attributeMetadata.getScopeString(), attributeMetadata.getKey()));
   }
 
   private static final class AttributeScopeAndKey {

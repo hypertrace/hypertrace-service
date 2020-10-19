@@ -27,7 +27,6 @@ public class AttributeMetadataModelTest {
     attributeMetadataModel.setDisplayName("Some Name");
     attributeMetadataModel.setMaterialized(true);
     attributeMetadataModel.setGroupable(true);
-    attributeMetadataModel.setScope(AttributeScope.EVENT);
     attributeMetadataModel.setScopeString(AttributeScope.EVENT.name());
     attributeMetadataModel.setType(AttributeType.ATTRIBUTE);
     attributeMetadataModel.setUnit("ms");
@@ -43,7 +42,6 @@ public class AttributeMetadataModelTest {
         "{"
             + "\"fqn\":\"fqn\","
             + "\"key\":\"key\","
-            + "\"scope\":\"EVENT\","
             + "\"materialized\":true,"
             + "\"unit\":\"ms\","
             + "\"type\":\"ATTRIBUTE\","
@@ -239,7 +237,6 @@ public class AttributeMetadataModelTest {
         "{"
             + "\"fqn\":\"fqn\","
             + "\"key\":\"key\","
-            + "\"scope\":\"EVENT\","
             + "\"materialized\":true,"
             + "\"unit\":\"ms\","
             + "\"type\":\"ATTRIBUTE\","
@@ -255,5 +252,109 @@ public class AttributeMetadataModelTest {
             + "\"scope_string\":\"EVENT\","
             + "\"tenant_id\":null}";
     Assertions.assertEquals(expectedJson, modelFromMetadataWithoutDefinition.toJson());
+  }
+
+  @Test
+  void testScopeStringCompatibility() throws IOException {
+    final AttributeMetadata template =
+        AttributeMetadata.newBuilder()
+            .setKey("key")
+            .setFqn("fqn")
+            .setDisplayName("Some Name")
+            .setValueKind(AttributeKind.TYPE_BOOL)
+            .setType(AttributeType.ATTRIBUTE)
+            .setDefinition(AttributeDefinition.getDefaultInstance())
+            .build();
+
+    // Given a scope enum, it should come back as a string too
+    AttributeMetadata input = template.toBuilder().setScope(AttributeScope.EVENT).build();
+    AttributeMetadata expected =
+        template.toBuilder()
+            .setScope(AttributeScope.EVENT)
+            .setScopeString("EVENT")
+            .setId("EVENT.key")
+            .build();
+    Assertions.assertEquals(expected, AttributeMetadataModel.fromDTO(input).toDTO());
+    Assertions.assertEquals(
+        AttributeMetadataModel.fromDTO(expected).toJson(),
+        AttributeMetadataModel.fromDTO(input).toJson());
+
+    // String scope backwards compatible when possible
+    input = template.toBuilder().setScopeString("EVENT").build();
+    expected =
+        template.toBuilder()
+            .setScope(AttributeScope.EVENT)
+            .setScopeString("EVENT")
+            .setId("EVENT.key")
+            .build();
+    Assertions.assertEquals(expected, AttributeMetadataModel.fromDTO(input).toDTO());
+    Assertions.assertEquals(
+        AttributeMetadataModel.fromDTO(expected).toJson(),
+        AttributeMetadataModel.fromDTO(input).toJson());
+
+    // If scope string not representable by enum, enum set to undefined and string used
+    input = template.toBuilder().setScopeString("NEWSCOPE").build();
+    expected =
+        template.toBuilder()
+            .setScopeString("NEWSCOPE")
+            .setId("NEWSCOPE.key")
+            .build();
+    Assertions.assertEquals(expected, AttributeMetadataModel.fromDTO(input).toDTO());
+    Assertions.assertEquals(
+        AttributeMetadataModel.fromDTO(expected).toJson(),
+        AttributeMetadataModel.fromDTO(input).toJson());
+
+    // Given Json with scope, scope and scope string should be set
+    String inputJson =
+        "{"
+            + "\"fqn\":\"fqn\","
+            + "\"key\":\"key\","
+            + "\"scope\":\"EVENT\","
+            + "\"type\":\"ATTRIBUTE\","
+            + "\"value_kind\":\"TYPE_BOOL\","
+            + "\"display_name\":\"Some Name\""
+            + "}";
+    expected =
+        template.toBuilder()
+            .setScope(AttributeScope.EVENT)
+            .setScopeString("EVENT")
+            .setId("EVENT.key")
+            .build();
+    Assertions.assertEquals(expected, AttributeMetadataModel.fromJson(inputJson).toDTO());
+
+    // Given JSON with scope string, scope and scope string should be set
+    inputJson =
+        "{"
+            + "\"fqn\":\"fqn\","
+            + "\"key\":\"key\","
+            + "\"scope_string\":\"EVENT\","
+            + "\"type\":\"ATTRIBUTE\","
+            + "\"value_kind\":\"TYPE_BOOL\","
+            + "\"display_name\":\"Some Name\""
+            + "}";
+    expected =
+        template.toBuilder()
+                .setScope(AttributeScope.EVENT)
+                .setScopeString("EVENT")
+                .setId("EVENT.key")
+                .build();
+    Assertions.assertEquals(expected, AttributeMetadataModel.fromJson(inputJson).toDTO());
+
+    // Given JSON with unknown scope string, scope string only should be set
+    inputJson =
+        "{"
+            + "\"fqn\":\"fqn\","
+            + "\"key\":\"key\","
+            + "\"scope_string\":\"NEWSCOPE\","
+            + "\"type\":\"ATTRIBUTE\","
+            + "\"value_kind\":\"TYPE_BOOL\","
+            + "\"display_name\":\"Some Name\""
+            + "}";
+    expected =
+        template.toBuilder()
+                .setScopeString("NEWSCOPE")
+                .setId("NEWSCOPE.key")
+                .build();
+    Assertions.assertEquals(expected, AttributeMetadataModel.fromJson(inputJson).toDTO());
   }
 }

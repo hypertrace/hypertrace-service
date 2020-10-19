@@ -44,13 +44,13 @@ class CachingAttributeClientTest {
 
   AttributeMetadata metadata1 =
       AttributeMetadata.newBuilder()
-          .setScope(AttributeScope.EVENT)
+          .setScopeString(AttributeScope.EVENT.name())
           .setKey("first")
           .setId("first-id")
           .build();
   AttributeMetadata metadata2 =
       AttributeMetadata.newBuilder()
-          .setScope(AttributeScope.EVENT)
+          .setScopeString(AttributeScope.EVENT.name())
           .setKey("second")
           .setId("second-id")
           .build();

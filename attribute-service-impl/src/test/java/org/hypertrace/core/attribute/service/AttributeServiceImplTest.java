@@ -180,15 +180,22 @@ public class AttributeServiceImplTest {
 
       List<String> fqnList = List.of("EVENT.name", "EVENT.id");
       List<String> keyList = List.of("name", "startTime", "duration");
-      List<AttributeScope> scopeList =
-          List.of(AttributeScope.TRACE, AttributeScope.EVENT, AttributeScope.BACKEND);
 
       AttributeMetadataFilter attributeMetadataFilter =
           AttributeMetadataFilter.newBuilder()
               .addAllFqn(fqnList)
               .addAllKey(keyList)
-              .addAllScope(scopeList)
+              .addAllScope(
+                  List.of(AttributeScope.TRACE, AttributeScope.EVENT, AttributeScope.BACKEND))
+              .addScopeString("OTHER")
               .build();
+
+      List<String> allScopes =
+          List.of(
+              "OTHER",
+              AttributeScope.TRACE.name(),
+              AttributeScope.EVENT.name(),
+              AttributeScope.BACKEND.name());
 
       attributeService.findAttributes(attributeMetadataFilter, responseObserver);
 
@@ -197,20 +204,23 @@ public class AttributeServiceImplTest {
 
       Filter filter = queryCaptor.getValue().getFilter();
       // The structure of the filters is an and(^) filter chain that looks like this:
-      // (((tenant_id ^ fqn) ^ scope) ^ key)
+      // (((tenant_id ^ fqn) ^ (scope_string | scope)) ^ key)
       Assertions.assertEquals(Filter.Op.AND, filter.getOp());
       Assertions.assertEquals(Filter.Op.IN, filter.getChildFilters()[1].getOp());
       Assertions.assertEquals("key", filter.getChildFilters()[1].getFieldName());
       Assertions.assertEquals(keyList, filter.getChildFilters()[1].getValue());
 
       Assertions.assertEquals(Filter.Op.AND, filter.getChildFilters()[0].getOp());
-      Assertions.assertEquals(
-          Filter.Op.IN, filter.getChildFilters()[0].getChildFilters()[1].getOp());
-      Assertions.assertEquals(
-          "scope", filter.getChildFilters()[0].getChildFilters()[1].getFieldName());
-      Assertions.assertEquals(
-          scopeList.stream().map(Enum::name).collect(Collectors.toUnmodifiableList()),
-          filter.getChildFilters()[0].getChildFilters()[1].getValue());
+      Filter scopeFilter = filter.getChildFilters()[0].getChildFilters()[1];
+      Assertions.assertEquals(Filter.Op.OR, scopeFilter.getOp());
+
+      Assertions.assertEquals(Filter.Op.IN, scopeFilter.getChildFilters()[0].getOp());
+      Assertions.assertEquals("scope_string", scopeFilter.getChildFilters()[0].getFieldName());
+      Assertions.assertEquals(allScopes, scopeFilter.getChildFilters()[0].getValue());
+
+      Assertions.assertEquals(Filter.Op.IN, scopeFilter.getChildFilters()[1].getOp());
+      Assertions.assertEquals("scope", scopeFilter.getChildFilters()[1].getFieldName());
+      Assertions.assertEquals(allScopes, scopeFilter.getChildFilters()[1].getValue());
 
       Assertions.assertEquals(
           Filter.Op.AND, filter.getChildFilters()[0].getChildFilters()[0].getOp());
