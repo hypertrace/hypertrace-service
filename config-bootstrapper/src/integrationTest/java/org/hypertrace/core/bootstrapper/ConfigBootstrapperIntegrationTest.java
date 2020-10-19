@@ -36,6 +36,7 @@ public class ConfigBootstrapperIntegrationTest {
 
   private static final String TENANT_ID = "__default";
   private static EntityTypeServiceClient entityTypeServiceClient;
+  private static org.hypertrace.entity.type.client.EntityTypeServiceClient entityTypeServiceClientV2;
   private static AttributeServiceClient attributesServiceClient;
 
   @BeforeAll
@@ -50,6 +51,7 @@ public class ConfigBootstrapperIntegrationTest {
                 .build(),
             new TenantIdClientInterceptor(TENANT_ID));
     entityTypeServiceClient = new EntityTypeServiceClient(channel);
+    entityTypeServiceClientV2 = new org.hypertrace.entity.type.client.EntityTypeServiceClient(channel);
 
     AttributeServiceClientConfig asConfig = AttributeServiceClientConfig.from(config);
     channel =
@@ -71,6 +73,7 @@ public class ConfigBootstrapperIntegrationTest {
     entityTypeServiceClient.deleteEntityTypes(TENANT_ID, EntityTypeFilter.newBuilder().build());
     entityTypeServiceClient.deleteEntityRelationshipTypes(
         TENANT_ID, EntityRelationshipTypeFilter.newBuilder().build());
+    entityTypeServiceClientV2.deleteAllEntityTypes(TENANT_ID);
     attributesServiceClient.delete(TENANT_ID, AttributeMetadataFilter.newBuilder().build());
   }
 
@@ -117,6 +120,10 @@ public class ConfigBootstrapperIntegrationTest {
     Assertions.assertEquals(2, entityTypeServiceClient.getAllEntityTypes(TENANT_ID).size());
     Assertions.assertEquals(
         1, entityTypeServiceClient.getAllEntityRelationshipTypes(TENANT_ID).size());
+
+    Assertions.assertEquals(3, entityTypeServiceClientV2.getAllEntityTypes(TENANT_ID).size());
+    Assertions.assertEquals(1, entityTypeServiceClientV2.queryEntityTypes(TENANT_ID,
+        List.of("API")).size());
 
     // Rollback to version 1
     // Since the clients to run Config commands are created internal to this code,
