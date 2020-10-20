@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
  * Helper TimerTask for checking health of dependency data services before starting UI server
  */
 public class HypertraceUIServerTimerTask extends TimerTask {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(HypertraceUIServerTimerTask.class);
 
   private static final String RETRIES_CONFIG = "hypertraceUI.init.waittime.retries";
@@ -53,30 +54,36 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private String pinotSeverHost;
   private int pinotServerPort;
   private int pinotControllerPort;
+  private boolean isPinotUp;
 
 
-  public HypertraceUIServerTimerTask(Config appConfig, HypertraceUIServer uiServer, String defaultTenant) {
-    maxRetries = appConfig.hasPath(RETRIES_CONFIG) ? appConfig.getInt(RETRIES_CONFIG) : DEFAULT_RETRIES;
-    timeout = appConfig.hasPath(TIMEOUT_CONFIG) ? appConfig.getInt(TIMEOUT_CONFIG) : DEFAULT_TIMEOUT;
+  public HypertraceUIServerTimerTask(Config appConfig, HypertraceUIServer uiServer,
+      String defaultTenant) {
+    maxRetries =
+        appConfig.hasPath(RETRIES_CONFIG) ? appConfig.getInt(RETRIES_CONFIG) : DEFAULT_RETRIES;
+    timeout =
+        appConfig.hasPath(TIMEOUT_CONFIG) ? appConfig.getInt(TIMEOUT_CONFIG) : DEFAULT_TIMEOUT;
     interval = appConfig.hasPath(INTERVAL) ? appConfig.getInt(INTERVAL) : DEFAULT_INTERVAL;
-    startPeriod = appConfig.hasPath(START_PERIOD) ? appConfig.getInt(START_PERIOD) : DEFAULT_START_PERIOD;
+    startPeriod =
+        appConfig.hasPath(START_PERIOD) ? appConfig.getInt(START_PERIOD) : DEFAULT_START_PERIOD;
 
     pinotSeverHost = appConfig.hasPath(PINOT_SERVER_HOST) ?
-            appConfig.getString(PINOT_SERVER_HOST) : DEFAULT_PINOT_SERVER_HOST;
+        appConfig.getString(PINOT_SERVER_HOST) : DEFAULT_PINOT_SERVER_HOST;
     pinotServerPort = appConfig.hasPath(PINOT_SERVER_PORT) ?
-            appConfig.getInt(PINOT_SERVER_PORT) : DEFAULT_PINOT_SERVER_PORT;
+        appConfig.getInt(PINOT_SERVER_PORT) : DEFAULT_PINOT_SERVER_PORT;
     pinotControllerPort = appConfig.hasPath(PINOT_CONTROLLER_PORT) ?
-            appConfig.getInt(PINOT_CONTROLLER_PORT) : DEFAULT_PINOT_CONTROLLER_PORT;
+        appConfig.getInt(PINOT_CONTROLLER_PORT) : DEFAULT_PINOT_CONTROLLER_PORT;
 
     this.uiServer = uiServer;
     this.numRetries = 0;
     this.defaultTenant = defaultTenant;
     this.startTime = Instant.now().toEpochMilli();
+    this.isPinotUp = false;
 
     client = GatewayServiceGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(
-            "localhost", appConfig.getInt("service.port")).usePlaintext().build())
-            .withCallCredentials(RequestContextClientCallCredsProviderFactory
-                    .getClientCallCredsProvider().get());
+        "localhost", appConfig.getInt("service.port")).usePlaintext().build())
+        .withCallCredentials(RequestContextClientCallCredsProviderFactory
+            .getClientCallCredsProvider().get());
   }
 
   public long getStartPeriod() {
@@ -92,28 +99,51 @@ public class HypertraceUIServerTimerTask extends TimerTask {
     try {
       if (numRetries >= maxRetries) {
         cancel();
-        LOGGER.info(String.format("Max out attempts [%s] in checking bootstrapping status. Manually check " +
+        LOGGER.info(String
+            .format("Exhausted maximum attempts [%s] in checking bootstrapping status. Manually check " +
                 "the status of data service [pinot].", numRetries));
         uiServer.start();
         return;
       }
 
-      if (executePinotHealthCheck() && executeBrokerRegistrationCheck() && executeHealthCheck()) {
+      /**
+       * We will check for e2e spans request in the next time cycle after the pinot is up. We are
+       * using a zookeeper based pinot client in query service which needs brokers to be registered.
+       * So, instead of checking immediately after the pinot is up, we are adding buffer time for
+       * it to be fully functional. This avoids any confusion between any pre-configured errors
+       * messages during start time, see an issue - https://github.com/hypertrace/query-service/issues/29
+       * */
+      if (!isPinotUp && executePinotHealthCheck() && executeBrokerRegistrationCheck()) {
+        isPinotUp = true;
+        LOGGER
+            .warn(String.format("Finished an attempt [%s] in checking for bootstrapping status. " +
+                "It seems dependent data service [pinot] is up now. " +
+                "Will check for span status after [%s] seconds", numRetries, interval));
+        return;
+      } else if (!isPinotUp) {
+        LOGGER
+            .warn(String.format("Finished an attempt [%s] in checking for bootstrapping status. " +
+                "It seems dependent data service [pinot] is not yet up. " +
+                "will retry after [%s] seconds", numRetries, interval));
+        return;
+      }
+
+      if (executeHealthCheck()) {
         cancel();
         LOGGER.info(String.format("Stack is up after [%s] attempts, and duration [%s] in millis.",
-                numRetries, Instant.now().toEpochMilli() - startTime));
+            numRetries, Instant.now().toEpochMilli() - startTime));
         uiServer.start();
         return;
       }
 
       LOGGER.warn(String.format("Finished an attempt [%s] in checking for bootstrapping status. " +
-              "It seems dependent data service [pinot] is not yet up. " +
-              "will retry after [%s] seconds", numRetries, interval));
+          "It seems brokers have not been registered with zookeeper " +
+          "will retry after [%s] seconds", numRetries, interval));
 
     } catch (Exception ex) {
       LOGGER.warn(String.format("Finished an attempt [%s] in checking for bootstrapping status. " +
-              "It seems dependent data service [pinot] is not yet up. " +
-              "will retry after [%s] seconds", numRetries, interval));
+              "There was an exception in checking status, will retry after [%s] seconds",
+          numRetries, interval));
     } finally {
       numRetries++;
     }
@@ -121,18 +151,18 @@ public class HypertraceUIServerTimerTask extends TimerTask {
 
   private boolean executeHealthCheck() {
     SpansResponse response = GrpcClientRequestContextUtil.executeInTenantContext(defaultTenant,
-            () -> client.withDeadline(Deadline.after(timeout, TimeUnit.SECONDS))
-                    .getSpans(buildSpanRequest()));
+        () -> client.withDeadline(Deadline.after(timeout, TimeUnit.SECONDS))
+            .getSpans(buildSpanRequest()));
     return response.getSpansCount() >= 0;
   }
 
   private SpansRequest buildSpanRequest() {
     return SpansRequest.newBuilder()
-            .setStartTimeMillis(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(10))
-            .setEndTimeMillis(System.currentTimeMillis())
-            .addSelection(QueryExpressionUtil.getColumnExpression("EVENT.id"))
-            .setLimit(1)
-            .build();
+        .setStartTimeMillis(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(10))
+        .setEndTimeMillis(System.currentTimeMillis())
+        .addSelection(QueryExpressionUtil.getColumnExpression("EVENT.id"))
+        .setLimit(1)
+        .build();
   }
 
   private boolean executePinotHealthCheck() throws Exception {
@@ -157,7 +187,8 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private boolean executeBrokerRegistrationCheck() throws Exception {
     HttpURLConnection con = null;
     try {
-      URL url = new URL(String.format("http://%s:%s/brokers/tenants", pinotSeverHost, pinotControllerPort));
+      URL url = new URL(
+          String.format("http://%s:%s/brokers/tenants", pinotSeverHost, pinotControllerPort));
       con = (HttpURLConnection) url.openConnection();
       con.setRequestMethod("GET");
       con.setConnectTimeout(timeout * 1000);
@@ -167,7 +198,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
 
       if (status >= 200 && status <= 206) {
         BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
+            new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer content = new StringBuffer();
         while ((inputLine = in.readLine()) != null) {
