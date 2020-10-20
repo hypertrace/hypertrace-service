@@ -82,7 +82,8 @@ public class HypertraceService extends PlatformService {
     serverBuilder.addService(
         InterceptorUtil.wrapInterceptors(
             QueryServiceFactory.build(
-                getServiceConfig(QUERY_SERVICE_NAME).getConfig(QUERY_SERVICE_SERVICE_CONFIG))));
+                getServiceConfig(QUERY_SERVICE_NAME).getConfig(QUERY_SERVICE_SERVICE_CONFIG),
+                getLifecycle())));
 
     // Gateway service
     final Config gatewayServiceAppConfig = getServiceConfig(GATEWAY_SERVICE_NAME);
