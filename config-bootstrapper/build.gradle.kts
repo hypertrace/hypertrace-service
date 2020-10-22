@@ -147,9 +147,13 @@ dependencies {
   implementation("com.google.protobuf:protobuf-java-util:3.12.2")
   implementation("commons-cli:commons-cli:1.4")
   implementation("org.reflections:reflections:0.9.12")
-  implementation("io.grpc:grpc-netty-shaded:1.30.2")
+  implementation("io.grpc:grpc-netty:1.33.0")
   implementation("com.fasterxml.jackson.core:jackson-core:2.11.1")
   implementation("com.fasterxml.jackson.core:jackson-databind:2.11.1")
+
+  runtimeOnly("io.netty:netty-handler-proxy:4.1.53.Final") {
+    because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439")
+  }
 
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
   testImplementation("org.mockito:mockito-core:3.3.3")
