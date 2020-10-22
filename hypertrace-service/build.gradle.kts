@@ -9,6 +9,14 @@ plugins {
 
 var hypertraceUiVersion = "latest"
 
+configurations {
+  "runtimeClasspath" {
+    resolutionStrategy {
+      force("io.grpc:grpc-netty:1.30.2")
+    }
+  }
+}
+
 dependencies {
   implementation("org.hypertrace.core.attribute.service:attribute-service")
   implementation("org.hypertrace.core.attribute.service:attribute-service-impl")
