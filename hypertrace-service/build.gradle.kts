@@ -9,6 +9,14 @@ plugins {
 
 var hypertraceUiVersion = "latest"
 
+configurations {
+  "implementation" {
+    resolutionStrategy {
+      force("io.grpc:grpc-netty:1.33.0")
+    }
+  }
+}
+
 dependencies {
   implementation("org.hypertrace.core.attribute.service:attribute-service")
   implementation("org.hypertrace.core.attribute.service:attribute-service-impl")
@@ -36,7 +44,7 @@ dependencies {
   runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.13.3")
 
   // GRPC
-  runtimeOnly("io.grpc:grpc-netty:1.30.2")
+  runtimeOnly("io.grpc:grpc-netty:1.33.0")
 
   // Config
   implementation("com.typesafe:config:1.4.0")
