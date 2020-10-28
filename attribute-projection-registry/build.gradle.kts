@@ -8,7 +8,7 @@ plugins {
 dependencies {
   api(project(":attribute-service-api"))
   implementation(project(":attribute-projection-functions"))
-  implementation("com.google.guava:guava:29.0-jre")
+  implementation("com.google.guava:guava:30.0-jre")
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
 }
 

@@ -8,11 +8,6 @@ dependencies {
   api(project(":attribute-service-api"))
   implementation(project(":attribute-service-tenant-api"))
 
-  implementation("commons-codec:commons-codec:1.13") {
-    because("Information Exposure [Low Severity][https://snyk.io/vuln/SNYK-JAVA-COMMONSCODEC-561518] in commons-codec:commons-codec@1.11"
-        + " introduced org.apache.httpcomponents:httpclient@4.5.12")
-  }
-
   implementation("org.hypertrace.core.documentstore:document-store:0.1.1")
   implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.2.0")
 

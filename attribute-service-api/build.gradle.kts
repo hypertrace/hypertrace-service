@@ -52,8 +52,13 @@ sourceSets {
 }
 
 dependencies {
-  api("io.grpc:grpc-stub:1.32.1")
-  api("io.grpc:grpc-protobuf:1.32.1")
+  api("io.grpc:grpc-stub:1.33.0")
+  api("io.grpc:grpc-protobuf:1.33.0")
+  constraints {
+    implementation("com.google.guava:guava:30.0-jre") {
+      because("https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415")
+    }
+  }
 
   implementation("javax.annotation:javax.annotation-api:1.3.2")
 }
