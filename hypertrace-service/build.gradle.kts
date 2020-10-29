@@ -48,6 +48,10 @@ dependencies {
 
   // Config
   implementation("com.typesafe:config:1.4.0")
+
+  runtimeOnly("com.google.guava:guava:30.0-android") {
+    because("https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415")
+  }
 }
 
 application {
