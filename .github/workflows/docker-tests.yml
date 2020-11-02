@@ -55,6 +55,6 @@ jobs:
         run: |
           sleep 60 # you can decrease it but never increase it
           docker-compose -f docker-compose.yml ps
-      - name: "Runs tests"
-       working-directory: ./.github/workflows/hypertrace-service
+      - name: Runs tests
+        working-directory: ./.github/workflows/hypertrace-service
         run: chmod +x /scripts/tests.sh
