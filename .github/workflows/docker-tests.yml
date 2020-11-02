@@ -61,4 +61,4 @@ jobs:
           docker-compose -f docker-compose.yml ps
       - name: Runs tests
         working-directory: ./.github/workflows/hypertrace-service/scripts
-        run: chmod +x tests.sh
+        run: chmod +x ./tests.sh
