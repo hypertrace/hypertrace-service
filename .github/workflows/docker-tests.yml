@@ -49,7 +49,7 @@ jobs:
         # Below tests a docker-compose.yml service named 'sut' with a valid HEALTHCHECK instruction:
         run: |
           docker-compose -f docker-compose.yml -f docker-compose-zipkin-example.yml pull
-          docker-compose -f docker-compose.yml -f docker-compose-zipkin-example.yml up -d || { ../.circleci/inspect.sh ; exit 1 ; }
+          docker-compose -f docker-compose.yml -f docker-compose-zipkin-example.yml up -d || { ../scripts/inspect.sh ; exit 1 ; }
       - name: Waits for some stability
         working-directory: ./.github/workflows/hypertrace-service
         run: |
@@ -57,5 +57,4 @@ jobs:
           docker-compose -f docker-compose.yml ps
       - name: "Runs tests"
        working-directory: ./.github/workflows/hypertrace-service
-        run: |
-          /tests.sh
+        run: chmod +x /scripts/tests.sh
