@@ -15,7 +15,7 @@ import org.hypertrace.core.serviceframework.config.ConfigUtils;
 import org.hypertrace.entity.data.service.EntityDataServiceImpl;
 import org.hypertrace.entity.query.service.EntityQueryServiceImpl;
 import org.hypertrace.entity.service.EntityServiceConfig;
-import org.hypertrace.entity.type.service.EntityTypeServiceImpl;
+import org.hypertrace.entity.type.service.v2.EntityTypeServiceImpl;
 import org.hypertrace.gateway.service.GatewayServiceImpl;
 import org.hypertrace.gateway.service.entity.config.DomainObjectConfigs;
 import org.hypertrace.gateway.service.entity.config.InteractionConfigs;
@@ -73,7 +73,8 @@ public class HypertraceService extends PlatformService {
     final Datastore datastore =
             DatastoreProvider.getDatastore(entityServiceConfig.getDataStoreType(), dataStoreConfig);
 
-    serverBuilder.addService(InterceptorUtil.wrapInterceptors(new EntityTypeServiceImpl(datastore)))
+    serverBuilder.addService(InterceptorUtil.wrapInterceptors(new org.hypertrace.entity.type.service.EntityTypeServiceImpl(datastore)))
+                 .addService(InterceptorUtil.wrapInterceptors(new EntityTypeServiceImpl(datastore)))
             .addService(InterceptorUtil.wrapInterceptors(new EntityDataServiceImpl(datastore)))
             .addService(InterceptorUtil
                     .wrapInterceptors(new EntityQueryServiceImpl(datastore, entityServiceAppConfig)));
