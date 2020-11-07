@@ -9,14 +9,6 @@ plugins {
 
 var hypertraceUiVersion = "latest"
 
-configurations {
-  "implementation" {
-    resolutionStrategy {
-      force("io.grpc:grpc-netty:1.33.0")
-    }
-  }
-}
-
 dependencies {
   implementation("org.hypertrace.core.attribute.service:attribute-service")
   implementation("org.hypertrace.core.attribute.service:attribute-service-impl")
@@ -48,6 +40,12 @@ dependencies {
 
   // Config
   implementation("com.typesafe:config:1.4.0")
+
+  constraints {
+    implementation("com.google.guava:guava:30.0-jre") {
+      because("https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415")
+    }
+  }
 }
 
 application {
