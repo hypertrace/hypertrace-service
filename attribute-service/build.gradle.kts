@@ -58,7 +58,7 @@ dependencies {
 
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.16")
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.2.0")
-  implementation("org.hypertrace.core.documentstore:document-store:0.1.1")
+  implementation("org.hypertrace.core.documentstore:document-store:0.4.2")
 
   // Logging
   implementation("org.slf4j:slf4j-api:1.7.25")
