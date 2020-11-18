@@ -129,12 +129,12 @@ tasks.test {
 }
 
 dependencies {
-  implementation("org.hypertrace.entity.service:entity-service-client:0.1.26")
-  implementation("org.hypertrace.entity.service:entity-service-api:0.1.26")
-  implementation("org.hypertrace.core.documentstore:document-store:0.3.2")
-  implementation("org.hypertrace.core.attribute.service:attribute-service-client:0.4.3")
-  implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.2.0")
-  implementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.0")
+  implementation("org.hypertrace.entity.service:entity-service-client:0.3.0")
+  implementation("org.hypertrace.entity.service:entity-service-api:0.3.0")
+  implementation("org.hypertrace.core.documentstore:document-store:0.4.2")
+  implementation("org.hypertrace.core.attribute.service:attribute-service-client:0.7.0")
+  implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.3.1")
+  implementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.1")
 
   implementation("org.slf4j:slf4j-api:1.7.30")
   implementation("org.apache.logging.log4j:log4j-api:2.13.3")
@@ -143,8 +143,8 @@ dependencies {
   implementation("org.apache.httpcomponents:httpclient:4.5.13")
   implementation ("commons-io:commons-io:2.6")
   implementation("com.typesafe:config:1.4.0")
-  implementation("com.google.protobuf:protobuf-java:3.12.2")
-  implementation("com.google.protobuf:protobuf-java-util:3.12.2")
+  implementation("com.google.protobuf:protobuf-java:3.13.0")
+  implementation("com.google.protobuf:protobuf-java-util:3.13.0")
   implementation("commons-cli:commons-cli:1.4")
   implementation("org.reflections:reflections:0.9.12")
   implementation("io.grpc:grpc-netty:1.33.0")
@@ -153,6 +153,12 @@ dependencies {
 
   runtimeOnly("io.netty:netty-handler-proxy:4.1.53.Final") {
     because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439")
+  }
+
+  constraints {
+    implementation("com.google.guava:guava:30.0-jre") {
+      because("Information Disclosure [Medium Severity][https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415] in com.google.guava:guava@29.0-android")
+    }
   }
 
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
