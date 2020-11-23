@@ -67,10 +67,10 @@ dependencies {
   // GRPC
   runtimeOnly("io.grpc:grpc-netty:1.33.0")
   constraints {
-    runtimeOnly("io.netty:netty-codec-http2:4.1.53.Final") {
+    runtimeOnly("io.netty:netty-codec-http2:4.1.54.Final") {
       because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439")
     }
-    runtimeOnly("io.netty:netty-handler-proxy:4.1.53.Final") {
+    runtimeOnly("io.netty:netty-handler-proxy:4.1.54.Final") {
       because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439s")
     }
   }
