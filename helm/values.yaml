@@ -77,11 +77,19 @@ attributeServiceConfig:
     host: attribute-service
     port: 9012
 
+dataStoreType: "mongo"
 mongoConfig:
   name: mongo-config
   data:
     host: mongo
     port: 27017
+    url: ""
+
+postgresConfig:
+  name: postgres-config
+  data:
+    host: postgres
+    port: 5432
     url: ""
 
 logConfig:
