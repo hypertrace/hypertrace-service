@@ -29,14 +29,14 @@ public class AttributeProjectionRegistry {
               AttributeKind.TYPE_STRING, AttributeKind.TYPE_STRING, Hash::hash),
           PROJECTION_OPERATOR_STRING_EQUALS,
           new BinaryAttributeProjection<>(
-              AttributeKind.TYPE_STRING,
-              AttributeKind.TYPE_STRING,
               AttributeKind.TYPE_BOOL,
+              AttributeKind.TYPE_STRING,
+              AttributeKind.TYPE_STRING,
               Equals::stringEquals),
           PROJECTION_OPERATOR_CONDITIONAL,
           new TernaryAttributeProjection<>(
-              AttributeKind.TYPE_BOOL,
               AttributeKind.TYPE_STRING,
+              AttributeKind.TYPE_BOOL,
               AttributeKind.TYPE_STRING,
               AttributeKind.TYPE_STRING,
               Conditional::getValue
