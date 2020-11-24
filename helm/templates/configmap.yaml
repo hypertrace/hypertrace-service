@@ -7,12 +7,13 @@ metadata:
 data:
   application.conf: |-
     document.store {
-      dataStoreType = mongo
-      mongo {
-        {{- if .Values.configMap.mongodb.url }}
-        url = {{ .Values.configMap.mongodb.url | quote }}
-        {{- else }}
-        host = {{ .Values.configMap.mongodb.host }}
+      {{- $dst := .Values.configMap.dataStoreType }}
+      dataStoreType = {{ $dst }}
+      {{ $dst }} {
+        {{- range $key, $value := (index .Values "configMap" (printf "%s" $dst)) }}
+        {{- if $value }}
+        {{ $key }} = {{ $value }}
+        {{- end }}
         {{- end }}
       }
     }
