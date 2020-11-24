@@ -12,7 +12,7 @@ data:
       {{ $dst }} {
         {{- range $key, $value := (index .Values "configMap" (printf "%s" $dst)) }}
         {{- if $value }}
-        {{ $key }} = {{ $value }}
+        {{ $key }} = {{ $value | quote }}
         {{- end }}
         {{- end }}
       }
