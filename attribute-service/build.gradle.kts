@@ -9,8 +9,8 @@ plugins {
   java
   application
   jacoco
-  id("org.hypertrace.docker-java-application-plugin") version "0.4.0"
-  id("org.hypertrace.docker-publish-plugin") version "0.4.0"
+  id("org.hypertrace.docker-java-application-plugin") version "0.8.0"
+  id("org.hypertrace.docker-publish-plugin") version "0.8.0"
   id("org.hypertrace.integration-test-plugin")
   id("org.hypertrace.jacoco-report-plugin")
 }
@@ -97,4 +97,12 @@ tasks.run<JavaExec> {
 tasks.jacocoIntegrationTestReport {
   sourceSets(project(":attribute-service-impl").sourceSets.getByName("main"))
   sourceSets(project(":attribute-service-client").sourceSets.getByName("main"))
+}
+
+hypertraceDocker {
+  defaultImage {
+    javaApplication {
+      port.set(9012)
+    }
+  }
 }
