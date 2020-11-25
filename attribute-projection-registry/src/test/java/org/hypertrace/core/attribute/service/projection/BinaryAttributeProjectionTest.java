@@ -1,21 +1,31 @@
 package org.hypertrace.core.attribute.service.projection;
 
-import static org.hypertrace.core.attribute.service.projection.LiteralConstructors.booleanLiteral;
-import static org.hypertrace.core.attribute.service.projection.LiteralConstructors.doubleLiteral;
-import static org.hypertrace.core.attribute.service.projection.LiteralConstructors.longLiteral;
-import static org.hypertrace.core.attribute.service.projection.LiteralConstructors.stringLiteral;
+import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNullElse;
+import static org.hypertrace.core.attribute.service.projection.AttributeKindWithNullability.nonNullableKind;
+import static org.hypertrace.core.attribute.service.projection.AttributeKindWithNullability.nullableKind;
+import static org.hypertrace.core.attribute.service.projection.ValueCoercer.booleanLiteral;
+import static org.hypertrace.core.attribute.service.projection.ValueCoercer.doubleLiteral;
+import static org.hypertrace.core.attribute.service.projection.ValueCoercer.longLiteral;
+import static org.hypertrace.core.attribute.service.projection.ValueCoercer.nullLiteral;
+import static org.hypertrace.core.attribute.service.projection.ValueCoercer.stringLiteral;
+import static org.hypertrace.core.attribute.service.v1.AttributeKind.TYPE_BOOL;
+import static org.hypertrace.core.attribute.service.v1.AttributeKind.TYPE_INT64;
+import static org.hypertrace.core.attribute.service.v1.AttributeKind.TYPE_STRING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
-import org.hypertrace.core.attribute.service.v1.AttributeKind;
 import org.junit.jupiter.api.Test;
 
 class BinaryAttributeProjectionTest {
 
   private final BinaryAttributeProjection<Long, Long, Long> sumProjection =
       new BinaryAttributeProjection<>(
-          AttributeKind.TYPE_INT64, AttributeKind.TYPE_INT64, AttributeKind.TYPE_INT64, Long::sum);
+          nonNullableKind(TYPE_INT64),
+          nonNullableKind(TYPE_INT64),
+          nonNullableKind(TYPE_INT64),
+          Long::sum);
 
   @Test
   void projectsForAnyConvertibleArgTypes() {
@@ -49,7 +59,76 @@ class BinaryAttributeProjectionTest {
   void throwsIfResultIsNotConvertibleToExpectedType() {
     BinaryAttributeProjection<Long, Long, Long> badProjection =
         new BinaryAttributeProjection<>(
-            AttributeKind.TYPE_BOOL, AttributeKind.TYPE_INT64, AttributeKind.TYPE_INT64, Long::sum);
+            nonNullableKind(TYPE_BOOL),
+            nonNullableKind(TYPE_INT64),
+            nonNullableKind(TYPE_INT64),
+            Long::sum);
+
+    assertThrows(
+        UnsupportedOperationException.class,
+        () -> badProjection.project(List.of(longLiteral(2), longLiteral(1))));
+  }
+
+  @Test
+  void supportsNullableArguments() {
+    BinaryAttributeProjection<String, String, String> nullableArgProjection =
+        new BinaryAttributeProjection<>(
+            nonNullableKind(TYPE_STRING),
+            nullableKind(TYPE_STRING),
+            nullableKind(TYPE_STRING),
+            (first, second) ->
+                requireNonNullElse(first, "firstIsNull")
+                    + ":"
+                    + requireNonNullElse(second, "secondIsNull"));
+
+    assertEquals(
+        stringLiteral("firstIsNull:secondIsNull"),
+        nullableArgProjection.project(List.of(nullLiteral(), nullLiteral())));
+
+    assertEquals(
+        stringLiteral("foo:secondIsNull"),
+        nullableArgProjection.project(List.of(stringLiteral("foo"), nullLiteral())));
+
+    assertEquals(
+        stringLiteral("firstIsNull:bar"),
+        nullableArgProjection.project(List.of(nullLiteral(), stringLiteral("bar"))));
+
+    assertEquals(
+        stringLiteral("foo:bar"),
+        nullableArgProjection.project(List.of(stringLiteral("foo"), stringLiteral("bar"))));
+  }
+
+  @Test
+  void supportsNullableResults() {
+    BinaryAttributeProjection<String, String, String> nullableArgProjection =
+        new BinaryAttributeProjection<>(
+            nullableKind(TYPE_STRING),
+            nullableKind(TYPE_STRING),
+            nullableKind(TYPE_STRING),
+            (first, second) -> isNull(first) || isNull(second) ? null : first + ":" + second);
+
+    assertEquals(
+        nullLiteral(), nullableArgProjection.project(List.of(nullLiteral(), nullLiteral())));
+
+    assertEquals(
+        nullLiteral(), nullableArgProjection.project(List.of(stringLiteral("foo"), nullLiteral())));
+
+    assertEquals(
+        nullLiteral(), nullableArgProjection.project(List.of(nullLiteral(), stringLiteral("bar"))));
+
+    assertEquals(
+        stringLiteral("foo:bar"),
+        nullableArgProjection.project(List.of(stringLiteral("foo"), stringLiteral("bar"))));
+  }
+
+  @Test
+  void throwsIfResultIsNotConvertibleToExpectedNullableType() {
+    BinaryAttributeProjection<Long, Long, Long> badProjection =
+        new BinaryAttributeProjection<>(
+            nullableKind(TYPE_BOOL),
+            nonNullableKind(TYPE_INT64),
+            nonNullableKind(TYPE_INT64),
+            Long::sum);
 
     assertThrows(
         UnsupportedOperationException.class,

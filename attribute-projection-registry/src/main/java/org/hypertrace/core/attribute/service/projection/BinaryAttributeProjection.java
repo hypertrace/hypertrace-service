@@ -2,15 +2,14 @@ package org.hypertrace.core.attribute.service.projection;
 
 import java.util.List;
 import java.util.function.BiFunction;
-import org.hypertrace.core.attribute.service.v1.AttributeKind;
 
 class BinaryAttributeProjection<T, U, R> extends AbstractAttributeProjection<R> {
   private final BiFunction<T, U, R> projectionImplementation;
 
   BinaryAttributeProjection(
-      AttributeKind resultKind,
-      AttributeKind firstArgumentKind,
-      AttributeKind secondArgumentKind,
+      AttributeKindWithNullability resultKind,
+      AttributeKindWithNullability firstArgumentKind,
+      AttributeKindWithNullability secondArgumentKind,
       BiFunction<T, U, R> projectionImplementation) {
     super(resultKind, List.of(firstArgumentKind, secondArgumentKind));
     this.projectionImplementation = projectionImplementation;

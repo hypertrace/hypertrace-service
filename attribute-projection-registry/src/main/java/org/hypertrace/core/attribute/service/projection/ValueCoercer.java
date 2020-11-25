@@ -32,9 +32,9 @@ class ValueCoercer {
     }
   }
 
-  public static Optional<LiteralValue> toLiteral(Object value, AttributeKind attributeKind) {
+  public static Optional<LiteralValue> toLiteral(Object value, AttributeKind attributeKind, boolean nullable) {
     if (isNull(value)) {
-      return Optional.empty();
+      return nullable ? Optional.of(nullLiteral()) : Optional.empty();
     }
     if (isAssignableToAnyOfClasses(value.getClass(), CharSequence.class)) {
       return toLiteral(value.toString(), attributeKind);
@@ -189,20 +189,24 @@ class ValueCoercer {
     return false;
   }
 
-  private static LiteralValue stringLiteral(@Nonnull String stringValue) {
+  static LiteralValue stringLiteral(@Nonnull String stringValue) {
     return LiteralValue.newBuilder().setStringValue(stringValue).build();
   }
 
-  private static LiteralValue longLiteral(@Nonnull Number number) {
+  static LiteralValue longLiteral(@Nonnull Number number) {
     return LiteralValue.newBuilder().setIntValue(number.longValue()).build();
   }
 
-  private static LiteralValue doubleLiteral(@Nonnull Number number) {
+  static LiteralValue doubleLiteral(@Nonnull Number number) {
     return LiteralValue.newBuilder().setFloatValue(number.doubleValue()).build();
   }
 
-  private static LiteralValue booleanLiteral(boolean booleanValue) {
+  static LiteralValue booleanLiteral(boolean booleanValue) {
     return LiteralValue.newBuilder().setBooleanValue(booleanValue).build();
+  }
+
+  static LiteralValue nullLiteral() {
+    return LiteralValue.getDefaultInstance();
   }
 
   private static Optional<Long> tryParseLong(@Nullable String intString) {

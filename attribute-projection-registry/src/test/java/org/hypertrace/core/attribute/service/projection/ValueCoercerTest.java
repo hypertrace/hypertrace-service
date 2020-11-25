@@ -1,11 +1,12 @@
 package org.hypertrace.core.attribute.service.projection;
 
 import static java.util.Optional.empty;
-import static org.hypertrace.core.attribute.service.projection.LiteralConstructors.booleanLiteral;
-import static org.hypertrace.core.attribute.service.projection.LiteralConstructors.doubleLiteral;
-import static org.hypertrace.core.attribute.service.projection.LiteralConstructors.longLiteral;
-import static org.hypertrace.core.attribute.service.projection.LiteralConstructors.stringLiteral;
+import static org.hypertrace.core.attribute.service.projection.ValueCoercer.booleanLiteral;
+import static org.hypertrace.core.attribute.service.projection.ValueCoercer.doubleLiteral;
 import static org.hypertrace.core.attribute.service.projection.ValueCoercer.fromLiteral;
+import static org.hypertrace.core.attribute.service.projection.ValueCoercer.longLiteral;
+import static org.hypertrace.core.attribute.service.projection.ValueCoercer.nullLiteral;
+import static org.hypertrace.core.attribute.service.projection.ValueCoercer.stringLiteral;
 import static org.hypertrace.core.attribute.service.projection.ValueCoercer.toLiteral;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,119 +24,120 @@ class ValueCoercerTest {
   private static final Instant TEST_TIMESTAMP_INSTANT = Instant.ofEpochMilli(TEST_TIMESTAMP_MS);
 
   @Test
-  void coercesEmptyFromNull() {
-    assertEquals(empty(), toLiteral(null, AttributeKind.TYPE_STRING));
-    assertEquals(empty(), toLiteral(null, AttributeKind.TYPE_BOOL));
-    assertEquals(empty(), toLiteral(null, AttributeKind.TYPE_DOUBLE));
-    assertEquals(empty(), toLiteral(null, AttributeKind.TYPE_INT64));
+  void coercesFromNull() {
+    assertEquals(empty(), toLiteral(null, AttributeKind.TYPE_STRING, false));
+    assertEquals(empty(), toLiteral(null, AttributeKind.TYPE_BOOL, false));
+    assertEquals(empty(), toLiteral(null, AttributeKind.TYPE_DOUBLE, false));
+    assertEquals(empty(), toLiteral(null, AttributeKind.TYPE_INT64, false));
+    assertEquals(Optional.of(nullLiteral()), toLiteral(null, AttributeKind.TYPE_INT64, true));
   }
 
   @Test
   void coercesFromString() {
-    assertEquals(Optional.of(stringLiteral("test")), toLiteral("test", AttributeKind.TYPE_STRING));
-    assertEquals(Optional.of(stringLiteral("")), toLiteral("", AttributeKind.TYPE_STRING));
+    assertEquals(Optional.of(stringLiteral("test")), toLiteral("test", AttributeKind.TYPE_STRING, false));
+    assertEquals(Optional.of(stringLiteral("")), toLiteral("", AttributeKind.TYPE_STRING, false));
 
-    assertEquals(empty(), toLiteral("test", AttributeKind.TYPE_INT64));
-    assertEquals(Optional.of(longLiteral(10)), toLiteral("10", AttributeKind.TYPE_INT64));
-    assertEquals(Optional.of(longLiteral(-10)), toLiteral("-10", AttributeKind.TYPE_INT64));
-    assertEquals(empty(), toLiteral("10.0", AttributeKind.TYPE_INT64));
+    assertEquals(empty(), toLiteral("test", AttributeKind.TYPE_INT64, false));
+    assertEquals(Optional.of(longLiteral(10)), toLiteral("10", AttributeKind.TYPE_INT64, false));
+    assertEquals(Optional.of(longLiteral(-10)), toLiteral("-10", AttributeKind.TYPE_INT64, false));
+    assertEquals(empty(), toLiteral("10.0", AttributeKind.TYPE_INT64, false));
 
-    assertEquals(empty(), toLiteral("test", AttributeKind.TYPE_DOUBLE));
-    assertEquals(Optional.of(doubleLiteral(10)), toLiteral("10", AttributeKind.TYPE_DOUBLE));
-    assertEquals(Optional.of(doubleLiteral(-10)), toLiteral("-10", AttributeKind.TYPE_DOUBLE));
-    assertEquals(Optional.of(doubleLiteral(10.5)), toLiteral("10.5", AttributeKind.TYPE_DOUBLE));
+    assertEquals(empty(), toLiteral("test", AttributeKind.TYPE_DOUBLE, false));
+    assertEquals(Optional.of(doubleLiteral(10)), toLiteral("10", AttributeKind.TYPE_DOUBLE, false));
+    assertEquals(Optional.of(doubleLiteral(-10)), toLiteral("-10", AttributeKind.TYPE_DOUBLE, false));
+    assertEquals(Optional.of(doubleLiteral(10.5)), toLiteral("10.5", AttributeKind.TYPE_DOUBLE, false));
 
-    assertEquals(empty(), toLiteral("test", AttributeKind.TYPE_BOOL));
-    assertEquals(Optional.of(booleanLiteral(true)), toLiteral("true", AttributeKind.TYPE_BOOL));
-    assertEquals(Optional.of(booleanLiteral(true)), toLiteral("TRUE", AttributeKind.TYPE_BOOL));
-    assertEquals(Optional.of(booleanLiteral(false)), toLiteral("fALse", AttributeKind.TYPE_BOOL));
-    assertEquals(Optional.of(booleanLiteral(false)), toLiteral("false", AttributeKind.TYPE_BOOL));
+    assertEquals(empty(), toLiteral("test", AttributeKind.TYPE_BOOL, false));
+    assertEquals(Optional.of(booleanLiteral(true)), toLiteral("true", AttributeKind.TYPE_BOOL, false));
+    assertEquals(Optional.of(booleanLiteral(true)), toLiteral("TRUE", AttributeKind.TYPE_BOOL, false));
+    assertEquals(Optional.of(booleanLiteral(false)), toLiteral("fALse", AttributeKind.TYPE_BOOL, false));
+    assertEquals(Optional.of(booleanLiteral(false)), toLiteral("false", AttributeKind.TYPE_BOOL, false));
 
-    assertEquals(empty(), toLiteral("test", AttributeKind.TYPE_BOOL));
-    assertEquals(Optional.of(booleanLiteral(true)), toLiteral("true", AttributeKind.TYPE_BOOL));
-    assertEquals(Optional.of(booleanLiteral(true)), toLiteral("TRUE", AttributeKind.TYPE_BOOL));
-    assertEquals(Optional.of(booleanLiteral(false)), toLiteral("fALse", AttributeKind.TYPE_BOOL));
-    assertEquals(Optional.of(booleanLiteral(false)), toLiteral("false", AttributeKind.TYPE_BOOL));
+    assertEquals(empty(), toLiteral("test", AttributeKind.TYPE_BOOL, false));
+    assertEquals(Optional.of(booleanLiteral(true)), toLiteral("true", AttributeKind.TYPE_BOOL, false));
+    assertEquals(Optional.of(booleanLiteral(true)), toLiteral("TRUE", AttributeKind.TYPE_BOOL, false));
+    assertEquals(Optional.of(booleanLiteral(false)), toLiteral("fALse", AttributeKind.TYPE_BOOL, false));
+    assertEquals(Optional.of(booleanLiteral(false)), toLiteral("false", AttributeKind.TYPE_BOOL, false));
 
-    assertEquals(empty(), toLiteral("test", AttributeKind.TYPE_TIMESTAMP));
+    assertEquals(empty(), toLiteral("test", AttributeKind.TYPE_TIMESTAMP, false));
     assertEquals(
         Optional.of(longLiteral(TEST_TIMESTAMP_MS)),
-        toLiteral(String.valueOf(TEST_TIMESTAMP_MS), AttributeKind.TYPE_TIMESTAMP));
+        toLiteral(String.valueOf(TEST_TIMESTAMP_MS), AttributeKind.TYPE_TIMESTAMP, false));
     assertEquals(
         Optional.of(longLiteral(TEST_TIMESTAMP_MS)),
-        toLiteral(TEST_TIMESTAMP_STRING, AttributeKind.TYPE_TIMESTAMP));
+        toLiteral(TEST_TIMESTAMP_STRING, AttributeKind.TYPE_TIMESTAMP, false));
   }
 
   @Test
   void coercesFromBoolean() {
-    assertEquals(Optional.of(booleanLiteral(true)), toLiteral(true, AttributeKind.TYPE_BOOL));
-    assertEquals(Optional.of(booleanLiteral(false)), toLiteral(false, AttributeKind.TYPE_BOOL));
+    assertEquals(Optional.of(booleanLiteral(true)), toLiteral(true, AttributeKind.TYPE_BOOL, false));
+    assertEquals(Optional.of(booleanLiteral(false)), toLiteral(false, AttributeKind.TYPE_BOOL, false));
 
-    assertEquals(Optional.of(stringLiteral("true")), toLiteral(true, AttributeKind.TYPE_STRING));
-    assertEquals(Optional.of(stringLiteral("false")), toLiteral(false, AttributeKind.TYPE_STRING));
+    assertEquals(Optional.of(stringLiteral("true")), toLiteral(true, AttributeKind.TYPE_STRING, false));
+    assertEquals(Optional.of(stringLiteral("false")), toLiteral(false, AttributeKind.TYPE_STRING, false));
 
-    assertEquals(empty(), toLiteral(true, AttributeKind.TYPE_INT64));
-    assertEquals(empty(), toLiteral(true, AttributeKind.TYPE_DOUBLE));
-    assertEquals(empty(), toLiteral(true, AttributeKind.TYPE_TIMESTAMP));
+    assertEquals(empty(), toLiteral(true, AttributeKind.TYPE_INT64, false));
+    assertEquals(empty(), toLiteral(true, AttributeKind.TYPE_DOUBLE, false));
+    assertEquals(empty(), toLiteral(true, AttributeKind.TYPE_TIMESTAMP, false));
   }
 
   @Test
   void coercesFromLong() {
-    assertEquals(Optional.of(longLiteral(10L)), toLiteral(10L, AttributeKind.TYPE_INT64));
-    assertEquals(Optional.of(longLiteral(-10L)), toLiteral(-10L, AttributeKind.TYPE_INT64));
+    assertEquals(Optional.of(longLiteral(10L)), toLiteral(10L, AttributeKind.TYPE_INT64, false));
+    assertEquals(Optional.of(longLiteral(-10L)), toLiteral(-10L, AttributeKind.TYPE_INT64, false));
 
-    assertEquals(Optional.of(doubleLiteral(10d)), toLiteral(10L, AttributeKind.TYPE_DOUBLE));
-    assertEquals(Optional.of(doubleLiteral(-10d)), toLiteral(-10L, AttributeKind.TYPE_DOUBLE));
+    assertEquals(Optional.of(doubleLiteral(10d)), toLiteral(10L, AttributeKind.TYPE_DOUBLE, false));
+    assertEquals(Optional.of(doubleLiteral(-10d)), toLiteral(-10L, AttributeKind.TYPE_DOUBLE, false));
 
-    assertEquals(Optional.of(stringLiteral("10")), toLiteral(10L, AttributeKind.TYPE_STRING));
-    assertEquals(Optional.of(stringLiteral("-10")), toLiteral(-10L, AttributeKind.TYPE_STRING));
+    assertEquals(Optional.of(stringLiteral("10")), toLiteral(10L, AttributeKind.TYPE_STRING, false));
+    assertEquals(Optional.of(stringLiteral("-10")), toLiteral(-10L, AttributeKind.TYPE_STRING, false));
 
-    assertEquals(Optional.of(longLiteral(10L)), toLiteral(10L, AttributeKind.TYPE_TIMESTAMP));
-    assertEquals(empty(), toLiteral(-10L, AttributeKind.TYPE_TIMESTAMP));
+    assertEquals(Optional.of(longLiteral(10L)), toLiteral(10L, AttributeKind.TYPE_TIMESTAMP, false));
+    assertEquals(empty(), toLiteral(-10L, AttributeKind.TYPE_TIMESTAMP, false));
 
-    assertEquals(empty(), toLiteral(10L, AttributeKind.TYPE_BOOL));
+    assertEquals(empty(), toLiteral(10L, AttributeKind.TYPE_BOOL, false));
   }
 
   @Test
   void coercesFromDouble() {
-    assertEquals(Optional.of(longLiteral(10L)), toLiteral(10d, AttributeKind.TYPE_INT64));
-    assertEquals(Optional.of(longLiteral(-10L)), toLiteral(-10d, AttributeKind.TYPE_INT64));
+    assertEquals(Optional.of(longLiteral(10L)), toLiteral(10d, AttributeKind.TYPE_INT64, false));
+    assertEquals(Optional.of(longLiteral(-10L)), toLiteral(-10d, AttributeKind.TYPE_INT64, false));
 
-    assertEquals(Optional.of(doubleLiteral(10d)), toLiteral(10d, AttributeKind.TYPE_DOUBLE));
-    assertEquals(Optional.of(doubleLiteral(-10d)), toLiteral(-10d, AttributeKind.TYPE_DOUBLE));
+    assertEquals(Optional.of(doubleLiteral(10d)), toLiteral(10d, AttributeKind.TYPE_DOUBLE, false));
+    assertEquals(Optional.of(doubleLiteral(-10d)), toLiteral(-10d, AttributeKind.TYPE_DOUBLE, false));
 
-    assertEquals(Optional.of(stringLiteral("10.0")), toLiteral(10d, AttributeKind.TYPE_STRING));
-    assertEquals(Optional.of(stringLiteral("-10.0")), toLiteral(-10d, AttributeKind.TYPE_STRING));
+    assertEquals(Optional.of(stringLiteral("10.0")), toLiteral(10d, AttributeKind.TYPE_STRING, false));
+    assertEquals(Optional.of(stringLiteral("-10.0")), toLiteral(-10d, AttributeKind.TYPE_STRING, false));
 
-    assertEquals(Optional.of(longLiteral(10L)), toLiteral(10d, AttributeKind.TYPE_TIMESTAMP));
-    assertEquals(empty(), toLiteral(-10d, AttributeKind.TYPE_TIMESTAMP));
+    assertEquals(Optional.of(longLiteral(10L)), toLiteral(10d, AttributeKind.TYPE_TIMESTAMP, false));
+    assertEquals(empty(), toLiteral(-10d, AttributeKind.TYPE_TIMESTAMP, false));
 
-    assertEquals(empty(), toLiteral(10d, AttributeKind.TYPE_BOOL));
+    assertEquals(empty(), toLiteral(10d, AttributeKind.TYPE_BOOL, false));
   }
 
   @Test
   void coercesFromTemporal() {
     assertEquals(
         Optional.of(longLiteral(TEST_TIMESTAMP_MS)),
-        toLiteral(TEST_TIMESTAMP_INSTANT, AttributeKind.TYPE_TIMESTAMP));
+        toLiteral(TEST_TIMESTAMP_INSTANT, AttributeKind.TYPE_TIMESTAMP, false));
     assertEquals(
         Optional.of(longLiteral(TEST_TIMESTAMP_MS)),
         toLiteral(
             TEST_TIMESTAMP_INSTANT.atOffset(ZoneOffset.of("+07:00")),
-            AttributeKind.TYPE_TIMESTAMP));
+            AttributeKind.TYPE_TIMESTAMP, false));
 
     assertEquals(
         Optional.of(longLiteral(TEST_TIMESTAMP_MS)),
-        toLiteral(TEST_TIMESTAMP_INSTANT, AttributeKind.TYPE_INT64));
+        toLiteral(TEST_TIMESTAMP_INSTANT, AttributeKind.TYPE_INT64, false));
     assertEquals(
         Optional.of(doubleLiteral(TEST_TIMESTAMP_MS)),
-        toLiteral(TEST_TIMESTAMP_INSTANT, AttributeKind.TYPE_DOUBLE));
+        toLiteral(TEST_TIMESTAMP_INSTANT, AttributeKind.TYPE_DOUBLE, false));
 
     assertEquals(
         Optional.of(stringLiteral(TEST_TIMESTAMP_STRING)),
-        toLiteral(TEST_TIMESTAMP_INSTANT, AttributeKind.TYPE_STRING));
+        toLiteral(TEST_TIMESTAMP_INSTANT, AttributeKind.TYPE_STRING, false));
 
-    assertEquals(empty(), toLiteral(TEST_TIMESTAMP_INSTANT, AttributeKind.TYPE_BOOL));
+    assertEquals(empty(), toLiteral(TEST_TIMESTAMP_INSTANT, AttributeKind.TYPE_BOOL, false));
   }
 
   @Test
