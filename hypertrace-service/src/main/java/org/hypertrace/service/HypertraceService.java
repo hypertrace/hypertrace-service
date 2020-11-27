@@ -1,6 +1,8 @@
 package org.hypertrace.service;
 
 import com.typesafe.config.Config;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
@@ -73,9 +75,12 @@ public class HypertraceService extends PlatformService {
     final Datastore datastore =
             DatastoreProvider.getDatastore(entityServiceConfig.getDataStoreType(), dataStoreConfig);
 
+    ManagedChannel localChannel =
+        ManagedChannelBuilder.forAddress("localhost", port).usePlaintext().build();
+
     serverBuilder.addService(InterceptorUtil.wrapInterceptors(new org.hypertrace.entity.type.service.EntityTypeServiceImpl(datastore)))
                  .addService(InterceptorUtil.wrapInterceptors(new EntityTypeServiceImpl(datastore)))
-            .addService(InterceptorUtil.wrapInterceptors(new EntityDataServiceImpl(datastore)))
+            .addService(InterceptorUtil.wrapInterceptors(new EntityDataServiceImpl(datastore, localChannel)))
             .addService(InterceptorUtil
                     .wrapInterceptors(new EntityQueryServiceImpl(datastore, entityServiceAppConfig)));
 
