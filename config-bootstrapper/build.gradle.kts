@@ -141,29 +141,32 @@ dependencies {
   implementation("org.apache.logging.log4j:log4j-core:2.13.3")
   implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.13.3")
   implementation("org.apache.httpcomponents:httpclient:4.5.13")
-  implementation ("commons-io:commons-io:2.6")
+  implementation("commons-io:commons-io:2.6")
   implementation("com.typesafe:config:1.4.0")
   implementation("com.google.protobuf:protobuf-java:3.13.0")
   implementation("com.google.protobuf:protobuf-java-util:3.13.0")
   implementation("commons-cli:commons-cli:1.4")
   implementation("org.reflections:reflections:0.9.12")
-  implementation("io.grpc:grpc-netty:1.33.0")
   implementation("com.fasterxml.jackson.core:jackson-core:2.11.1")
   implementation("com.fasterxml.jackson.core:jackson-databind:2.11.1")
 
-  runtimeOnly("io.netty:netty-handler-proxy:4.1.53.Final") {
-    because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439")
-  }
+  runtimeOnly("io.grpc:grpc-netty:1.33.0")
 
   constraints {
     implementation("com.google.guava:guava:30.0-jre") {
       because("Information Disclosure [Medium Severity][https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415] in com.google.guava:guava@29.0-android")
+    }
+    implementation("commons-codec:commons-codec:1.15") {
+      because("https://snyk.io/vuln/SNYK-JAVA-COMMONSCODEC-561518")
+    }
+    runtimeOnly("io.netty:netty-handler-proxy:4.1.53.Final") {
+      because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439")
     }
   }
 
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
   testImplementation("org.mockito:mockito-core:3.3.3")
 
-  integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.13")
+  integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.18")
   integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
 }

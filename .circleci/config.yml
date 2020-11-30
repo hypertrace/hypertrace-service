@@ -125,7 +125,7 @@ jobs:
     steps:
       - setup_build_environment
       - snyk/scan:
-          additional-arguments: --all-sub-projects --policy-path=.snyk
+          additional-arguments: --all-sub-projects --policy-path=.snyk --configuration-matching='^runtimeClasspath$'
   validate-charts:
     executor: helm
     steps:
