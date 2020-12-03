@@ -10,6 +10,11 @@ plugins {
 
 dependencies {
   implementation(project(":config-service-impl"))
+  constraints {
+    implementation("com.google.guava:guava:30.0-jre") {
+      because("https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415")
+    }
+  }
 }
 
 application {

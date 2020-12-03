@@ -81,11 +81,10 @@ jobs:
           flags: unit
   verify-protos:
     executor: buf
-    # TODO: Re-enable buf
     steps:
       - checkout
       - run: buf check lint
-      # - run: buf check breaking --against-input "ssh://${CIRCLE_REPOSITORY_URL/://}#branch=main"
+      - run: buf check breaking --against-input "ssh://${CIRCLE_REPOSITORY_URL/://}#branch=main"
   merge-publish:
     executor: gradle_docker
     steps:
@@ -149,7 +148,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             # This ssh key gives write permission needed for the following step.
-            - '<REPLACEME>'
+            - '9e:b9:a7:f4:a0:0d:99:9e:49:7f:8f:cd:d1:43:50:ca'
       - run:
           name: Update remote tags
           command: git push origin refs/tags/$(git describe --abbrev=0) :refs/tags/release-$(git describe --abbrev=0)
