@@ -2,10 +2,12 @@ package org.hypertrace.config.service.store;
 
 import com.google.protobuf.Value;
 import com.typesafe.config.Config;
+import org.hypertrace.config.service.ConfigResource;
 import org.hypertrace.config.service.v1.GetConfigResponse;
 
 import java.io.IOException;
 import java.util.Optional;
+import org.hypertrace.config.service.v1.UpsertConfigResponse;
 
 public interface ConfigStore {
 
@@ -16,13 +18,14 @@ public interface ConfigStore {
     void init(Config config);
 
     /**
-     * Write the config value associated with the specified config key to the store.
+     * Write the config value associated with the specified config resource to the store.
      * @param configResource
      * @param userId
      * @param config
-     * @return the version allocated to the newly inserted configuration
+     * @return
      */
-    long writeConfig(ConfigResource configResource, String userId, Value config) throws IOException;
+    UpsertConfigResponse writeConfig(ConfigResource configResource, String userId, Value config)
+        throws IOException;
 
     /**
      * Get the config for the specified resource with the specified version(optional).
@@ -31,5 +34,6 @@ public interface ConfigStore {
      * @param configVersion
      * @return
      */
-    GetConfigResponse getConfig(ConfigResource configResource, Optional<Long> configVersion);
+    GetConfigResponse getConfig(ConfigResource configResource, Optional<Long> configVersion)
+        throws IOException;
 }

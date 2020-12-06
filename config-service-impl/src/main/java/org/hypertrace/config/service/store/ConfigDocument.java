@@ -2,29 +2,32 @@ package org.hypertrace.config.service.store;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.protobuf.Value;
 import com.google.protobuf.util.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hypertrace.core.documentstore.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 public class ConfigDocument implements Document {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigDocument.class);
     private static final ObjectMapper OBJECT_MAPPER =
             new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -55,6 +58,7 @@ public class ConfigDocument implements Document {
     private String userId;
 
     @JsonSerialize(using = ValueSerializer.class)
+    @JsonDeserialize(using = ValueDeserializer.class)
     @JsonProperty(value = CONFIG_FIELD_NAME)
     private Value config;
 
@@ -67,7 +71,7 @@ public class ConfigDocument implements Document {
         try {
             return OBJECT_MAPPER.writeValueAsString(this);
         } catch (JsonProcessingException ex) {
-            LOGGER.error("Error in converting {} to json", this);
+            log.error("Error in converting {} to json", this);
             throw new RuntimeException("Error in converting ConfigDocument to json", ex);
         }
     }
@@ -76,6 +80,18 @@ public class ConfigDocument implements Document {
         @Override
         public void serialize(Value value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
             gen.writeRawValue(JsonFormat.printer().print(value));
+        }
+    }
+
+    public static class ValueDeserializer extends JsonDeserializer<Value> {
+
+        @Override
+        public Value deserialize(JsonParser p, DeserializationContext ctxt)
+            throws IOException {
+            String jsonString = p.readValueAsTree().toString();
+            Value.Builder valueBuilder = Value.newBuilder();
+            JsonFormat.parser().merge(jsonString, valueBuilder);
+            return valueBuilder.build();
         }
     }
 }

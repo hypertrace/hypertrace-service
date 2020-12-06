@@ -1,6 +1,6 @@
 package org.hypertrace.config.service.store;
 
-import org.hypertrace.config.service.Utils;
+import org.hypertrace.config.service.ConfigResource;
 import org.hypertrace.core.documentstore.Key;
 
 /**
@@ -20,8 +20,8 @@ public class ConfigDocumentKey implements Key {
 
     @Override
     public String toString() {
-        return String.join(SEPARATOR, configResource.getResourceName(), configResource.getResourceNamespace(),
-                configResource.getTenantId(), Utils.optionalContextToString(configResource.getContext()),
-                String.valueOf(configVersion));
+        return String.join(SEPARATOR, configResource.getResourceName(),
+            configResource.getResourceNamespace(), configResource.getTenantId(),
+            configResource.getContext(), String.valueOf(configVersion));
     }
 }
