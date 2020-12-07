@@ -8,20 +8,20 @@ import org.hypertrace.core.documentstore.Key;
  */
 public class ConfigDocumentKey implements Key {
 
-    private static final String SEPARATOR = ":";
+  private static final String SEPARATOR = ":";
 
-    private final ConfigResource configResource;
-    private final long configVersion;
+  private final ConfigResource configResource;
+  private final long configVersion;
 
-    public ConfigDocumentKey(ConfigResource configResource, long configVersion) {
-        this.configResource = configResource;
-        this.configVersion = configVersion;
-    }
+  public ConfigDocumentKey(ConfigResource configResource, long configVersion) {
+    this.configResource = configResource;
+    this.configVersion = configVersion;
+  }
 
-    @Override
-    public String toString() {
-        return String.join(SEPARATOR, configResource.getResourceName(),
-            configResource.getResourceNamespace(), configResource.getTenantId(),
-            configResource.getContext(), String.valueOf(configVersion));
-    }
+  @Override
+  public String toString() {
+    return String.join(SEPARATOR, configResource.getResourceName(),
+        configResource.getResourceNamespace(), configResource.getTenantId(),
+        configResource.getContext(), String.valueOf(configVersion));
+  }
 }
