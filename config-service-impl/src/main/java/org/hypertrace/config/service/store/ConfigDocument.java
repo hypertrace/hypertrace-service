@@ -1,5 +1,7 @@
 package org.hypertrace.config.service.store;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -14,17 +16,12 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.protobuf.Value;
 import com.google.protobuf.util.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hypertrace.core.documentstore.Document;
 
 import java.io.IOException;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@lombok.Value
 @Slf4j
 public class ConfigDocument implements Document {
 
@@ -40,27 +37,44 @@ public class ConfigDocument implements Document {
   public static final String CONFIG_FIELD_NAME = "config";
 
   @JsonProperty(value = RESOURCE_FIELD_NAME)
-  private String resourceName;
+  String resourceName;
 
   @JsonProperty(value = RESOURCE_NAMESPACE_FIELD_NAME)
-  private String resourceNamespace;
+  String resourceNamespace;
 
   @JsonProperty(value = TENANT_ID_FIELD_NAME)
-  private String tenantId;
+  String tenantId;
 
   @JsonProperty(value = CONTEXT_FIELD_NAME)
-  private String context;
+  String context;
 
   @JsonProperty(value = VERSION_FIELD_NAME)
-  private long configVersion;
+  long configVersion;
 
   @JsonProperty(value = USER_ID_FIELD_NAME)
-  private String userId;
+  String userId;
 
   @JsonSerialize(using = ValueSerializer.class)
   @JsonDeserialize(using = ValueDeserializer.class)
   @JsonProperty(value = CONFIG_FIELD_NAME)
-  private Value config;
+  Value config;
+
+  @JsonCreator(mode = Mode.PROPERTIES)
+  public ConfigDocument(@JsonProperty(RESOURCE_FIELD_NAME) String resourceName,
+      @JsonProperty(RESOURCE_NAMESPACE_FIELD_NAME) String resourceNamespace,
+      @JsonProperty(TENANT_ID_FIELD_NAME) String tenantId,
+      @JsonProperty(CONTEXT_FIELD_NAME) String context,
+      @JsonProperty(VERSION_FIELD_NAME) long configVersion,
+      @JsonProperty(USER_ID_FIELD_NAME) String userId,
+      @JsonProperty(CONFIG_FIELD_NAME) Value config) {
+    this.resourceName = resourceName;
+    this.resourceNamespace = resourceNamespace;
+    this.tenantId = tenantId;
+    this.context = context;
+    this.configVersion = configVersion;
+    this.userId = userId;
+    this.config = config;
+  }
 
   public static ConfigDocument fromJson(String json) throws IOException {
     return OBJECT_MAPPER.readValue(json, ConfigDocument.class);

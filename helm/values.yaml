@@ -48,10 +48,10 @@ resources:
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
    requests:
      cpu: 0.1
-     memory: 1024Mi
+     memory: 512Mi
    limits:
      cpu: 1
-     memory: 1024Mi
+     memory: 512Mi
 
 deploymentLabels:
   app: config-service

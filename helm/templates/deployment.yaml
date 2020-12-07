@@ -58,13 +58,11 @@ spec:
               containerPort: {{ .Values.containerAdminPort }}
               protocol: TCP
           env:
-            - name: SERVICE_NAME
-              value: "{{ .Chart.Name }}"
             - name: BOOTSTRAP_CONFIG_URI
               value: "file:///app/resources/configs"
             - name: LOG4J_CONFIGURATION_FILE
               value: "/var/{{ .Chart.Name }}/log/log4j2.properties"
-            - name: JAVA_TOOL_OPTIONS
+            - name: JAVA_OPTS
               value: {{ .Values.javaOpts | quote }}
           volumeMounts:
             - name: service-config

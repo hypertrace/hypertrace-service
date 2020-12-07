@@ -6,6 +6,8 @@ metadata:
     release: {{ .Release.Name }}
 data:
   application.conf: |-
+    service.port = {{ .Values.containerPort }}
+    service.admin.port = {{ .Values.containerAdminPort }}
     document.store {
       {{- $dst := .Values.configServiceConfig.dataStoreType }}
       dataStoreType = {{ $dst }}

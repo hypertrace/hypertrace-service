@@ -3,11 +3,8 @@ package org.hypertrace.config.service.store;
 import com.google.protobuf.Value;
 import com.typesafe.config.Config;
 import org.hypertrace.config.service.ConfigResource;
-import org.hypertrace.config.service.v1.GetConfigResponse;
 
 import java.io.IOException;
-import java.util.Optional;
-import org.hypertrace.config.service.v1.UpsertConfigResponse;
 
 public interface ConfigStore {
 
@@ -26,17 +23,14 @@ public interface ConfigStore {
    * @param config
    * @return
    */
-  UpsertConfigResponse writeConfig(ConfigResource configResource, String userId, Value config)
+  long writeConfig(ConfigResource configResource, String userId, Value config)
       throws IOException;
 
   /**
-   * Get the config for the specified resource with the specified version(optional). If
-   * configVersion is empty, get the config for the latest version.
+   * Get the config for the specified resource.
    *
    * @param configResource
-   * @param configVersion
    * @return
    */
-  GetConfigResponse getConfig(ConfigResource configResource, Optional<Long> configVersion)
-      throws IOException;
+  Value getConfig(ConfigResource configResource) throws IOException;
 }

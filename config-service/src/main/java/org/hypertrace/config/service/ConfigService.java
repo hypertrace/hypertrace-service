@@ -4,6 +4,7 @@ import com.typesafe.config.Config;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.hypertrace.config.service.store.ConfigStore;
+import org.hypertrace.config.service.store.DocumentConfigStore;
 import org.hypertrace.core.grpcutils.server.InterceptorUtil;
 import org.hypertrace.core.serviceframework.PlatformService;
 import org.hypertrace.core.serviceframework.config.ConfigClient;
@@ -16,7 +17,6 @@ public class ConfigService extends PlatformService {
 
   private static final String SERVICE_NAME_CONFIG = "service.name";
   private static final String SERVICE_PORT_CONFIG = "service.port";
-  private static final String CONFIG_STORE_CONFIG = "config.store.class";
   private static final Logger LOG = LoggerFactory.getLogger(ConfigService.class);
   private String serviceName;
   private int serverPort;
@@ -84,10 +84,7 @@ public class ConfigService extends PlatformService {
 
   private ConfigStore getConfigStore(Config config) {
     try {
-      String providerClassName = config.getString(CONFIG_STORE_CONFIG);
-      Class<? extends ConfigStore> providerClass =
-          Class.forName(providerClassName).asSubclass(ConfigStore.class);
-      ConfigStore configStore = providerClass.getDeclaredConstructor().newInstance();
+      ConfigStore configStore = new DocumentConfigStore();
       configStore.init(config);
       return configStore;
     } catch (Exception e) {

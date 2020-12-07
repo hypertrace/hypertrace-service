@@ -8,8 +8,6 @@ import com.typesafe.config.Config;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.hypertrace.config.service.ConfigResource;
-import org.hypertrace.config.service.v1.GetConfigResponse;
-import org.hypertrace.config.service.v1.UpsertConfigResponse;
 import org.hypertrace.core.documentstore.Collection;
 import org.hypertrace.core.documentstore.Datastore;
 import org.hypertrace.core.documentstore.DatastoreProvider;
@@ -22,7 +20,6 @@ import org.hypertrace.core.documentstore.Query;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 
 import static org.hypertrace.config.service.store.ConfigDocument.CONTEXT_FIELD_NAME;
 import static org.hypertrace.config.service.store.ConfigDocument.RESOURCE_FIELD_NAME;
@@ -68,8 +65,8 @@ public class DocumentConfigStore implements ConfigStore {
   }
 
   @Override
-  public UpsertConfigResponse writeConfig(ConfigResource configResource, String userId,
-      Value config) throws IOException {
+  public long writeConfig(ConfigResource configResource, String userId, Value config)
+      throws IOException {
     // Synchronization is required across different threads trying to write the latest config
     // for the same resource into the document store
     synchronized (configResourceLocks.getUnchecked(configResource)) {
@@ -79,28 +76,24 @@ public class DocumentConfigStore implements ConfigStore {
           configResource.getResourceNamespace(), configResource.getTenantId(),
           configResource.getContext(), configVersion, userId, config);
       collection.upsert(key, document);
-      return UpsertConfigResponse.newBuilder()
-          .setConfigVersion(configVersion)
-          .build();
+      return configVersion;
     }
   }
 
   @Override
-  public GetConfigResponse getConfig(ConfigResource configResource, Optional<Long> configVersion)
-      throws IOException {
-    GetConfigResponse.Builder responseBuilder = GetConfigResponse.newBuilder();
-    long version = configVersion.isEmpty() ? getLatestVersion(configResource) : configVersion.get();
+  public Value getConfig(ConfigResource configResource) throws IOException {
+    Value config = null;
     Filter filter = getConfigResourceFilter(configResource)
-        .and(Filter.eq(VERSION_FIELD_NAME, version));
+        .and(Filter.eq(VERSION_FIELD_NAME, getLatestVersion(configResource)));
     Query query = new Query();
     query.setFilter(filter);
     Iterator<Document> documentIterator = collection.search(query);
     if (documentIterator.hasNext()) {
       String documentString = documentIterator.next().toJson();
       ConfigDocument configDocument = ConfigDocument.fromJson(documentString);
-      responseBuilder.setConfig(configDocument.getConfig());
+      config = configDocument.getConfig();
     }
-    return responseBuilder.build();
+    return config;
   }
 
   private long getLatestVersion(ConfigResource configResource) throws IOException {
