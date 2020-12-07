@@ -15,6 +15,12 @@ dependencies {
     implementation("com.google.guava:guava:30.0-jre") {
       because("https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415")
     }
+    runtimeOnly("io.netty:netty-codec-http2:4.1.53.Final") {
+      because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439")
+    }
+    runtimeOnly("io.netty:netty-handler-proxy:4.1.53.Final") {
+      because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439")
+    }
   }
 
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.2.0")

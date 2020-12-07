@@ -7,7 +7,7 @@ plugins {
 dependencies {
   api(project(":config-service-api"))
 
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.9.5")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.9.10.7")
   implementation("com.google.guava:guava:30.0-jre")
   implementation("com.google.protobuf:protobuf-java-util:3.13.0")
   implementation("com.typesafe:config:1.4.0")
