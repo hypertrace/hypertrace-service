@@ -78,9 +78,8 @@ public class DocumentConfigStore implements ConfigStore {
       Document document = new ConfigDocument(configResource.getResourceName(),
           configResource.getResourceNamespace(), configResource.getTenantId(),
           configResource.getContext(), configVersion, userId, config);
-      boolean success = collection.upsert(key, document);
+      collection.upsert(key, document);
       return UpsertConfigResponse.newBuilder()
-          .setSuccess(success)
           .setConfigVersion(configVersion)
           .build();
     }
