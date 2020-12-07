@@ -21,6 +21,9 @@ dependencies {
     runtimeOnly("io.netty:netty-handler-proxy:4.1.53.Final") {
       because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439")
     }
+    runtimeOnly("io.netty:netty-handler:4.1.53.Final") {
+      because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1042268")
+    }
   }
 
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.2.0")
