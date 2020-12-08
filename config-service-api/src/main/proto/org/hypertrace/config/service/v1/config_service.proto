@@ -19,7 +19,7 @@ message UpsertConfigRequest {
 }
 
 message UpsertConfigResponse {
-  int64 config_version = 1;
+  int64 config_version = 1; // the version allocated to the newly inserted configuration
 }
 
 message GetConfigRequest {

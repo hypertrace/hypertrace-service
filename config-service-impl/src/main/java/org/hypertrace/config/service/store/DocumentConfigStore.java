@@ -27,12 +27,15 @@ import static org.hypertrace.config.service.store.ConfigDocument.RESOURCE_NAMESP
 import static org.hypertrace.config.service.store.ConfigDocument.TENANT_ID_FIELD_NAME;
 import static org.hypertrace.config.service.store.ConfigDocument.VERSION_FIELD_NAME;
 
+/**
+ * Document store which stores and serves the configurations.
+ */
 @Slf4j
 public class DocumentConfigStore implements ConfigStore {
 
-  private static final String DOC_STORE_CONFIG_KEY = "document.store";
-  private static final String DATA_STORE_TYPE = "dataStoreType";
-  private static final String CONFIGURATIONS_COLLECTION = "configurations";
+  static final String DOC_STORE_CONFIG_KEY = "document.store";
+  static final String DATA_STORE_TYPE = "dataStoreType";
+  static final String CONFIGURATIONS_COLLECTION = "configurations";
 
   private final LoadingCache<ConfigResource, Object> configResourceLocks =
       CacheBuilder.newBuilder()

@@ -1,22 +1,19 @@
 package org.hypertrace.config.service.store;
 
+import lombok.Value;
 import org.hypertrace.config.service.ConfigResource;
 import org.hypertrace.core.documentstore.Key;
 
 /**
- * Key for the Config Document
+ * Key for the {@link ConfigDocument} (used by {@link DocumentConfigStore}).
  */
+@Value
 public class ConfigDocumentKey implements Key {
 
   private static final String SEPARATOR = ":";
 
-  private final ConfigResource configResource;
-  private final long configVersion;
-
-  public ConfigDocumentKey(ConfigResource configResource, long configVersion) {
-    this.configResource = configResource;
-    this.configVersion = configVersion;
-  }
+  ConfigResource configResource;
+  long configVersion;
 
   @Override
   public String toString() {

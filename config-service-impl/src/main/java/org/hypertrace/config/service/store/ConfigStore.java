@@ -6,6 +6,10 @@ import org.hypertrace.config.service.ConfigResource;
 
 import java.io.IOException;
 
+/**
+ * Abstraction for the backend which stores and serves the configuration data for multiple
+ * resources.
+ */
 public interface ConfigStore {
 
   /**
@@ -21,13 +25,13 @@ public interface ConfigStore {
    * @param configResource
    * @param userId
    * @param config
-   * @return
+   * @return the version allocated to the newly inserted configuration
    */
   long writeConfig(ConfigResource configResource, String userId, Value config)
       throws IOException;
 
   /**
-   * Get the config for the specified resource.
+   * Get the config with the latest version for the specified resource.
    *
    * @param configResource
    * @return

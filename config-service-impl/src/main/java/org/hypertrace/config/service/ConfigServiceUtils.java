@@ -6,14 +6,24 @@ import com.google.protobuf.Value;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Utils {
+/**
+ * This class contains utility methods.
+ */
+public class ConfigServiceUtils {
 
   public static final String DEFAULT_CONTEXT = "DEFAULT-CONTEXT";
 
-  private Utils() {
+  private ConfigServiceUtils() {
     // to prevent instantiation
   }
 
+  /**
+   * Deep merge the specified {@link Value} configs with overridingConfig taking precedence over
+   * defaultConfig for the same keys.
+   * @param defaultConfig
+   * @param overridingConfig
+   * @return the resulting config obtained after merging defaultConfig and overridingConfig
+   */
   public static Value merge(Value defaultConfig, Value overridingConfig) {
     if (defaultConfig == null) {
       return overridingConfig;
@@ -40,6 +50,12 @@ public class Utils {
     }
   }
 
+  /**
+   * Get the actual context from rawContext. Specifically, it handles the case where rawContext
+   * can be null or empty which is equivalent to default context.
+   * @param rawContext
+   * @return
+   */
   public static String getActualContext(String rawContext) {
     return Strings.isNullOrEmpty(rawContext) ? DEFAULT_CONTEXT : rawContext;
   }

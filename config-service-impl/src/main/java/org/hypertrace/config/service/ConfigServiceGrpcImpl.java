@@ -1,8 +1,8 @@
 package org.hypertrace.config.service;
 
-import static org.hypertrace.config.service.Utils.DEFAULT_CONTEXT;
-import static org.hypertrace.config.service.Utils.getActualContext;
-import static org.hypertrace.config.service.Utils.merge;
+import static org.hypertrace.config.service.ConfigServiceUtils.DEFAULT_CONTEXT;
+import static org.hypertrace.config.service.ConfigServiceUtils.getActualContext;
+import static org.hypertrace.config.service.ConfigServiceUtils.merge;
 
 import com.google.protobuf.Value;
 import io.grpc.stub.StreamObserver;
@@ -17,6 +17,9 @@ import org.hypertrace.core.grpcutils.context.RequestContext;
 
 import java.util.Optional;
 
+/**
+ * Implementation for the gRPC service.
+ */
 @Slf4j
 public class ConfigServiceGrpcImpl extends ConfigServiceGrpc.ConfigServiceImplBase {
 

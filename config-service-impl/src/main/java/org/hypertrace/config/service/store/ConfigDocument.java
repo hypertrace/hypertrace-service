@@ -21,6 +21,9 @@ import org.hypertrace.core.documentstore.Document;
 
 import java.io.IOException;
 
+/**
+ * This class represents the data model for the Document as stored by {@link DocumentConfigStore}.
+ */
 @lombok.Value
 @Slf4j
 public class ConfigDocument implements Document {
