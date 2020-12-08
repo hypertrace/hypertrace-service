@@ -1,3 +1,10 @@
+import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerStartContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerStopContainer
+import com.bmuschko.gradle.docker.tasks.image.DockerPullImage
+import com.bmuschko.gradle.docker.tasks.network.DockerCreateNetwork
+import com.bmuschko.gradle.docker.tasks.network.DockerRemoveNetwork
+
 plugins {
   java
   application
@@ -6,6 +13,44 @@ plugins {
   id("org.hypertrace.docker-publish-plugin")
   id("org.hypertrace.integration-test-plugin")
   id("org.hypertrace.jacoco-report-plugin")
+}
+
+tasks.register<DockerCreateNetwork>("createIntegrationTestNetwork") {
+  networkName.set("cfg-svc-int-test")
+}
+
+tasks.register<DockerRemoveNetwork>("removeIntegrationTestNetwork") {
+  networkId.set("cfg-svc-int-test")
+}
+
+tasks.register<DockerPullImage>("pullMongoImage") {
+  image.set("mongo:4.2.6")
+}
+
+tasks.register<DockerCreateContainer>("createMongoContainer") {
+  dependsOn("createIntegrationTestNetwork")
+  dependsOn("pullMongoImage")
+  targetImageId(tasks.getByName<DockerPullImage>("pullMongoImage").image)
+  containerName.set("mongo-local")
+  hostConfig.network.set(tasks.getByName<DockerCreateNetwork>("createIntegrationTestNetwork").networkId)
+  hostConfig.portBindings.set(listOf("27017:27017"))
+  hostConfig.autoRemove.set(true)
+}
+
+tasks.register<DockerStartContainer>("startMongoContainer") {
+  dependsOn("createMongoContainer")
+  targetContainerId(tasks.getByName<DockerCreateContainer>("createMongoContainer").containerId)
+}
+
+tasks.register<DockerStopContainer>("stopMongoContainer") {
+  targetContainerId(tasks.getByName<DockerCreateContainer>("createMongoContainer").containerId)
+  finalizedBy("removeIntegrationTestNetwork")
+}
+
+tasks.integrationTest {
+  useJUnitPlatform()
+  dependsOn("startMongoContainer")
+  finalizedBy("stopMongoContainer")
 }
 
 dependencies {
@@ -31,6 +76,14 @@ dependencies {
 
   implementation("org.slf4j:slf4j-api:1.7.30")
   runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.13.3")
+
+  //Integration test dependencies
+  integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
+  integrationTestImplementation("com.google.guava:guava:30.0-jre")
+  integrationTestImplementation("org.yaml:snakeyaml:1.21")
+  integrationTestImplementation(project(":config-service-impl"))
+  integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.18")
+  integrationTestImplementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.2")
 }
 
 application {
@@ -40,4 +93,16 @@ application {
 // Config for gw run to be able to run this locally. Just execute gw run here on Intellij or on the console.
 tasks.run<JavaExec>  {
   jvmArgs = listOf("-Dservice.name=${project.name}")
+}
+
+tasks.jacocoIntegrationTestReport {
+  sourceSets(project(":config-service-impl").sourceSets.getByName("main"))
+}
+
+hypertraceDocker {
+  defaultImage {
+    javaApplication {
+      port.set(50101)
+    }
+  }
 }
