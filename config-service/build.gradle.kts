@@ -80,7 +80,7 @@ dependencies {
   //Integration test dependencies
   integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
   integrationTestImplementation("com.google.guava:guava:30.0-jre")
-  integrationTestImplementation("org.yaml:snakeyaml:1.21")
+  integrationTestImplementation("org.yaml:snakeyaml:1.26")
   integrationTestImplementation(project(":config-service-impl"))
   integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.18")
   integrationTestImplementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.2")
