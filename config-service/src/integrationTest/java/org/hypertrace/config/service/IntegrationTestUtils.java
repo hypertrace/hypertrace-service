@@ -49,5 +49,4 @@ public class IntegrationTestUtils {
     }
     return configValueBuilder.build();
   }
-
 }
