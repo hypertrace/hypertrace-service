@@ -57,6 +57,16 @@ commands:
           paths:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "/tmp/checksum.txt" }}
+  machine_install_java11:
+    description: "Install java11 on machine executor"
+    steps:
+      - run:
+          name: Install open jdk11
+          command: |
+            sudo apt-get update
+            sudo apt-get install openjdk-11-jdk
+            sudo sh -c 'for bin in /usr/lib/jvm/java-11-openjdk-amd64/bin/*; do update-alternatives --install /usr/bin/$(basename $bin) $(basename $bin) $bin 100; done'
+            sudo sh -c 'for bin in /usr/lib/jvm/java-11-openjdk-amd64/bin/*; do update-alternatives --set $(basename $bin) $bin; done'
   docker_login:
     description: "Login to dockerhub with readonly credentials"
     steps:
@@ -79,6 +89,17 @@ jobs:
           args: jacocoTestReport
       - codecov/upload:
           flags: unit
+  integration-test:
+    executor: gradle_machine
+    steps:
+      - machine_install_java11
+      - setup_build_environment
+      - populate_and_save_cache
+      - docker_login
+      - gradle:
+          args: jacocoIntegrationTestReport
+      - codecov/upload:
+          flags: integration
   verify-protos:
     executor: buf
     # TODO: Re-enable buf
@@ -149,7 +170,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             # This ssh key gives write permission needed for the following step.
-            - '<REPLACEME>'
+            - '9e:b9:a7:f4:a0:0d:99:9e:49:7f:8f:cd:d1:43:50:ca'
       - run:
           name: Update remote tags
           command: git push origin refs/tags/$(git describe --abbrev=0) :refs/tags/release-$(git describe --abbrev=0)
@@ -159,6 +180,9 @@ workflows:
   build-and-publish:
     jobs:
       - build:
+          context:
+            - dockerhub-read
+      - integration-test:
           context:
             - dockerhub-read
       - validate-charts:
@@ -181,6 +205,7 @@ workflows:
             - dockerhub-read
           requires:
             - build
+            - integration-test
             - validate-charts
             - snyk-scan
           filters:

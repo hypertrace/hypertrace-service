@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package org.hypertrace.config.service.v1;
+
+import "google/protobuf/struct.proto";
+
+service ConfigService {
+  rpc UpsertConfig(UpsertConfigRequest) returns (UpsertConfigResponse) {}
+  rpc GetConfig(GetConfigRequest) returns (GetConfigResponse) {}
+}
+
+message UpsertConfigRequest {
+  string resource_name = 1;  // required
+  string resource_namespace = 2;  // required - namespace with which the config resource is associated
+  google.protobuf.Value config = 3; // required - config value to be upserted
+  string context = 4; // optional - only required if config applies to a specific context
+}
+
+message UpsertConfigResponse {
+  int64 config_version = 1; // the version allocated to the newly inserted configuration
+}
+
+message GetConfigRequest {
+  string resource_name = 1;  // required
+  string resource_namespace = 2;  // required - namespace with which the config resource is associated
+  repeated string contexts = 3; // optional; order matters - specify the contexts in the order of increasing priority. Example: ["service1", "api1"]
+}
+
+message GetConfigResponse {
+  google.protobuf.Value config = 1;
+}
