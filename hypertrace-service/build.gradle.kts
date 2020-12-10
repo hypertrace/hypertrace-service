@@ -22,9 +22,9 @@ dependencies {
   implementation("org.hypertrace.core.graphql:hypertrace-core-graphql-spi")
   implementation("org.hypertrace.core.bootstrapper:config-bootstrapper")
 
-  implementation("org.eclipse.jetty:jetty-server@9.4.35.v20201120")
-  implementation("org.eclipse.jetty:jetty-servlet@9.4.35.v20201120")
-  implementation("org.eclipse.jetty:jetty-rewrite@9.4.35.v20201120")
+  implementation("org.eclipse.jetty:jetty-server:9.4.35.v20201120")
+  implementation("org.eclipse.jetty:jetty-servlet:9.4.35.v20201120")
+  implementation("org.eclipse.jetty:jetty-rewrite:9.4.35.v20201120")
 
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.16")
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.3.0")
