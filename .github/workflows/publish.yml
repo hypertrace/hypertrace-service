@@ -1,0 +1,74 @@
+name: Publish Docker image
+on:
+# Will only run when release is published. 
+  release:
+    types: 
+      - created
+  workflow_dispatch:
+
+jobs:
+  publish-images:
+    runs-on: ubuntu-20.04
+    steps:
+      # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
+      - name: Check out code
+        uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+
+      - name: create checksum file
+        run: find . -type f -name "*.gradle*" -o -name "gradle-wrapper*" | xargs shasum | sort > checksum.txt && cat checksum.txt
+
+      - name: Cache packages
+        id: cache-packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle
+          key: gradle-packages-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/checksum.txt') }}
+          restore-keys: |
+            gradle-packages-${{ runner.os }}-${{ github.job }}
+            gradle-packages-${{ runner.os }}
+            
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Publish docker image
+        run: ./gradlew publish dockerPushImages
+
+  publish-helm-charts:
+    runs-on: ubuntu-20.04
+    container: 
+      image: hypertrace/helm-gcs-packager:0.3.0
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    steps:
+       # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}       
+   
+      - name: package and release charts
+        env:
+          HELM_GCS_CREDENTIALS: ${{ secrets.HELM_GCS_CREDENTIALS }}
+          HELM_GCS_REPOSITORY: ${{ secrets.HELM_GCS_REPOSITORY }}
+            # GITHUB_REF will be refs/tags/docker-MAJOR.MINOR.PATCH
+        run: |
+            CHART_VERSION=$(git describe --abbrev=0)
+            CHART_NAME=$(awk '/^name:/ {print $2}' ./helm/Chart.yaml)
+            export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/helm-gcs-key.json
+            echo $HELM_GCS_CREDENTIALS > ${GOOGLE_APPLICATION_CREDENTIALS}
+            helm dependency update ./helm/
+            helm repo add helm-gcs $HELM_GCS_REPOSITORY
+            helm package --version ${CHART_VERSION} --app-version ${CHART_VERSION} ./helm/
+            helm gcs push ${CHART_NAME}-${CHART_VERSION}.tgz helm-gcs --public --retry

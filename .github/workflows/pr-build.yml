@@ -1,0 +1,68 @@
+name: build and test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  pull_request_target:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-20.04
+    steps:
+       # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
+      - name: Check out code
+        uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+      
+      - name: create checksum file
+        run: find . -type f -name "*.gradle*" -o -name "gradle-wrapper*" | xargs shasum | sort > checksum.txt && cat checksum.txt
+
+      - name: Cache packages
+        id: cache-packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle
+          key: gradle-packages-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/checksum.txt') }}
+          restore-keys: |
+            gradle-packages-${{ runner.os }}-${{ github.job }}
+            gradle-packages-${{ runner.os }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build with Gradle
+        run: ./gradlew build dockerBuildImages
+
+      - name: Unit test
+        run: ./gradlew jacocoTestReport
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          name: codecov-line-smoothing
+          fail_ci_if_error: true
+          verbose: true
+          flags: unit
+
+      - name: Integration test
+        run: ./gradlew jacocoIntegrationTestReport
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          name: codecov-line-smoothing
+          fail_ci_if_error: true
+          verbose: true
+          flags: integration
+
+      - name: push docker image
+        if: github.event.pull_request.merged
+        run: ./gradlew dockerPushImages
+
+
+      
