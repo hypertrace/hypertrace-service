@@ -3,6 +3,7 @@ package org.hypertrace.config.service;
 import static org.hypertrace.config.service.ConfigServiceUtils.DEFAULT_CONTEXT;
 import static org.hypertrace.config.service.ConfigServiceUtils.getActualContext;
 import static org.hypertrace.config.service.ConfigServiceUtils.merge;
+import static org.hypertrace.config.service.ConfigServiceUtils.nullSafeValue;
 
 import com.google.protobuf.Value;
 import io.grpc.stub.StreamObserver;
@@ -57,7 +58,7 @@ public class ConfigServiceGrpcImpl extends ConfigServiceGrpc.ConfigServiceImplBa
         config = merge(config, contextSpecificConfig);
       }
       responseObserver.onNext(GetConfigResponse.newBuilder()
-          .setConfig(config)
+          .setConfig(nullSafeValue(config))
           .build());
       responseObserver.onCompleted();
     } catch (Exception e) {
