@@ -4,6 +4,7 @@ import static org.hypertrace.config.service.ConfigServiceUtils.DEFAULT_CONTEXT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.protobuf.ListValue;
+import com.google.protobuf.NullValue;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 import org.junit.jupiter.api.Test;
@@ -12,8 +13,17 @@ class ConfigServiceUtilsTest {
 
   @Test
   void merge() {
+    Value config1Value = getConfig1Value();
+    Value config2Value = getConfig2Value();
+
+    // test merging 2 config values
     assertEquals(getExpectedMergedConfigValue(),
-        ConfigServiceUtils.merge(getConfig1Value(), getConfig2Value()));
+        ConfigServiceUtils.merge(config1Value, config2Value));
+
+    // test merging with null value
+    Value nullConfigValue = Value.newBuilder().setNullValue(NullValue.NULL_VALUE).build();
+    assertEquals(config1Value, ConfigServiceUtils.merge(config1Value, nullConfigValue));
+    assertEquals(config1Value, ConfigServiceUtils.merge(nullConfigValue, config1Value));
   }
 
   @Test

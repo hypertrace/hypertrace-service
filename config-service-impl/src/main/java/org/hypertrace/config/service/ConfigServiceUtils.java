@@ -25,9 +25,9 @@ public class ConfigServiceUtils {
    * @return the resulting config obtained after merging defaultConfig and overridingConfig
    */
   public static Value merge(Value defaultConfig, Value overridingConfig) {
-    if (defaultConfig == null) {
+    if (isNull(defaultConfig)) {
       return overridingConfig;
-    } else if (overridingConfig == null) {
+    } else if (isNull(overridingConfig)) {
       return defaultConfig;
     }
 
@@ -58,5 +58,9 @@ public class ConfigServiceUtils {
    */
   public static String getActualContext(String rawContext) {
     return Strings.isNullOrEmpty(rawContext) ? DEFAULT_CONTEXT : rawContext;
+  }
+
+  private static boolean isNull(Value value) {
+    return value == null || value.getKindCase() == Value.KindCase.NULL_VALUE;
   }
 }

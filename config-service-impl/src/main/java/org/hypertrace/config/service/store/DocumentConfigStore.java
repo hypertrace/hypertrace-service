@@ -3,6 +3,7 @@ package org.hypertrace.config.service.store;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.protobuf.NullValue;
 import com.google.protobuf.Value;
 import com.typesafe.config.Config;
 import java.util.concurrent.TimeUnit;
@@ -85,7 +86,7 @@ public class DocumentConfigStore implements ConfigStore {
 
   @Override
   public Value getConfig(ConfigResource configResource) throws IOException {
-    Value config = null;
+    Value config = Value.newBuilder().setNullValue(NullValue.NULL_VALUE).build();
     Filter filter = getConfigResourceFilter(configResource)
         .and(Filter.eq(VERSION_FIELD_NAME, getLatestVersion(configResource)));
     Query query = new Query();
