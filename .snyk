@@ -6,4 +6,12 @@ ignore:
     - '*':
         reason: No replacement available
         expires: 2021-01-31T00:00:00.000Z
+  SNYK-JAVA-COMFASTERXMLJACKSONCORE-1052449:
+    - '*':
+        reason: No replacement available
+        expires: 2021-01-31T00:00:00.000Z
+  SNYK-JAVA-COMFASTERXMLJACKSONCORE-1052450:
+    - '*':
+        reason: No replacement available
+        expires: 2021-01-31T00:00:00.000Z
 patch: {}

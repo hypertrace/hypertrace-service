@@ -1,14 +1,17 @@
 package org.hypertrace.config.service;
 
 import com.google.common.base.Strings;
+import com.google.protobuf.NullValue;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class contains utility methods.
  */
+@Slf4j
 public class ConfigServiceUtils {
 
   public static final String DEFAULT_CONTEXT = "DEFAULT-CONTEXT";
@@ -25,9 +28,9 @@ public class ConfigServiceUtils {
    * @return the resulting config obtained after merging defaultConfig and overridingConfig
    */
   public static Value merge(Value defaultConfig, Value overridingConfig) {
-    if (defaultConfig == null) {
+    if (isNull(defaultConfig)) {
       return overridingConfig;
-    } else if (overridingConfig == null) {
+    } else if (isNull(overridingConfig)) {
       return defaultConfig;
     }
 
@@ -58,5 +61,23 @@ public class ConfigServiceUtils {
    */
   public static String getActualContext(String rawContext) {
     return Strings.isNullOrEmpty(rawContext) ? DEFAULT_CONTEXT : rawContext;
+  }
+
+  private static boolean isNull(Value value) {
+    if (value == null) {
+      log.error("NULL Value encountered. This is unexpected and indicates a BUG in code.",
+          new RuntimeException());
+      return true;
+    }
+    return value.getKindCase() == Value.KindCase.NULL_VALUE;
+  }
+
+  public static Value nullSafeValue(Value value) {
+    if (value == null) {
+      log.error("NULL Value encountered. This is unexpected and indicates a BUG in code.", 
+          new RuntimeException());
+      return Value.newBuilder().setNullValue(NullValue.NULL_VALUE).build();
+    }
+    return value;
   }
 }
