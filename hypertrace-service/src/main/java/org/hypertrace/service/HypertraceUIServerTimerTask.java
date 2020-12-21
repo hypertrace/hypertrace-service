@@ -35,8 +35,10 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private static final int DEFAULT_INTERVAL = 5;
   private static final String START_PERIOD = "hypertraceUI.init.waittime.start_period";
   private static final int DEFAULT_START_PERIOD = 20;
-  private static final String PINOT_CONTROLLER_HOST = "pinot.controller_host";
-  private static final String DEFAULT_PINOT_CONTROLLER_HOST = "pinot-controller";
+  private static final String PINOT_SERVER_HOST = "pinot.server_host";
+  private static final String DEFAULT_PINOT_SERVER_HOST = "pinot-controller";
+  private static final String PINOT_SERVER_PORT = "pinot.server_port";
+  private static final int DEFAULT_PINOT_SERVER_PORT = 8097;
   private static final String PINOT_CONTROLLER_PORT = "pinot.controller_port";
   private static final int DEFAULT_PINOT_CONTROLLER_PORT = 9000;
 
@@ -49,7 +51,8 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private long interval;
   private long startPeriod;
   private String defaultTenant;
-  private String pinotControllerHost;
+  private String pinotSeverHost;
+  private int pinotServerPort;
   private int pinotControllerPort;
   private boolean isPinotUp;
 
@@ -64,8 +67,10 @@ public class HypertraceUIServerTimerTask extends TimerTask {
     startPeriod =
         appConfig.hasPath(START_PERIOD) ? appConfig.getInt(START_PERIOD) : DEFAULT_START_PERIOD;
 
-    pinotControllerHost = appConfig.hasPath(PINOT_CONTROLLER_HOST) ?
-        appConfig.getString(PINOT_CONTROLLER_HOST) : DEFAULT_PINOT_CONTROLLER_HOST;
+    pinotSeverHost = appConfig.hasPath(PINOT_SERVER_HOST) ?
+        appConfig.getString(PINOT_SERVER_HOST) : DEFAULT_PINOT_SERVER_HOST;
+    pinotServerPort = appConfig.hasPath(PINOT_SERVER_PORT) ?
+        appConfig.getInt(PINOT_SERVER_PORT) : DEFAULT_PINOT_SERVER_PORT;
     pinotControllerPort = appConfig.hasPath(PINOT_CONTROLLER_PORT) ?
         appConfig.getInt(PINOT_CONTROLLER_PORT) : DEFAULT_PINOT_CONTROLLER_PORT;
 
@@ -163,7 +168,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private boolean executePinotHealthCheck() throws Exception {
     HttpURLConnection con = null;
     try {
-      URL url = new URL(String.format("http://%s:%s/health", pinotControllerHost, pinotControllerPort));
+      URL url = new URL(String.format("http://%s:%s/health", pinotSeverHost, pinotServerPort));
       con = (HttpURLConnection) url.openConnection();
       con.setRequestMethod("GET");
       con.setConnectTimeout(timeout * 1000);
@@ -183,7 +188,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
     HttpURLConnection con = null;
     try {
       URL url = new URL(
-          String.format("http://%s:%s/brokers/tenants", pinotControllerHost, pinotControllerPort));
+          String.format("http://%s:%s/brokers/tenants", pinotSeverHost, pinotControllerPort));
       con = (HttpURLConnection) url.openConnection();
       con.setRequestMethod("GET");
       con.setConnectTimeout(timeout * 1000);
