@@ -37,4 +37,10 @@ public interface ConfigStore {
    * @return
    */
   Value getConfig(ConfigResource configResource) throws IOException;
+
+  /**
+   * Health check for the backend store
+   * @return
+   */
+  boolean healthCheck();
 }

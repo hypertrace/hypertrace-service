@@ -43,12 +43,13 @@ public class DocumentConfigStore implements ConfigStore {
           .expireAfterAccess(10, TimeUnit.MINUTES) // max lock time ever expected
           .build(CacheLoader.from(Object::new));
 
+  private Datastore datastore;
   private Collection collection;
 
   @Override
   public void init(Config config) {
-    Datastore store = initDataStore(config);
-    this.collection = getOrCreateCollection(store);
+    datastore = initDataStore(config);
+    this.collection = getOrCreateCollection(datastore);
   }
 
   private Datastore initDataStore(Config config) {
@@ -98,6 +99,11 @@ public class DocumentConfigStore implements ConfigStore {
       config = configDocument.getConfig();
     }
     return config;
+  }
+
+  @Override
+  public boolean healthCheck() {
+    return datastore.healthCheck();
   }
 
   private long getLatestVersion(ConfigResource configResource) throws IOException {
