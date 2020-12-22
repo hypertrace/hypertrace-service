@@ -23,5 +23,24 @@ The `Hypertrace service` uses gradlew to compile/install/distribute. Gradle wrap
 ./gradlew clean build dockerBuildImages
 ```
 
+### Testing image
+
+To test your image using the docker-compose setup follow the steps:
+
+- Commit you changes to a branch say `hypertrace-service-test`.
+- Go to [hypertrace-service](https://github.com/hypertrace/hypertrace-service) and checkout the above branch in the submodule.
+```
+cd hypertrace-service && git checkout hypertrace-service-test && cd ..
+```
+- Change tag for `hypertrace-service` from `:main` to `:test` in [docker-compose file](https://github.com/hypertrace/hypertrace/blob/main/docker/docker-compose.yml) like this.
+
+```yaml
+  hypertrace-service:
+    image: hypertrace/hypertrace-service:test
+    container_name: hypertrace-service
+    ...
+```
+- and then run `docker-compose up` to test the setup.
+
 ## Docker Image Source:
 - [DockerHub > Hypertrace service](https://hub.docker.com/r/hypertrace/hypertrace-service)
