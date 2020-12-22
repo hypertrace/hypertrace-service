@@ -42,6 +42,7 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
 
   publish-helm-charts:
+    needs: publish-images
     runs-on: ubuntu-20.04
     container: 
       image: hypertrace/helm-gcs-packager:0.3.0
