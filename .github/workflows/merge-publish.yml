@@ -35,11 +35,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-        
-      - name: branch name tag
-        run: | 
-          BRANCH="${GITHUB_REF#refs/heads/}"
-          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
 
       - name: push docker image
         run: ./gradlew dockerPushImages
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
