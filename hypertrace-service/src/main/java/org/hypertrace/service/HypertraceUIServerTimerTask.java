@@ -36,9 +36,11 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private static final String START_PERIOD = "hypertraceUI.init.waittime.start_period";
   private static final int DEFAULT_START_PERIOD = 20;
   private static final String PINOT_SERVER_HOST = "pinot.server_host";
-  private static final String DEFAULT_PINOT_SERVER_HOST = "pinot-controller";
+  private static final String DEFAULT_PINOT_SERVER_HOST = "pinot-server";
   private static final String PINOT_SERVER_PORT = "pinot.server_port";
   private static final int DEFAULT_PINOT_SERVER_PORT = 8097;
+  private static final String PINOT_CONTROLLER_HOST = "pinot.controller_host";
+  private static final String DEFAULT_PINOT_CONTROLLER_HOST = "pinot-controller";
   private static final String PINOT_CONTROLLER_PORT = "pinot.controller_port";
   private static final int DEFAULT_PINOT_CONTROLLER_PORT = 9000;
 
@@ -53,6 +55,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private String defaultTenant;
   private String pinotSeverHost;
   private int pinotServerPort;
+  private String pinotControllerHost;
   private int pinotControllerPort;
   private boolean isPinotUp;
 
@@ -71,6 +74,8 @@ public class HypertraceUIServerTimerTask extends TimerTask {
         appConfig.getString(PINOT_SERVER_HOST) : DEFAULT_PINOT_SERVER_HOST;
     pinotServerPort = appConfig.hasPath(PINOT_SERVER_PORT) ?
         appConfig.getInt(PINOT_SERVER_PORT) : DEFAULT_PINOT_SERVER_PORT;
+    pinotControllerHost = appConfig.hasPath(PINOT_CONTROLLER_HOST) ?
+        appConfig.getString(PINOT_CONTROLLER_HOST) : DEFAULT_PINOT_CONTROLLER_HOST;
     pinotControllerPort = appConfig.hasPath(PINOT_CONTROLLER_PORT) ?
         appConfig.getInt(PINOT_CONTROLLER_PORT) : DEFAULT_PINOT_CONTROLLER_PORT;
 
@@ -188,7 +193,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
     HttpURLConnection con = null;
     try {
       URL url = new URL(
-          String.format("http://%s:%s/brokers/tenants", pinotSeverHost, pinotControllerPort));
+          String.format("http://%s:%s/brokers/tenants", pinotControllerHost, pinotControllerPort));
       con = (HttpURLConnection) url.openConnection();
       con.setRequestMethod("GET");
       con.setConnectTimeout(timeout * 1000);
