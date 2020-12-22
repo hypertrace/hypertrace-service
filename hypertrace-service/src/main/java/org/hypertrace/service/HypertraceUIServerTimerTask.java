@@ -39,6 +39,10 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private static final String DEFAULT_PINOT_CONTROLLER_HOST = "pinot-controller";
   private static final String PINOT_CONTROLLER_PORT = "pinot.controller_port";
   private static final int DEFAULT_PINOT_CONTROLLER_PORT = 9000;
+  private static final String PINOT_SERVER_HOST = "pinot.server_host";
+  private static final String DEFAULT_PINOT_SERVER_HOST = "pinot-server";
+  private static final String PINOT_SERVER_PORT = "pinot.server_port";
+  private static final int DEFAULT_PINOT_SERVER_PORT = 8097;
 
   private final HypertraceUIServer uiServer;
   private final GatewayServiceBlockingStub client;
@@ -51,6 +55,8 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private String defaultTenant;
   private String pinotControllerHost;
   private int pinotControllerPort;
+  private String pinotSeverHost;
+  private int pinotServerPort;
   private boolean isPinotUp;
 
 
@@ -68,6 +74,11 @@ public class HypertraceUIServerTimerTask extends TimerTask {
         appConfig.getString(PINOT_CONTROLLER_HOST) : DEFAULT_PINOT_CONTROLLER_HOST;
     pinotControllerPort = appConfig.hasPath(PINOT_CONTROLLER_PORT) ?
         appConfig.getInt(PINOT_CONTROLLER_PORT) : DEFAULT_PINOT_CONTROLLER_PORT;
+
+    pinotSeverHost = appConfig.hasPath(PINOT_SERVER_HOST) ?
+        appConfig.getString(PINOT_SERVER_HOST) : DEFAULT_PINOT_SERVER_HOST;
+    pinotServerPort = appConfig.hasPath(PINOT_SERVER_PORT) ?
+        appConfig.getInt(PINOT_SERVER_PORT) : DEFAULT_PINOT_SERVER_PORT;
 
     this.uiServer = uiServer;
     this.numRetries = 0;
@@ -163,7 +174,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private boolean executePinotHealthCheck() throws Exception {
     HttpURLConnection con = null;
     try {
-      URL url = new URL(String.format("http://%s:%s/health", pinotControllerHost, pinotControllerPort));
+      URL url = new URL(String.format("http://%s:%s/health", pinotSeverHost, pinotServerPort));
       con = (HttpURLConnection) url.openConnection();
       con.setRequestMethod("GET");
       con.setConnectTimeout(timeout * 1000);
