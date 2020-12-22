@@ -76,10 +76,7 @@ public class ConfigService extends PlatformService {
 
   @Override
   public boolean healthCheck() {
-    if (configStore != null) {
-      return configStore.healthCheck();
-    }
-    return false;
+    return configStore.healthCheck();
   }
 
   @Override
