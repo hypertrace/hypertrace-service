@@ -21,6 +21,7 @@ public class ConfigService extends PlatformService {
   private String serviceName;
   private int serverPort;
   private Server configServer;
+  private ConfigStore configStore;
 
   public ConfigService(ConfigClient configClient) {
     super(configClient);
@@ -33,7 +34,8 @@ public class ConfigService extends PlatformService {
     serverPort = config.getInt(SERVICE_PORT_CONFIG);
     LOG.info("Creating {} on port {}", serviceName, serverPort);
 
-    ConfigServiceGrpcImpl configServiceGrpcImpl = new ConfigServiceGrpcImpl(getConfigStore(config));
+    configStore = getConfigStore(config);
+    ConfigServiceGrpcImpl configServiceGrpcImpl = new ConfigServiceGrpcImpl(configStore);
     configServer = ServerBuilder.forPort(serverPort)
         .addService(InterceptorUtil.wrapInterceptors(configServiceGrpcImpl))
         .build();
@@ -74,7 +76,7 @@ public class ConfigService extends PlatformService {
 
   @Override
   public boolean healthCheck() {
-    return true;
+    return configStore.healthCheck();
   }
 
   @Override
