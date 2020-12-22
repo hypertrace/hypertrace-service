@@ -1,19 +1,21 @@
-name: build and test
+name: build and validate
 on:
   push:
     branches:
       - main
-  pull_request:
   pull_request_target:
 
+
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-20.04
     steps:
        # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
       - name: Check out code
         uses: actions/checkout@v2.3.4
         with:
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
           fetch-depth: 0
       
       - name: create checksum file
@@ -38,31 +40,42 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build dockerBuildImages
 
-      - name: Unit test
-        run: ./gradlew jacocoTestReport
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+  validate-helm-charts:
+    runs-on: ubuntu-20.04
+    container: 
+      image: hypertrace/helm-gcs-packager:0.3.0
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+     # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2.3.4
         with:
-          name: codecov-line-smoothing
-          fail_ci_if_error: true
-          verbose: true
-          flags: unit
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+          fetch-depth: 0
 
-      - name: Integration test
-        run: ./gradlew jacocoIntegrationTestReport
+      - name: validate charts
+        run: |
+          helm dependency update ./helm/
+          helm lint --strict ./helm/
+          helm template ./helm/
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+  snyk-scan:
+    runs-on: ubuntu-20.04
+    steps:
+    # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
+      - name: Check out code
+        uses: actions/checkout@v2.3.4
         with:
-          name: codecov-line-smoothing
-          fail_ci_if_error: true
-          verbose: true
-          flags: integration
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+          fetch-depth: 0
 
-      - name: push docker image
-        if: github.event.pull_request.merged
-        run: ./gradlew dockerPushImages
-
-
-      
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/gradle-jdk11@0.3.0
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --all-sub-projects --policy-path=.snyk --configuration-matching='^runtimeClasspath$'

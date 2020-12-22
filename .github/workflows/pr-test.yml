@@ -1,0 +1,72 @@
+name: test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+       # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
+      - name: Check out code
+        uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+      
+      - name: create checksum file
+        run: find . -type f -name "*.gradle*" -o -name "gradle-wrapper*" | xargs shasum | sort > checksum.txt && cat checksum.txt
+
+      - name: Cache packages
+        id: cache-packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle
+          key: gradle-packages-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/checksum.txt') }}
+          restore-keys: |
+            gradle-packages-${{ runner.os }}-${{ github.job }}
+            gradle-packages-${{ runner.os }}
+
+      - name: Unit test
+        run: ./gradlew jacocoTestReport 
+        
+      - name: Copy unit test reports
+        run: ./gradlew copyAllReports --output-dir=/tmp/unit-test-reports
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          name: codecov-line-smoothing
+          fail_ci_if_error: true
+          verbose: true
+          flags: unit
+      
+      - name: Archive unit test report
+        uses: actions/upload-artifact@v1
+        with:
+          name: unit-test
+          path: /tmp/unit-test-reports
+        if: ${{ always() }}
+
+      - name: Integration test
+        run: ./gradlew jacocoIntegrationTestReport 
+
+      - name: Copy integration test reports
+        run: ./gradlew copyAllReports --output-dir=/tmp/integration-test-reports
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          name: codecov-line-smoothing
+          fail_ci_if_error: true
+          verbose: true
+          flags: integration
+
+      - name: Archive integration test report
+        uses: actions/upload-artifact@v1
+        with:
+          name: integration-test
+          path: /tmp/integration-test-reports
+        if: ${{ always() }}

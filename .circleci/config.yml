@@ -202,36 +202,36 @@ workflows:
           context:
             - hypertrace-vulnerability-scanning
             - dockerhub-read
-      - merge-publish:
-          context:
-            - hypertrace-publishing
-            - dockerhub-read
-          requires:
-            - build
-            - integration-test
-            - validate-charts
-            - snyk-scan
-          filters:
-            branches:
-              only:
-                - main
-      - release-publish:
-          context:
-            - hypertrace-publishing
-            - dockerhub-read
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^release-.*/
-      - release-charts:
-          context:
-            - hypertrace-publishing
-            - dockerhub-read
-          requires:
-            - release-publish
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^release-.*/
+      # - merge-publish:
+      #     context:
+      #       - hypertrace-publishing
+      #       - dockerhub-read
+      #     requires:
+      #       - build
+      #       - integration-test
+      #       - validate-charts
+      #       - snyk-scan
+      #     filters:
+      #       branches:
+      #         only:
+      #           - main
+      # - release-publish:
+      #     context:
+      #       - hypertrace-publishing
+      #       - dockerhub-read
+      #     filters:
+      #       branches:
+      #         ignore: /.*/
+      #       tags:
+      #         only: /^release-.*/
+      # - release-charts:
+      #     context:
+      #       - hypertrace-publishing
+      #       - dockerhub-read
+      #     requires:
+      #       - release-publish
+      #     filters:
+      #       branches:
+      #         ignore: /.*/
+      #       tags:
+      #         only: /^release-.*/
