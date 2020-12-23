@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish-images:
+  publish-artifacts:
     runs-on: ubuntu-20.04
     steps:
       # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
@@ -47,7 +47,7 @@ jobs:
     needs: publish-images
     runs-on: ubuntu-20.04
     container: 
-      image: hypertrace/helm-gcs-packager:0.3.0
+      image: hypertrace/helm-gcs-packager:0.3.1
       credentials:
         username: ${{ secrets.DOCKERHUB_READ_USER }}
         password: ${{ secrets.DOCKERHUB_READ_TOKEN }}
@@ -62,7 +62,6 @@ jobs:
         env:
           HELM_GCS_CREDENTIALS: ${{ secrets.HELM_GCS_CREDENTIALS }}
           HELM_GCS_REPOSITORY: ${{ secrets.HELM_GCS_REPOSITORY }}
-            # GITHUB_REF will be refs/tags/docker-MAJOR.MINOR.PATCH
         run: |
             CHART_VERSION=$(git describe --abbrev=0)
             CHART_NAME=$(awk '/^name:/ {print $2}' ./helm/Chart.yaml)

@@ -44,7 +44,7 @@ jobs:
   validate-helm-charts:
     runs-on: ubuntu-20.04
     container: 
-      image: hypertrace/helm-gcs-packager:0.3.0
+      image: hypertrace/helm-gcs-packager:0.3.1
       credentials:
         username: ${{ secrets.DOCKERHUB_READ_USER }}
         password: ${{ secrets.DOCKERHUB_READ_TOKEN }}
