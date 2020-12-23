@@ -44,7 +44,7 @@ jobs:
           ORG_GRADLE_PROJECT_publishApiKey: ${{ secrets.BINTRAY_API_KEY }}
 
   publish-helm-charts:
-    needs: publish-images
+    needs: publish-artifacts
     runs-on: ubuntu-20.04
     container: 
       image: hypertrace/helm-gcs-packager:0.3.1
