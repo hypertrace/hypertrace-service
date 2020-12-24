@@ -49,6 +49,10 @@ The Attribute service uses gradlew to compile/install/distribute. Gradle wrapper
 ### Running unit tests
 Run `./gradlew test` to execute unit tests. 
 
+### Running integration tests
+
+Run `./gradlew integrationTest` to execute integration tests. 
+
 
 ### Testing image
 
@@ -71,7 +75,6 @@ cd attribute-service && git checkout attribute-service-test && cd ..
 
 ## Docker Image Source:
 - [DockerHub > Attribute service](https://hub.docker.com/r/hypertrace/attribute-service)
-
 
 
 
