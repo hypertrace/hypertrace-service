@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
       
       - name: create checksum file
-        run: find . -type f -name "*.gradle*" -o -name "gradle-wrapper*" | xargs shasum | sort > checksum.txt && cat checksum.txt
+        uses: hypertrace/actions/checksum@main
 
       - name: Cache packages
         id: cache-packages

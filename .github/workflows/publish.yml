@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0
 
       - name: create checksum file
-        run: find . -type f -name "*.gradle*" -o -name "gradle-wrapper*" | xargs shasum | sort > checksum.txt && cat checksum.txt
+        run: hypertrace/actions/checksum@main
 
       - name: Cache packages
         id: cache-packages
@@ -62,12 +62,4 @@ jobs:
         env:
           HELM_GCS_CREDENTIALS: ${{ secrets.HELM_GCS_CREDENTIALS }}
           HELM_GCS_REPOSITORY: ${{ secrets.HELM_GCS_REPOSITORY }}
-        run: |
-            CHART_VERSION=$(echo ${GITHUB_REF} | cut -d/ -f 3)
-            CHART_NAME=$(awk '/^name:/ {print $2}' ./helm/Chart.yaml)
-            export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/helm-gcs-key.json
-            echo $HELM_GCS_CREDENTIALS > ${GOOGLE_APPLICATION_CREDENTIALS}
-            helm dependency update ./helm/
-            helm repo add helm-gcs $HELM_GCS_REPOSITORY
-            helm package --version ${CHART_VERSION} --app-version ${CHART_VERSION} ./helm/
-            helm gcs push ${CHART_NAME}-${CHART_VERSION}.tgz helm-gcs --public --retry
+        uses: hypertrace/actions/helm-gcs-publish@main

@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
       
       - name: create checksum file
-        run: find . -type f -name "*.gradle*" -o -name "gradle-wrapper*" | xargs shasum | sort > checksum.txt && cat checksum.txt
+        run: hypertrace/actions/checksum@main
 
       - name: Cache packages
         id: cache-packages
@@ -58,10 +58,7 @@ jobs:
           fetch-depth: 0
 
       - name: validate charts
-        run: |
-          helm dependency update ./helm/
-          helm lint --strict ./helm/
-          helm template ./helm/
+        uses: hypertrace/actions/validate-charts@main
 
   snyk-scan:
     runs-on: ubuntu-20.04
