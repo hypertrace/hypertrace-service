@@ -74,3 +74,4 @@ jobs:
         run: snyk test --all-sub-projects --org=hypertrace --severity-threshold=low --policy-path=.snyk --configuration-matching='^runtimeClasspath$'
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          GRADLE_OPTS: -Dorg.gradle.workers.max=1 # Snyk doesn't handle parallelism 
