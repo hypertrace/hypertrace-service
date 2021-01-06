@@ -2,7 +2,7 @@ version: "2.4"
 services:
 
   hypertrace:
-    image: hypertrace/hypertrace:${GITHUB_HEAD_REF}
+    image: hypertrace/hypertrace:main
     container_name: hypertrace
     environment:
       - MONGO_HOST=mongo
