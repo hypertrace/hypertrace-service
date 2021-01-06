@@ -52,6 +52,7 @@ jobs:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
           fetch-depth: 0
+          submodules: recursive
 
       - name: validate charts
         uses: hypertrace/github-actions/validate-charts@main
@@ -66,6 +67,7 @@ jobs:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
           fetch-depth: 0
+          submodules: recursive
       - name: Setup snyk
         uses: snyk/actions/setup@0.3.0
       - name: Snyk test
