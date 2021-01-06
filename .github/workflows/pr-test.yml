@@ -45,10 +45,4 @@ jobs:
           name: test-reports
           path: /tmp/test-reports
         if: always()
-     
-      - name: Publish Unit Test Results
-        uses: docker://ghcr.io/enricomi/publish-unit-test-result-action:v1.6
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          files: ./**/build/test-results/**/*.xml
+
