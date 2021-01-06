@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ConfigServiceUtils {
 
   public static final String DEFAULT_CONTEXT = "DEFAULT-CONTEXT";
+  private static final Value EMPTY_VALUE = Value.newBuilder().setNullValue(NullValue.NULL_VALUE)
+      .build();
 
   private ConfigServiceUtils() {
     // to prevent instantiation
@@ -23,6 +25,7 @@ public class ConfigServiceUtils {
   /**
    * Deep merge the specified {@link Value} configs with overridingConfig taking precedence over
    * defaultConfig for the same keys.
+   *
    * @param defaultConfig
    * @param overridingConfig
    * @return the resulting config obtained after merging defaultConfig and overridingConfig
@@ -54,8 +57,9 @@ public class ConfigServiceUtils {
   }
 
   /**
-   * Get the actual context from rawContext. Specifically, it handles the case where rawContext
-   * can be null or empty which is equivalent to default context.
+   * Get the actual context from rawContext. Specifically, it handles the case where rawContext can
+   * be null or empty which is equivalent to default context.
+   *
    * @param rawContext
    * @return
    */
@@ -63,7 +67,7 @@ public class ConfigServiceUtils {
     return Strings.isNullOrEmpty(rawContext) ? DEFAULT_CONTEXT : rawContext;
   }
 
-  private static boolean isNull(Value value) {
+  public static boolean isNull(Value value) {
     if (value == null) {
       log.error("NULL Value encountered. This is unexpected and indicates a BUG in code.",
           new RuntimeException());
@@ -74,10 +78,14 @@ public class ConfigServiceUtils {
 
   public static Value nullSafeValue(Value value) {
     if (value == null) {
-      log.error("NULL Value encountered. This is unexpected and indicates a BUG in code.", 
+      log.error("NULL Value encountered. This is unexpected and indicates a BUG in code.",
           new RuntimeException());
-      return Value.newBuilder().setNullValue(NullValue.NULL_VALUE).build();
+      return emptyValue();
     }
     return value;
+  }
+
+  public static Value emptyValue() {
+    return EMPTY_VALUE;
   }
 }

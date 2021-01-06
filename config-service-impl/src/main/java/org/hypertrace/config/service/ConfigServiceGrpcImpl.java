@@ -1,15 +1,22 @@
 package org.hypertrace.config.service;
 
 import static org.hypertrace.config.service.ConfigServiceUtils.DEFAULT_CONTEXT;
+import static org.hypertrace.config.service.ConfigServiceUtils.emptyValue;
 import static org.hypertrace.config.service.ConfigServiceUtils.getActualContext;
 import static org.hypertrace.config.service.ConfigServiceUtils.merge;
 import static org.hypertrace.config.service.ConfigServiceUtils.nullSafeValue;
 
 import com.google.protobuf.Value;
 import io.grpc.stub.StreamObserver;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.hypertrace.config.service.store.ConfigStore;
 import org.hypertrace.config.service.v1.ConfigServiceGrpc;
+import org.hypertrace.config.service.v1.ContextSpecificConfig;
+import org.hypertrace.config.service.v1.DeleteConfigRequest;
+import org.hypertrace.config.service.v1.DeleteConfigResponse;
+import org.hypertrace.config.service.v1.GetAllConfigsRequest;
+import org.hypertrace.config.service.v1.GetAllConfigsResponse;
 import org.hypertrace.config.service.v1.GetConfigRequest;
 import org.hypertrace.config.service.v1.GetConfigResponse;
 import org.hypertrace.config.service.v1.UpsertConfigRequest;
@@ -34,10 +41,12 @@ public class ConfigServiceGrpcImpl extends ConfigServiceGrpc.ConfigServiceImplBa
   public void upsertConfig(UpsertConfigRequest request,
       StreamObserver<UpsertConfigResponse> responseObserver) {
     try {
-      long configVersion =
-          configStore.writeConfig(getConfigResource(request), getUserId(), request.getConfig());
+      ConfigResource configResource = getConfigResource(request);
+      Value existingConfig = configStore.getConfig(configResource);
+      Value resultingConfig = merge(existingConfig, request.getConfig());
+      configStore.writeConfig(configResource, getUserId(), resultingConfig);
       responseObserver.onNext(UpsertConfigResponse.newBuilder()
-          .setConfigVersion(configVersion)
+          .setConfig(resultingConfig)
           .build());
       responseObserver.onCompleted();
     } catch (Exception e) {
@@ -67,6 +76,36 @@ public class ConfigServiceGrpcImpl extends ConfigServiceGrpc.ConfigServiceImplBa
     }
   }
 
+  @Override
+  public void getAllConfigs(GetAllConfigsRequest request,
+      StreamObserver<GetAllConfigsResponse> responseObserver) {
+    try {
+      List<ContextSpecificConfig> contextSpecificConfigList = configStore
+          .getAllConfigs(request.getResourceName(), request.getResourceNamespace(), getTenantId());
+      responseObserver.onNext(
+          GetAllConfigsResponse.newBuilder().addAllContextSpecificConfigs(contextSpecificConfigList)
+              .build());
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      log.error("Get all configs failed for request:{}", request, e);
+      responseObserver.onError(e);
+    }
+  }
+
+  @Override
+  public void deleteConfig(DeleteConfigRequest request,
+      StreamObserver<DeleteConfigResponse> responseObserver) {
+    try {
+      // write an empty config for the specified config resource. This maintains the versioning.
+      configStore.writeConfig(getConfigResource(request), getUserId(), emptyValue());
+      responseObserver.onNext(DeleteConfigResponse.getDefaultInstance());
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      log.error("Delete config failed for request:{}", request, e);
+      responseObserver.onError(e);
+    }
+  }
+
   private ConfigResource getConfigResource(UpsertConfigRequest upsertConfigRequest) {
     return new ConfigResource(upsertConfigRequest.getResourceName(),
         upsertConfigRequest.getResourceNamespace(),
@@ -86,6 +125,13 @@ public class ConfigServiceGrpcImpl extends ConfigServiceGrpc.ConfigServiceImplBa
         getConfigRequest.getResourceNamespace(),
         getTenantId(),
         getActualContext(context));
+  }
+
+  private ConfigResource getConfigResource(DeleteConfigRequest deleteConfigRequest) {
+    return new ConfigResource(deleteConfigRequest.getResourceName(),
+        deleteConfigRequest.getResourceNamespace(),
+        getTenantId(),
+        deleteConfigRequest.getContext());
   }
 
   private String getTenantId() {

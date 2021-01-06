@@ -3,12 +3,17 @@ package org.hypertrace.config.service.store;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.protobuf.NullValue;
 import com.google.protobuf.Value;
 import com.typesafe.config.Config;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.hypertrace.config.service.ConfigResource;
+import org.hypertrace.config.service.ConfigServiceUtils;
+import org.hypertrace.config.service.v1.ContextSpecificConfig;
 import org.hypertrace.core.documentstore.Collection;
 import org.hypertrace.core.documentstore.Datastore;
 import org.hypertrace.core.documentstore.DatastoreProvider;
@@ -22,6 +27,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 
+import static org.hypertrace.config.service.ConfigServiceUtils.emptyValue;
 import static org.hypertrace.config.service.store.ConfigDocument.CONTEXT_FIELD_NAME;
 import static org.hypertrace.config.service.store.ConfigDocument.RESOURCE_FIELD_NAME;
 import static org.hypertrace.config.service.store.ConfigDocument.RESOURCE_NAMESPACE_FIELD_NAME;
@@ -87,7 +93,7 @@ public class DocumentConfigStore implements ConfigStore {
 
   @Override
   public Value getConfig(ConfigResource configResource) throws IOException {
-    Value config = Value.newBuilder().setNullValue(NullValue.NULL_VALUE).build();
+    Value config = emptyValue();
     Filter filter = getConfigResourceFilter(configResource)
         .and(Filter.eq(VERSION_FIELD_NAME, getLatestVersion(configResource)));
     Query query = new Query();
@@ -99,6 +105,31 @@ public class DocumentConfigStore implements ConfigStore {
       config = configDocument.getConfig();
     }
     return config;
+  }
+
+  @Override
+  public List<ContextSpecificConfig> getAllConfigs(String resourceName, String resourceNamespace,
+      String tenantId) throws IOException {
+    Filter filter = Filter.eq(RESOURCE_FIELD_NAME, resourceName)
+        .and(Filter.eq(RESOURCE_NAMESPACE_FIELD_NAME, resourceNamespace))
+        .and(Filter.eq(TENANT_ID_FIELD_NAME, tenantId));
+    Query query = new Query();
+    query.setFilter(filter);
+    query.addOrderBy(new OrderBy(VERSION_FIELD_NAME, false));
+    Iterator<Document> documentIterator = collection.search(query);
+    List<ContextSpecificConfig> contextSpecificConfigList = new ArrayList<>();
+    Set<String> seenContexts = new HashSet<>();
+    while (documentIterator.hasNext()) {
+      String documentString = documentIterator.next().toJson();
+      ConfigDocument configDocument = ConfigDocument.fromJson(documentString);
+      String context = configDocument.getContext();
+      Value config = configDocument.getConfig();
+      if (seenContexts.add(context) && !ConfigServiceUtils.isNull(config)) {
+        contextSpecificConfigList
+            .add(ContextSpecificConfig.newBuilder().setContext(context).setConfig(config).build());
+      }
+    }
+    return contextSpecificConfigList;
   }
 
   @Override
