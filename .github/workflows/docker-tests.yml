@@ -44,7 +44,7 @@ jobs:
         with: 
           args: build dockerBuildImages
         env: 
-          GITHUB_REF: test
+          GITHUB_REF: ${GITHUB_REF:-test}
 
       - name: Verify hypertrace image
         working-directory: ./.github/workflows/hypertrace-service
