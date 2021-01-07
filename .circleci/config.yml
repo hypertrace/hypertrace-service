@@ -102,11 +102,10 @@ jobs:
           flags: integration
   verify-protos:
     executor: buf
-    # TODO: Re-enable buf
     steps:
       - checkout
       - run: buf check lint
-      # - run: buf check breaking --against-input "ssh://${CIRCLE_REPOSITORY_URL/://}#branch=main"
+      - run: buf check breaking --against-input "ssh://${CIRCLE_REPOSITORY_URL/://}#branch=main"
   merge-publish:
     executor: gradle_docker
     steps:
