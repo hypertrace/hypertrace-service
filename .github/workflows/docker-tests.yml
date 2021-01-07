@@ -42,7 +42,7 @@ jobs:
       - name: Build with Gradle
         uses: hypertrace/github-actions/gradle@main
         with: 
-          args: build dockerBuildImages
+          args: dockerBuildImages
         env: 
           GITHUB_REF: ${GITHUB_REF:-test}
 
