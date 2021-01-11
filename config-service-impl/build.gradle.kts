@@ -8,7 +8,7 @@ dependencies {
   api(project(":config-service-api"))
 
   implementation("com.fasterxml.jackson.core:jackson-databind:2.10.5.1")
-  implementation("com.google.guava:guava:30.0-jre")
+  implementation("com.google.guava:guava:30.1-jre")
   implementation("com.google.protobuf:protobuf-java-util:3.13.0")
   implementation("com.typesafe:config:1.4.0")
   implementation("org.slf4j:slf4j-api:1.7.30")

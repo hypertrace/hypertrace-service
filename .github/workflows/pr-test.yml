@@ -9,12 +9,12 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     steps:
-       # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
+      # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
       - name: Check out code
         uses: actions/checkout@v2.3.4
         with:
           fetch-depth: 0
-      
+
       - name: create checksum file
         uses: hypertrace/github-actions/checksum@main
 
@@ -30,7 +30,7 @@ jobs:
 
       - name: Unit test
         uses: hypertrace/github-actions/gradle@main
-        with: 
+        with:
           args: jacocoTestReport
 
       - name: Upload coverage to Codecov
@@ -42,16 +42,16 @@ jobs:
 
       - name: Integration test
         uses: hypertrace/github-actions/gradle@main
-        with: 
+        with:
           args: jacocoIntegrationTestReport
-  
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
           name: integration test reports
           fail_ci_if_error: true
           flags: integration
-     
+
       - name: Publish Unit Test Results
         uses: docker://ghcr.io/enricomi/publish-unit-test-result-action:v1.6
         if: always()

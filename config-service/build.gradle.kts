@@ -57,7 +57,7 @@ dependencies {
   implementation(project(":config-service-impl"))
 
   constraints {
-    implementation("com.google.guava:guava:30.0-jre") {
+    implementation("com.google.guava:guava:30.1-jre") {
       because("https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-1015415")
     }
     runtimeOnly("io.netty:netty-codec-http2:4.1.53.Final") {
@@ -71,7 +71,7 @@ dependencies {
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.3.2")
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.18")
 
-  runtimeOnly("io.grpc:grpc-netty:1.33.1")
+  runtimeOnly("io.grpc:grpc-netty:1.34.1")
   implementation("com.typesafe:config:1.4.0")
 
   implementation("org.slf4j:slf4j-api:1.7.30")
@@ -79,7 +79,7 @@ dependencies {
 
   //Integration test dependencies
   integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
-  integrationTestImplementation("com.google.guava:guava:30.0-jre")
+  integrationTestImplementation("com.google.guava:guava:30.1-jre")
   integrationTestImplementation("org.yaml:snakeyaml:1.26")
   integrationTestImplementation(project(":config-service-impl"))
   integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.18")
