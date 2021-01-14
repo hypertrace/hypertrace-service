@@ -1,24 +1,25 @@
 package org.hypertrace.config.service;
 
-import com.typesafe.config.Config;
+import static org.hypertrace.core.grpcutils.server.InterceptorUtil.wrapInterceptors;
+
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import java.io.IOException;
 import org.hypertrace.config.service.store.ConfigStore;
 import org.hypertrace.config.service.store.DocumentConfigStore;
-import org.hypertrace.core.grpcutils.server.InterceptorUtil;
 import org.hypertrace.core.serviceframework.PlatformService;
 import org.hypertrace.core.serviceframework.config.ConfigClient;
+import org.hypertrace.space.config.service.SpacesConfigServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 public class ConfigService extends PlatformService {
 
-  private static final String SERVICE_NAME_CONFIG = "service.name";
   private static final String SERVICE_PORT_CONFIG = "service.port";
+  private static final String GENERIC_CONFIG_SERVICE_CONFIG = "generic.config.service";
   private static final Logger LOG = LoggerFactory.getLogger(ConfigService.class);
-  private String serviceName;
   private int serverPort;
   private Server configServer;
   private ConfigStore configStore;
@@ -29,21 +30,24 @@ public class ConfigService extends PlatformService {
 
   @Override
   protected void doInit() {
-    Config config = getAppConfig();
-    serviceName = config.getString(SERVICE_NAME_CONFIG);
-    serverPort = config.getInt(SERVICE_PORT_CONFIG);
-    LOG.info("Creating {} on port {}", serviceName, serverPort);
+    serverPort = getAppConfig().getInt(SERVICE_PORT_CONFIG);
+    LOG.info("Creating {} on port {}", getServiceName(), serverPort);
 
-    configStore = getConfigStore(config);
-    ConfigServiceGrpcImpl configServiceGrpcImpl = new ConfigServiceGrpcImpl(configStore);
-    configServer = ServerBuilder.forPort(serverPort)
-        .addService(InterceptorUtil.wrapInterceptors(configServiceGrpcImpl))
-        .build();
+    configStore = getConfigStore();
+    ManagedChannel configChannel =
+        ManagedChannelBuilder.forAddress("localhost", serverPort).usePlaintext().build();
+    this.getLifecycle().shutdownComplete().thenRun(configChannel::shutdown);
+
+    configServer =
+        ServerBuilder.forPort(serverPort)
+            .addService(wrapInterceptors(new ConfigServiceGrpcImpl(configStore)))
+            .addService(wrapInterceptors(new SpacesConfigServiceImpl(configChannel)))
+            .build();
   }
 
   @Override
   protected void doStart() {
-    LOG.info("Attempting to start {} on port {}", serviceName, serverPort);
+    LOG.info("Attempting to start {} on port {}", getServiceName(), serverPort);
     try {
       configServer.start();
       LOG.info("Started Config Service on port {}", serverPort);
@@ -62,7 +66,7 @@ public class ConfigService extends PlatformService {
 
   @Override
   protected void doStop() {
-    LOG.info("Shutting down service: {}", serviceName);
+    LOG.info("Shutting down service: {}", getServiceName());
     while (!configServer.isShutdown()) {
       configServer.shutdown();
       try {
@@ -79,15 +83,10 @@ public class ConfigService extends PlatformService {
     return configStore.healthCheck();
   }
 
-  @Override
-  public String getServiceName() {
-    return serviceName;
-  }
-
-  private ConfigStore getConfigStore(Config config) {
+  private ConfigStore getConfigStore() {
     try {
       ConfigStore configStore = new DocumentConfigStore();
-      configStore.init(config);
+      configStore.init(getAppConfig().getConfig(GENERIC_CONFIG_SERVICE_CONFIG));
       return configStore;
     } catch (Exception e) {
       throw new RuntimeException("Error in getting or initializing config store", e);

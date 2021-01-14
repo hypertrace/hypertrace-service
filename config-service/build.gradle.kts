@@ -9,6 +9,7 @@ plugins {
   java
   application
   jacoco
+  `java-test-fixtures`
   id("org.hypertrace.docker-java-application-plugin")
   id("org.hypertrace.docker-publish-plugin")
   id("org.hypertrace.integration-test-plugin")
@@ -55,6 +56,30 @@ tasks.integrationTest {
 
 dependencies {
   implementation(project(":config-service-impl"))
+  implementation(project(":spaces-config-service-impl"))
+  implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.3.2")
+  implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.18")
+  implementation("com.typesafe:config:1.4.0")
+  implementation("org.slf4j:slf4j-api:1.7.30")
+
+  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.13.3")
+  runtimeOnly("io.grpc:grpc-netty:1.34.1")
+
+  //Integration test dependencies
+  integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
+  integrationTestImplementation("com.google.guava:guava:30.1-jre")
+  integrationTestImplementation("org.yaml:snakeyaml:1.26")
+  integrationTestImplementation(project(":config-service-impl"))
+  integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.18")
+  integrationTestImplementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.2")
+
+  testFixturesApi("io.grpc:grpc-api:1.34.1")
+  testFixturesApi(project(":config-service-api"))
+  testFixturesImplementation(project(":config-service-impl"))
+  testFixturesImplementation("io.grpc:grpc-stub:1.34.1")
+  testFixturesImplementation("io.grpc:grpc-core:1.34.1")
+  testFixturesImplementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.3.2")
+  testFixturesImplementation("org.mockito:mockito-core:3.7.0")
 
   constraints {
     implementation("com.google.guava:guava:30.1-jre") {
@@ -67,23 +92,6 @@ dependencies {
       because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439")
     }
   }
-
-  implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.3.2")
-  implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.18")
-
-  runtimeOnly("io.grpc:grpc-netty:1.34.1")
-  implementation("com.typesafe:config:1.4.0")
-
-  implementation("org.slf4j:slf4j-api:1.7.30")
-  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.13.3")
-
-  //Integration test dependencies
-  integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
-  integrationTestImplementation("com.google.guava:guava:30.1-jre")
-  integrationTestImplementation("org.yaml:snakeyaml:1.26")
-  integrationTestImplementation(project(":config-service-impl"))
-  integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.18")
-  integrationTestImplementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.2")
 }
 
 application {
@@ -91,7 +99,7 @@ application {
 }
 
 // Config for gw run to be able to run this locally. Just execute gw run here on Intellij or on the console.
-tasks.run<JavaExec>  {
+tasks.run<JavaExec> {
   jvmArgs = listOf("-Dservice.name=${project.name}")
 }
 

@@ -15,3 +15,8 @@ plugins {
 include(":config-service-api")
 include(":config-service-impl")
 include(":config-service")
+
+include(":config-proto-converter")
+
+include(":spaces-config-service-api")
+include(":spaces-config-service-impl")
