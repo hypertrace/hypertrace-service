@@ -8,14 +8,17 @@ data:
   application.conf: |-
     service.port = {{ .Values.containerPort }}
     service.admin.port = {{ .Values.containerAdminPort }}
-    document.store {
-      {{- $dst := .Values.configServiceConfig.dataStoreType }}
-      dataStoreType = {{ $dst }}
-      {{ $dst }} {
-        {{- range $key, $value := (index .Values "configServiceConfig" (printf "%s" $dst)) }}
-        {{- if $value }}
-        {{ $key }} = {{ $value | quote }}
-        {{- end }}
-        {{- end }}
+
+    generic.config.service {
+      document.store {
+        {{- $dst := .Values.configServiceConfig.dataStoreType }}
+        dataStoreType = {{ $dst }}
+        {{ $dst }} {
+          {{- range $key, $value := (index .Values "configServiceConfig" (printf "%s" $dst)) }}
+          {{- if $value }}
+          {{ $key }} = {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+        }
       }
     }
