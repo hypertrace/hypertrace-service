@@ -2,13 +2,15 @@ package org.hypertrace.config.service;
 
 import static org.hypertrace.config.service.ConfigServiceUtils.DEFAULT_CONTEXT;
 import static org.hypertrace.config.service.ConfigServiceUtils.emptyValue;
+import static org.hypertrace.config.service.ConfigServiceUtils.filterNull;
 import static org.hypertrace.config.service.ConfigServiceUtils.getActualContext;
 import static org.hypertrace.config.service.ConfigServiceUtils.merge;
-import static org.hypertrace.config.service.ConfigServiceUtils.nullSafeValue;
 
 import com.google.protobuf.Value;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.hypertrace.config.service.store.ConfigStore;
 import org.hypertrace.config.service.v1.ConfigServiceGrpc;
@@ -22,8 +24,6 @@ import org.hypertrace.config.service.v1.GetConfigResponse;
 import org.hypertrace.config.service.v1.UpsertConfigRequest;
 import org.hypertrace.config.service.v1.UpsertConfigResponse;
 import org.hypertrace.core.grpcutils.context.RequestContext;
-
-import java.util.Optional;
 
 /**
  * Implementation for the gRPC service.
@@ -66,10 +66,16 @@ public class ConfigServiceGrpcImpl extends ConfigServiceGrpc.ConfigServiceImplBa
         Value contextSpecificConfig = configStore.getConfig(getConfigResource(request, context));
         config = merge(config, contextSpecificConfig);
       }
-      responseObserver.onNext(GetConfigResponse.newBuilder()
-          .setConfig(nullSafeValue(config))
-          .build());
-      responseObserver.onCompleted();
+
+      filterNull(config)
+          .map(nonNullConfig -> GetConfigResponse.newBuilder().setConfig(nonNullConfig).build())
+          .ifPresentOrElse(
+              response -> {
+                responseObserver.onNext(response);
+                responseObserver.onCompleted();
+              },
+              () -> responseObserver.onError(Status.NOT_FOUND.asException()));
+
     } catch (Exception e) {
       log.error("Get config failed for request:{}", request, e);
       responseObserver.onError(e);

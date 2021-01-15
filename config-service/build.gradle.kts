@@ -57,13 +57,13 @@ tasks.integrationTest {
 dependencies {
   implementation(project(":config-service-impl"))
   implementation(project(":spaces-config-service-impl"))
-  implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.3.2")
+  implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.3.3")
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.18")
   implementation("com.typesafe:config:1.4.0")
   implementation("org.slf4j:slf4j-api:1.7.30")
 
   runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.13.3")
-  runtimeOnly("io.grpc:grpc-netty:1.34.1")
+  runtimeOnly("io.grpc:grpc-netty:1.35.0")
 
   //Integration test dependencies
   integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
@@ -71,14 +71,14 @@ dependencies {
   integrationTestImplementation("org.yaml:snakeyaml:1.26")
   integrationTestImplementation(project(":config-service-impl"))
   integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.18")
-  integrationTestImplementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.2")
+  integrationTestImplementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.3")
 
-  testFixturesApi("io.grpc:grpc-api:1.34.1")
+  testFixturesApi("io.grpc:grpc-api:1.35.0")
   testFixturesApi(project(":config-service-api"))
   testFixturesImplementation(project(":config-service-impl"))
-  testFixturesImplementation("io.grpc:grpc-stub:1.34.1")
-  testFixturesImplementation("io.grpc:grpc-core:1.34.1")
-  testFixturesImplementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.3.2")
+  testFixturesImplementation("io.grpc:grpc-stub:1.35.0")
+  testFixturesImplementation("io.grpc:grpc-core:1.35.0")
+  testFixturesImplementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.3.3")
   testFixturesImplementation("org.mockito:mockito-core:3.7.0")
 
   constraints {

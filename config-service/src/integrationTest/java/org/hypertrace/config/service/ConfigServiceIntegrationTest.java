@@ -2,11 +2,13 @@ package org.hypertrace.config.service;
 
 import static org.hypertrace.config.service.IntegrationTestUtils.getConfigValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.google.protobuf.NullValue;
 import com.google.protobuf.Value;
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -160,8 +162,12 @@ public class ConfigServiceIntegrationTest {
     deleteConfig(RESOURCE_NAME, RESOURCE_NAMESPACE, TENANT_1, DEFAULT_CONTEXT);
 
     // get config with context should return empty config
-    config = getConfig(RESOURCE_NAME, RESOURCE_NAMESPACE, TENANT_1, CONTEXT_1).getConfig();
-    assertEquals(Value.newBuilder().setNullValue(NullValue.NULL_VALUE).build(), config);
+    StatusRuntimeException exception =
+        assertThrows(
+            StatusRuntimeException.class,
+            () -> getConfig(RESOURCE_NAME, RESOURCE_NAMESPACE, TENANT_1, CONTEXT_1));
+
+    assertEquals(Status.NOT_FOUND, exception.getStatus());
   }
 
   private UpsertConfigResponse upsertConfig(String resourceName, String resourceNamespace,

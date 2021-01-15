@@ -6,6 +6,7 @@ import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -76,13 +77,8 @@ public class ConfigServiceUtils {
     return value.getKindCase() == Value.KindCase.NULL_VALUE;
   }
 
-  public static Value nullSafeValue(Value value) {
-    if (value == null) {
-      log.error("NULL Value encountered. This is unexpected and indicates a BUG in code.",
-          new RuntimeException());
-      return emptyValue();
-    }
-    return value;
+  public static Optional<Value> filterNull(Value value) {
+    return isNull(value) ? Optional.empty() : Optional.of(value);
   }
 
   public static Value emptyValue() {
