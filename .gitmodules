@@ -22,3 +22,7 @@
 	path = config-bootstrapper
 	url = https://github.com/hypertrace/config-bootstrapper.git
 	branch = main
+[submodule "config-service"]
+  path = config-service
+  url = https://github.com/hypertrace/config-service.git
+  branch = main

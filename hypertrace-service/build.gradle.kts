@@ -21,6 +21,8 @@ dependencies {
   implementation("org.hypertrace.graphql:hypertrace-graphql-service")
   implementation("org.hypertrace.core.graphql:hypertrace-core-graphql-spi")
   implementation("org.hypertrace.core.bootstrapper:config-bootstrapper")
+  implementation("org.hypertrace.config.service:config-service")
+  implementation("org.hypertrace.config.service:config-service-impl")
 
   implementation("org.eclipse.jetty:jetty-server:9.4.35.v20201120")
   implementation("org.eclipse.jetty:jetty-servlet:9.4.35.v20201120")
@@ -76,7 +78,8 @@ tasks.register<Copy>("copyServiceConfigs") {
       createCopySpec("entity-service", "entity-service"),
       createCopySpec("gateway-service", "gateway-service"),
       createCopySpec("query-service", "query-service"),
-      createCopySpec("hypertrace-graphql", "hypertrace-graphql-service")
+      createCopySpec("hypertrace-graphql", "hypertrace-graphql-service"),
+      createCopySpec("config-service", "config-service")
   ).into("./build/resources/main/configs/")
 }
 
