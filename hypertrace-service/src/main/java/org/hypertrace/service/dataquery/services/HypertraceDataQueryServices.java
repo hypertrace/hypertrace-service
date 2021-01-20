@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 public class HypertraceDataQueryServices implements HypertraceService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(HypertraceAllServices.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HypertraceDataQueryServices.class);
 
   private static final String PORT_PATH = "service.port";
   private static final String GRAPHQL_SERVICE_NAME = "hypertrace-graphql-service";
@@ -42,6 +42,7 @@ public class HypertraceDataQueryServices implements HypertraceService {
   }
 
   public void start() {
+    LOGGER.info("Starting `data-query-services` server");
     Thread grpcThread = new Thread(() -> {
       try {
         try {
@@ -57,15 +58,16 @@ public class HypertraceDataQueryServices implements HypertraceService {
       }
     });
 
-    Thread graphQlThread = new Thread(graphQlServer::doStart);
+    Thread graphQlThread = new Thread(graphQlServer::start);
 
     grpcThread.start();
     graphQlThread.start();
   }
 
   public void stop() {
+    LOGGER.info("Stopping `data-query-services` server");
     grpcServicesServer.shutdownNow();
-    graphQlServer.doStop();
+    graphQlServer.stop();
   }
 }
 

@@ -39,6 +39,7 @@ public class HypertraceAllServices implements HypertraceService {
   }
 
   public void start() {
+    LOGGER.info("Starting `all-services` server ");
     Thread grpcThread = new Thread(() -> {
       try {
         try {
@@ -61,6 +62,7 @@ public class HypertraceAllServices implements HypertraceService {
   }
 
   public void stop() {
+    LOGGER.info("Stopping `all-services` server");
     grpcServicesServer.shutdownNow();
     hypertraceUIServer.stop();
   }

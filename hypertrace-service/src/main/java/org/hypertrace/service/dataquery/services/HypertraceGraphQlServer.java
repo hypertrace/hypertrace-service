@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class HypertraceGraphQlServer {
 
-  private static final Logger LOG = LoggerFactory.getLogger(HypertraceGraphQlServer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HypertraceGraphQlServer.class);
 
   private final Server server;
   private final GraphQlServiceImpl graphQlService;
@@ -20,12 +20,12 @@ public class HypertraceGraphQlServer {
     server.setStopAtShutdown(true);
   }
 
-  protected void doStart() {
-    LOG.info("Starting GraphQl server");
+  protected void start() {
+    LOGGER.info("Starting GraphQl server");
     try {
       server.start();
     } catch (Exception e) {
-      LOG.error("Failed to start GraphQl server");
+      LOGGER.error("Failed to start GraphQl server");
       throw new RuntimeException(e);
     }
 
@@ -37,8 +37,8 @@ public class HypertraceGraphQlServer {
     }
   }
 
-  protected void doStop() {
-    LOG.info("Shutting down GraphQl service");
+  protected void stop() {
+    LOGGER.info("Shutting down GraphQl server");
 
     graphQlService.shutdown();
 
@@ -46,7 +46,7 @@ public class HypertraceGraphQlServer {
       try {
         server.stop();
       } catch (Exception e) {
-        LOG.error("Failed to shutdown GraphQl service");
+        LOGGER.error("Failed to shutdown GraphQl server");
         throw new RuntimeException(e);
       }
     }
