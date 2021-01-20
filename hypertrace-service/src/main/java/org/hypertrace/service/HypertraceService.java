@@ -6,6 +6,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
+import org.hypertrace.config.service.ConfigServicesFactory;
 import org.hypertrace.core.attribute.service.AttributeServiceImpl;
 import org.hypertrace.core.documentstore.Datastore;
 import org.hypertrace.core.documentstore.DatastoreProvider;
@@ -19,7 +20,6 @@ import org.hypertrace.entity.query.service.EntityQueryServiceImpl;
 import org.hypertrace.entity.service.EntityServiceConfig;
 import org.hypertrace.entity.type.service.v2.EntityTypeServiceImpl;
 import org.hypertrace.gateway.service.GatewayServiceImpl;
-import org.hypertrace.gateway.service.entity.config.DomainObjectConfigs;
 import org.hypertrace.gateway.service.entity.config.InteractionConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +40,7 @@ public class HypertraceService extends PlatformService {
   private static final String GATEWAY_SERVICE_NAME = "gateway-service";
   private static final String QUERY_SERVICE_NAME = "query-service";
   private static final String GRAPHQL_SERVICE_NAME = "hypertrace-graphql-service";
+  private static final String CONFIG_SERVICE_NAME = "config-service";
 
   private static final String ENTITY_SERVICE_ENTITY_SERVICE_CONFIG = "entity.service.config";
   private static final String QUERY_SERVICE_SERVICE_CONFIG = "service.config";
@@ -94,11 +95,17 @@ public class HypertraceService extends PlatformService {
     // Gateway service
     final Config gatewayServiceAppConfig = getServiceConfig(GATEWAY_SERVICE_NAME);
 
-    DomainObjectConfigs.init(gatewayServiceAppConfig);
     InteractionConfigs.init(gatewayServiceAppConfig);
 
     GatewayServiceImpl ht = new GatewayServiceImpl(gatewayServiceAppConfig);
     serverBuilder.addService(InterceptorUtil.wrapInterceptors(ht));
+
+    // Config service
+    ConfigServicesFactory.buildAllConfigServices(
+            getServiceConfig(CONFIG_SERVICE_NAME), port, getLifecycle())
+        .stream()
+        .map(InterceptorUtil::wrapInterceptors)
+        .forEach(serverBuilder::addService);
 
     this.server = serverBuilder.build();
 
@@ -137,9 +144,7 @@ public class HypertraceService extends PlatformService {
       }
     });
 
-    Thread uiThread = new Thread(() -> {
-      hypertraceUIServer.startWithTimerTasks();
-    });
+    Thread uiThread = new Thread(() -> hypertraceUIServer.startWithTimerTasks());
 
     grpcThread.start();
     uiThread.start();
