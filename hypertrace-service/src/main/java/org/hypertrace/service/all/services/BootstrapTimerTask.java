@@ -1,4 +1,4 @@
-package org.hypertrace.service;
+package org.hypertrace.service.all.services;
 
 import com.typesafe.config.Config;
 import java.net.URI;
@@ -27,9 +27,9 @@ public class BootstrapTimerTask extends TimerTask {
   private final BootstrapArgs bootstrapArgs;
   private final BootstrapRunner bootstrapRunner;
   private int numRetries;
-  private int maxRetries;
-  private boolean shouldExit;
-  private int interval;
+  private final int maxRetries;
+  private final boolean shouldExit;
+  private final int interval;
   private boolean isDone;
 
   public BootstrapTimerTask(Config appConfig) {

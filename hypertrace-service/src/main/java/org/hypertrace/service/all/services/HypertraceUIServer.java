@@ -1,4 +1,4 @@
-package org.hypertrace.service;
+package org.hypertrace.service.all.services;
 
 import com.typesafe.config.Config;
 import java.net.URI;
@@ -18,17 +18,18 @@ import org.slf4j.LoggerFactory;
  * Serves both the Hypertrace UI and GraphQL APIs used by it.
  */
 public class HypertraceUIServer {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(HypertraceUIServer.class);
 
   private static final String PORT_CONFIG = "hypertraceUI.port";
   private static final int DEFAULT_PORT = 2020;
   private static final String DEFAULT_TENANT_ID_CONFIG = "defaultTenantId";
 
-  private Server server;
-  private GraphQlServiceImpl graphQlService;
-  private Config appConfig;
-  private Config graphQlServiceAppConfig;
-  private int port;
+  private final Server server;
+  private final GraphQlServiceImpl graphQlService;
+  private final Config appConfig;
+  private final Config graphQlServiceAppConfig;
+  private final int port;
 
   public HypertraceUIServer(Config appConfig, Config graphQlServiceAppConfig) {
     this.appConfig = appConfig;

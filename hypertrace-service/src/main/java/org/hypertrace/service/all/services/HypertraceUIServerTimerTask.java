@@ -1,4 +1,4 @@
-package org.hypertrace.service;
+package org.hypertrace.service.all.services;
 
 import com.typesafe.config.Config;
 import io.grpc.Deadline;
@@ -47,20 +47,21 @@ public class HypertraceUIServerTimerTask extends TimerTask {
   private final HypertraceUIServer uiServer;
   private final GatewayServiceBlockingStub client;
   private int numRetries;
-  private int maxRetries;
-  private int timeout;
-  private long startTime;
-  private long interval;
-  private long startPeriod;
-  private String defaultTenant;
-  private String pinotControllerHost;
-  private int pinotControllerPort;
-  private String pinotSeverHost;
-  private int pinotServerPort;
+  private final int maxRetries;
+  private final int timeout;
+  private final long startTime;
+  private final long interval;
+  private final long startPeriod;
+  private final String defaultTenant;
+  private final String pinotControllerHost;
+  private final int pinotControllerPort;
+  private final String pinotSeverHost;
+  private final int pinotServerPort;
   private boolean isPinotUp;
 
-
-  public HypertraceUIServerTimerTask(Config appConfig, HypertraceUIServer uiServer,
+  public HypertraceUIServerTimerTask(
+      Config appConfig,
+      HypertraceUIServer uiServer,
       String defaultTenant) {
     maxRetries =
         appConfig.hasPath(RETRIES_CONFIG) ? appConfig.getInt(RETRIES_CONFIG) : DEFAULT_RETRIES;
