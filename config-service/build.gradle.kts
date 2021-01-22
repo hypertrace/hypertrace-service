@@ -80,6 +80,9 @@ dependencies {
   testFixturesImplementation("io.grpc:grpc-core:1.35.0")
   testFixturesImplementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.3.3")
   testFixturesImplementation("org.mockito:mockito-core:3.7.0")
+  testFixturesImplementation("com.google.guava:guava:30.1-jre")
+  testFixturesAnnotationProcessor("org.projectlombok:lombok:1.18.12")
+  testFixturesCompileOnly("org.projectlombok:lombok:1.18.12")
 
   constraints {
     implementation("com.google.guava:guava:30.1-jre") {

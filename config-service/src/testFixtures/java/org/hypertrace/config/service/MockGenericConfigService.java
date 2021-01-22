@@ -1,5 +1,7 @@
 package org.hypertrace.config.service;
 
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
 import com.google.protobuf.Value;
 import io.grpc.BindableService;
 import io.grpc.Channel;
@@ -19,13 +21,14 @@ import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.hypertrace.config.service.v1.ConfigServiceGrpc.ConfigServiceImplBase;
 import org.hypertrace.config.service.v1.ContextSpecificConfig;
 import org.hypertrace.config.service.v1.ContextSpecificConfig.Builder;
 import org.hypertrace.config.service.v1.DeleteConfigRequest;
 import org.hypertrace.config.service.v1.DeleteConfigResponse;
+import org.hypertrace.config.service.v1.GetAllConfigsRequest;
 import org.hypertrace.config.service.v1.GetAllConfigsResponse;
 import org.hypertrace.config.service.v1.GetConfigRequest;
 import org.hypertrace.config.service.v1.GetConfigResponse;
@@ -36,8 +39,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 /**
- * A mock implementation of the generic config service. Limited support right now, it assumes all
- * calls are scoped to the same resource name/namespace.
+ * A mock implementation of the generic config service.
  *
  * <p>Each method must be explicitly requested for mocking to allow strict stubbing.
  */
@@ -47,7 +49,9 @@ public class MockGenericConfigService {
   private final InProcessServerBuilder serverBuilder;
   private final ManagedChannel configChannel;
   private final RequestContext context = RequestContext.forTenantId("default tenant");
-  private final Map<String, Value> currentValues = new LinkedHashMap<>();
+  private final Table<ResourceType, String, Value> currentValues =
+      Tables.newCustomTable(new LinkedHashMap<>(), LinkedHashMap::new);
+
   private final ConfigServiceImplBase mockConfigService =
       Mockito.mock(
           ConfigServiceImplBase.class,
@@ -93,7 +97,10 @@ public class MockGenericConfigService {
               UpsertConfigRequest request = invocation.getArgument(0, UpsertConfigRequest.class);
               StreamObserver<UpsertConfigResponse> responseStreamObserver =
                   invocation.getArgument(1, StreamObserver.class);
-              currentValues.put(request.getContext(), request.getConfig());
+              currentValues.put(
+                  ResourceType.of(request.getResourceNamespace(), request.getResourceName()),
+                  request.getContext(),
+                  request.getConfig());
               responseStreamObserver.onNext(
                   UpsertConfigResponse.newBuilder().setConfig(request.getConfig()).build());
               responseStreamObserver.onCompleted();
@@ -110,8 +117,14 @@ public class MockGenericConfigService {
             invocation -> {
               StreamObserver<GetAllConfigsResponse> responseStreamObserver =
                   invocation.getArgument(1, StreamObserver.class);
+              GetAllConfigsRequest request = invocation.getArgument(0, GetAllConfigsRequest.class);
               GetAllConfigsResponse response =
-                  currentValues.values().stream()
+                  currentValues
+                      .row(
+                          ResourceType.of(
+                              request.getResourceNamespace(), request.getResourceName()))
+                      .values()
+                      .stream()
                       .map(value -> ContextSpecificConfig.newBuilder().setConfig(value))
                       .map(Builder::build)
                       .collect(
@@ -139,7 +152,9 @@ public class MockGenericConfigService {
               StreamObserver<DeleteConfigResponse> responseStreamObserver =
                   invocation.getArgument(1, StreamObserver.class);
 
-              currentValues.remove(request.getContext());
+              currentValues.remove(
+                  ResourceType.of(request.getResourceNamespace(), request.getResourceName()),
+                  request.getContext());
               responseStreamObserver.onNext(DeleteConfigResponse.getDefaultInstance());
               responseStreamObserver.onCompleted();
               return null;
@@ -159,8 +174,13 @@ public class MockGenericConfigService {
 
               Value mergedValue =
                   request.getContextsList().stream()
-                      .filter(this.currentValues::containsKey)
-                      .map(this.currentValues::get)
+                      .map(
+                          context ->
+                              this.currentValues.get(
+                                  ResourceType.of(
+                                      request.getResourceNamespace(), request.getResourceName()),
+                                  context))
+                      .filter(Objects::nonNull)
                       .collect(
                           Collectors.collectingAndThen(Collectors.toList(), this::mergeValues));
 
@@ -186,5 +206,11 @@ public class MockGenericConfigService {
       Context ctx = Context.current().withValue(RequestContext.CURRENT, context);
       return Contexts.interceptCall(ctx, call, headers, next);
     }
+  }
+
+  @lombok.Value(staticConstructor = "of")
+  private static class ResourceType {
+    String namespace;
+    String name;
   }
 }
