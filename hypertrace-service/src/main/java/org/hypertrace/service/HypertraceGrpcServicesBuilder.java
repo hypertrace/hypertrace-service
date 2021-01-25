@@ -21,8 +21,13 @@ import org.hypertrace.entity.type.service.v2.EntityTypeServiceImpl;
 import org.hypertrace.gateway.service.GatewayServiceImpl;
 import org.hypertrace.gateway.service.entity.config.DomainObjectConfigs;
 import org.hypertrace.gateway.service.entity.config.InteractionConfigs;
+import org.hypertrace.service.all.services.HypertraceAllServices;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HypertraceGrpcServicesBuilder {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(HypertraceGrpcServicesBuilder.class);
 
   public static final String ATTRIBUTE_SERVICE_NAME = "attribute-service";
   public static final String ENTITY_SERVICE_NAME = "entity-service";
@@ -43,6 +48,8 @@ public class HypertraceGrpcServicesBuilder {
 
   public HypertraceGrpcServicesBuilder addEntityService() {
     final Config entityServiceAppConfig = getServiceConfig(ENTITY_SERVICE_NAME, configClient);
+    System.out.println("XxxxxxxxxxxxxxxxxxxxxxxxxxxX");
+    System.out.println(entityServiceAppConfig);
     final EntityServiceConfig entityServiceConfig = new EntityServiceConfig(
         entityServiceAppConfig.getConfig(ENTITY_SERVICE_ENTITY_SERVICE_CONFIG));
     final Config dataStoreConfig =
@@ -60,6 +67,7 @@ public class HypertraceGrpcServicesBuilder {
         .addService(
             InterceptorUtil.wrapInterceptors(
                 new EntityQueryServiceImpl(datastore, entityServiceAppConfig)));
+    LOGGER.info("Added entity service to the list of services: {}", service_port);
     return this;
   }
 

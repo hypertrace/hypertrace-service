@@ -21,7 +21,7 @@ public class HypertraceDataQueryServices implements HypertraceService {
   private static final String GRAPHQL_SERVICE_NAME = "hypertrace-graphql-service";
 
   private final Server grpcServicesServer;
-  private final HypertraceGraphQlServer graphQlServer;
+  //private final HypertraceGraphQlServer graphQlServer;
 
   public HypertraceDataQueryServices(
       ConfigClient configClient,
@@ -33,12 +33,11 @@ public class HypertraceDataQueryServices implements HypertraceService {
         .addEntityService()
         .addQueryService(serviceLifecycle)
         .addGatewayService()
-        .addAttributeService()
         .build();
 
     // start Hypertrace GraphQl service
-    final Config graphQlServiceAppConfig = getServiceConfig(GRAPHQL_SERVICE_NAME, configClient);
-    graphQlServer = new HypertraceGraphQlServer(graphQlServiceAppConfig);
+    //final Config graphQlServiceAppConfig = getServiceConfig(GRAPHQL_SERVICE_NAME, configClient);
+    //graphQlServer = new HypertraceGraphQlServer(graphQlServiceAppConfig);
   }
 
   public void start() {
@@ -58,16 +57,13 @@ public class HypertraceDataQueryServices implements HypertraceService {
       }
     });
 
-    Thread graphQlThread = new Thread(graphQlServer::start);
-
     grpcThread.start();
-    graphQlThread.start();
   }
 
   public void stop() {
     LOGGER.info("Stopping `data-query-services` server");
     grpcServicesServer.shutdownNow();
-    graphQlServer.stop();
+    //graphQlServer.stop();
   }
 }
 
