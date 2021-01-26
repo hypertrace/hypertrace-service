@@ -1,7 +1,3 @@
-[submodule "attribute-service"]
-	path = attribute-service
-	url = https://github.com/hypertrace/attribute-service.git
-	branch = main
 [submodule "entity-service"]
 	path = entity-service
 	url = https://github.com/hypertrace/entity-service.git
