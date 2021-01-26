@@ -27,7 +27,7 @@ dependencies {
           + " introduced org.apache.httpcomponents:httpclient@4.5.12")
     }
   }
-  api(project(":query-service-api"))
+  api(project(":query-service:query-service-api"))
   api("com.typesafe:config:1.4.0")
   implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.3.0")
   implementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.0")
@@ -48,7 +48,7 @@ dependencies {
   implementation("com.google.guava:guava:30.0-jre")
   implementation("io.reactivex.rxjava3:rxjava:3.0.6")
 
-  testImplementation(project(":query-service-api"))
+  testImplementation(project(":query-service:query-service-api"))
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
   testImplementation("org.mockito:mockito-core:3.3.3")
   testImplementation("org.mockito:mockito-junit-jupiter:3.3.3")

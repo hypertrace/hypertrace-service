@@ -1,12 +1,12 @@
 plugins {
   java
   application
-  id("org.hypertrace.docker-java-application-plugin") version "0.8.1"
-  id("org.hypertrace.docker-publish-plugin") version "0.8.1"
+  id("org.hypertrace.docker-java-application-plugin")
+  id("org.hypertrace.docker-publish-plugin")
 }
 
 dependencies {
-  implementation(project(":query-service-impl"))
+  implementation(project(":query-service:query-service-impl"))
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.3.0")
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.18")
   implementation("io.grpc:grpc-netty:1.33.0")

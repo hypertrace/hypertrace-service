@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  api(project(":query-service-api"))
+  api(project(":query-service:query-service-api"))
   implementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.0")
 
   // Logging

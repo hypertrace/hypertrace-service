@@ -4,6 +4,7 @@ plugins {
   id("org.hypertrace.docker-java-application-plugin") version "0.8.1" apply false
   id("org.hypertrace.docker-publish-plugin") version "0.8.1" apply false
   id("org.hypertrace.jacoco-report-plugin") version "0.1.3" apply false
+  id("org.hypertrace.publish-plugin") version "0.3.0" apply false
 }
 
 subprojects {
