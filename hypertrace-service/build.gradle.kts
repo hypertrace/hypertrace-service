@@ -23,12 +23,12 @@ dependencies {
   implementation(project(":gateway-service:gateway-service-impl"))
 
   implementation(project(":hypertrace-graphql:hypertrace-graphql-service"))
-  implementation(project(":hypertrace-graphql:hypertrace-core-graphql-spi"))
-
   implementation(project(":config-bootstrapper:config-bootstrapper"))
 
   implementation(project(":config-service:config-service"))
   implementation(project(":config-service:config-service-impl"))
+
+  implementation("org.hypertrace.core.graphql:hypertrace-core-graphql-spi")
 
   implementation("org.eclipse.jetty:jetty-server:9.4.35.v20201120")
   implementation("org.eclipse.jetty:jetty-servlet:9.4.35.v20201120")

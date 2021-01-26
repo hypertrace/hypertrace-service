@@ -16,18 +16,18 @@ plugins {
 //includeBuild("./entity-service")
 //includeBuild("./gateway-service")
 //includeBuild("./hypertrace-graphql")
-//includeBuild("./hypertrace-graphql/hypertrace-core-graphql")
+includeBuild("./hypertrace-graphql/hypertrace-core-graphql")
 //includeBuild("./config-bootstrapper")
 //includeBuild("./config-service")
 
 // attribute-service
-include("attribute-service:attribute-projection-functions")
-include("attribute-service:attribute-projection-registry")
+include("attribute-service:attribute-service-projection-functions")
+include("attribute-service:attribute-service-projection-registry")
 include("attribute-service:attribute-service")
-include("attribute-service:attribute-client")
-include("attribute-service:attribute-api")
-include("attribute-service:attribute-impl")
-include("attribute-service:attribute-tenant-api")
+include("attribute-service:attribute-service-client")
+include("attribute-service:attribute-service-api")
+include("attribute-service:attribute-service-impl")
+include("attribute-service:attribute-service-tenant-api")
 include("attribute-service:caching-attribute-service-client")
 
 // config-bootstrapper
@@ -55,7 +55,6 @@ include("gateway-service:gateway-service-api")
 include("gateway-service:gateway-service-impl")
 
 // hypertrace-graphql-service
-include("hypertrace-graphql:hypertrace-core-graphql")
 include("hypertrace-graphql:hypertrace-graphql-attribute-scope")
 include("hypertrace-graphql:hypertrace-graphql-entity-schema")
 include("hypertrace-graphql:hypertrace-graphql-entity-type")
