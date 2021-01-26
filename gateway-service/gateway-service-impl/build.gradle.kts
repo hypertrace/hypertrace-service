@@ -9,7 +9,7 @@ tasks.test {
 }
 
 dependencies {
-  api(project(":gateway-service-api"))
+  api(project(":gateway-service:gateway-service-api"))
 
   constraints {
     implementation("com.google.guava:guava:30.0-jre") {

@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  implementation(project(":gateway-service-impl"))
+  implementation(project(":gateway-service:gateway-service-impl"))
 
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.3.2")
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.18")

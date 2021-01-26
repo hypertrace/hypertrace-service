@@ -5,11 +5,11 @@ plugins {
 }
 
 dependencies {
-  api(project(":entity-service-api"))
+  api(project(":entity-service:entity-service-api"))
   api("org.hypertrace.core.serviceframework:service-framework-spi:0.1.19")
   implementation("org.hypertrace.core.documentstore:document-store:0.5.0")
   implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.3.1")
-  implementation(project(":entity-type-service-rx-client"))
+  implementation(project(":entity-service:entity-type-service-rx-client"))
 
   implementation("com.google.protobuf:protobuf-java-util:3.13.0")
   implementation("com.github.f4b6a3:uuid-creator:2.5.1")

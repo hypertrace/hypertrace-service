@@ -9,8 +9,8 @@ dependencies {
   implementation("org.hypertrace.core.graphql:hypertrace-core-graphql-common-schema")
   implementation("org.hypertrace.entity.service:entity-type-service-rx-client")
   implementation("org.hypertrace.core.graphql:hypertrace-core-graphql-grpc-utils")
-  implementation(project(":hypertrace-graphql-entity-schema"))
-  implementation(project(":hypertrace-graphql-service-config"))
+  implementation(project(":hypertrace-graphql:hypertrace-graphql-entity-schema"))
+  implementation(project(":hypertrace-graphql:hypertrace-graphql-service-config"))
 
-  compileOnly(project(":hypertrace-graphql-attribute-scope"))
+  compileOnly(project(":hypertrace-graphql:hypertrace-graphql-attribute-scope"))
 }

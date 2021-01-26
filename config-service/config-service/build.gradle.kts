@@ -55,8 +55,8 @@ tasks.integrationTest {
 }
 
 dependencies {
-  implementation(project(":config-service-impl"))
-  implementation(project(":spaces-config-service-impl"))
+  implementation(project(":config-service:config-service-impl"))
+  implementation(project(":config-service:spaces-config-service-impl"))
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.3.3")
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.18")
   implementation("com.typesafe:config:1.4.0")
@@ -69,13 +69,13 @@ dependencies {
   integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
   integrationTestImplementation("com.google.guava:guava:30.1-jre")
   integrationTestImplementation("org.yaml:snakeyaml:1.26")
-  integrationTestImplementation(project(":config-service-impl"))
+  integrationTestImplementation(project(":config-service:config-service-impl"))
   integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.18")
   integrationTestImplementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.3")
 
   testFixturesApi("io.grpc:grpc-api:1.35.0")
-  testFixturesApi(project(":config-service-api"))
-  testFixturesImplementation(project(":config-service-impl"))
+  testFixturesApi(project(":config-service:config-service-api"))
+  testFixturesImplementation(project(":config-service:config-service-impl"))
   testFixturesImplementation("io.grpc:grpc-stub:1.35.0")
   testFixturesImplementation("io.grpc:grpc-core:1.35.0")
   testFixturesImplementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.3.3")

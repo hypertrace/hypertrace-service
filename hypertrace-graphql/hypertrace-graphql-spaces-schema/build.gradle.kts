@@ -14,11 +14,11 @@ dependencies {
   compileOnly("org.projectlombok:lombok")
 
   implementation("org.hypertrace.config.service:spaces-config-service-api")
-  implementation(project(":hypertrace-graphql-service-config"))
+  implementation(project(":hypertrace-graphql:hypertrace-graphql-service-config"))
   implementation("org.hypertrace.core.graphql:hypertrace-core-graphql-common-schema")
   implementation("org.hypertrace.core.graphql:hypertrace-core-graphql-grpc-utils")
   implementation("org.hypertrace.core.graphql:hypertrace-core-graphql-deserialization")
-  implementation(project(":hypertrace-graphql-explorer-schema"))
+  implementation(project(":hypertrace-graphql:hypertrace-graphql-explorer-schema"))
 
   testImplementation("org.junit.jupiter:junit-jupiter")
   testImplementation("org.mockito:mockito-core")

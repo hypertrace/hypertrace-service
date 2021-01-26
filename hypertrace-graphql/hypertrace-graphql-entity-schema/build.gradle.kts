@@ -7,12 +7,12 @@ dependencies {
   api("com.graphql-java:graphql-java")
   api("org.hypertrace.core.graphql:hypertrace-core-graphql-spi")
   api("io.github.graphql-java:graphql-java-annotations")
-  api(project(":hypertrace-graphql-metric-schema"))
+  api(project(":hypertrace-graphql:hypertrace-graphql-metric-schema"))
   api("org.hypertrace.core.graphql:hypertrace-core-graphql-common-schema")
 
   annotationProcessor("org.projectlombok:lombok")
   compileOnly("org.projectlombok:lombok")
-  compileOnly(project(":hypertrace-graphql-attribute-scope"))
+  compileOnly(project(":hypertrace-graphql:hypertrace-graphql-attribute-scope"))
 
   implementation("org.slf4j:slf4j-api")
   implementation("io.reactivex.rxjava3:rxjava")

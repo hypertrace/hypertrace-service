@@ -15,16 +15,16 @@ dependencies {
   implementation("org.eclipse.jetty:jetty-servlets:9.4.35.v20201120")
 
   implementation("com.graphql-java-kickstart:graphql-java-servlet")
-  implementation(project(":hypertrace-graphql-impl"))
-  implementation(project(":hypertrace-graphql-service-config"))
+  implementation(project(":hypertrace-graphql:hypertrace-graphql-impl"))
+  implementation(project(":hypertrace-graphql:hypertrace-graphql-service-config"))
 
   annotationProcessor("org.projectlombok:lombok")
   compileOnly("org.projectlombok:lombok")
 
   runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl")
 
-  annotationProcessor(platform(project(":hypertrace-graphql-platform")))
-  compileOnly(platform(project(":hypertrace-graphql-platform")))
+  annotationProcessor(platform(project(":hypertrace-graphql:hypertrace-graphql-platform")))
+  compileOnly(platform(project(":hypertrace-graphql:hypertrace-graphql-platform")))
 }
 
 application {

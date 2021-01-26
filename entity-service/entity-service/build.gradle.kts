@@ -54,7 +54,7 @@ tasks.integrationTest {
 }
 
 dependencies {
-  implementation(project(":entity-service-impl"))
+  implementation(project(":entity-service:entity-service-impl"))
 
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.3.1")
   implementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.1")
@@ -78,7 +78,7 @@ dependencies {
   // Config
   implementation("com.typesafe:config:1.4.0")
 
-  integrationTestImplementation(project(":entity-service-client"))
+  integrationTestImplementation(project(":entity-service:entity-service-client"))
   integrationTestImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
   integrationTestImplementation("org.hypertrace.core.serviceframework:integrationtest-service-framework:0.1.19")
 }

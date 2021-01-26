@@ -5,8 +5,8 @@ plugins {
 }
 
 dependencies {
-  api(project(":attribute-service-api"))
-  implementation(project(":attribute-service-tenant-api"))
+  api(project(":attribute-service:attribute-service-api"))
+  implementation(project(":attribute-service:attribute-service-tenant-api"))
 
   implementation("org.hypertrace.core.documentstore:document-store:0.4.5")
   implementation("org.hypertrace.core.grpcutils:grpc-context-utils:0.2.0")

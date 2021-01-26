@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-  api(project(":config-service-api"))
+  api(project(":config-service:config-service-api"))
 
   implementation("com.fasterxml.jackson.core:jackson-databind:2.10.5.1")
   implementation("com.google.guava:guava:30.1-jre")

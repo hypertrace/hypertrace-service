@@ -21,8 +21,8 @@ includeBuild("./hypertrace-graphql/hypertrace-core-graphql")
 //includeBuild("./config-service")
 
 // attribute-service
-include("attribute-service:attribute-service-projection-functions")
-include("attribute-service:attribute-service-projection-registry")
+include("attribute-service:attribute-projection-functions")
+include("attribute-service:attribute-projection-registry")
 include("attribute-service:attribute-service")
 include("attribute-service:attribute-service-client")
 include("attribute-service:attribute-service-api")

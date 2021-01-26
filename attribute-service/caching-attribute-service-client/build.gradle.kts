@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  api(project(":attribute-service-api"))
+  api(project(":attribute-service:attribute-service-api"))
   api("io.reactivex.rxjava3:rxjava:3.0.5")
   api("io.grpc:grpc-api:1.33.0")
 

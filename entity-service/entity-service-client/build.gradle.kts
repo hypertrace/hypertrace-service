@@ -10,7 +10,7 @@ tasks.test {
 }
 
 dependencies {
-  api(project(":entity-service-api"))
+  api(project(":entity-service:entity-service-api"))
   api("com.typesafe:config:1.4.0")
 
   implementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.1")
