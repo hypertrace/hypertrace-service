@@ -18,7 +18,6 @@ public class HypertraceDataQueryService extends PlatformService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HypertraceDataQueryService.class);
 
-  private static final String SERVICE_NAME_CONFIG = "service.name";
   private static final String PORT_PATH = "service.port";
 
   private static final String CLUSTER_NAME = "cluster.name";
@@ -30,8 +29,6 @@ public class HypertraceDataQueryService extends PlatformService {
 
   private static final String QUERY_SERVICE_SERVICE_CONFIG = "service.config";
 
-  private static final String DEFAULT_CLUSTER_NAME = "default-cluster";
-
   private String serviceName;
   private Server server;
 
@@ -41,7 +38,7 @@ public class HypertraceDataQueryService extends PlatformService {
 
   @Override
   protected void doInit() {
-    serviceName = getAppConfig().getString(SERVICE_NAME_CONFIG);
+    serviceName = getServiceName();
     int port = getAppConfig().getInt(PORT_PATH);
 
     final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(port);
