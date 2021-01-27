@@ -65,28 +65,20 @@ tasks.processResources {
 
 tasks.register<Copy>("copyServiceConfigs") {
   with(
-    createCopySpec("gateway-service", "gateway-service", "main"),
-    createCopySpec("query-service", "query-service", "main")
+    createCopySpec("gateway-service", "gateway-service"),
+    createCopySpec("query-service", "query-service")
   ).into("./build/resources/main/configs/")
 }
 
-tasks.test {
-  useJUnitPlatform()
-  dependsOn("copyServiceConfigsTest");
-}
-
-tasks.register<Copy>("copyServiceConfigsTest") {
-  with(
-    createCopySpec("gateway-service", "gateway-service", "test"),
-    createCopySpec("query-service", "query-service", "test")
-  ).into("./build/resources/test/configs/")
-}
-
-fun createCopySpec(projectName: String, serviceName: String, srcFolder: String): CopySpec {
+fun createCopySpec(projectName: String, serviceName: String): CopySpec {
   return copySpec {
     from("../${projectName}/${serviceName}/src/main/resources/configs/common") {
       include("application.conf")
       into(serviceName)
     }
   }
+}
+
+tasks.test {
+  useJUnitPlatform()
 }
