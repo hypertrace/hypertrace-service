@@ -5,4 +5,4 @@ metadata:
   labels:
     release: {{ .Release.Name }}
 data:
-  application.conf: |-
+  {{- toYaml .Values.hypertraceDataQueryServiceConfig.data | nindent 2 }}

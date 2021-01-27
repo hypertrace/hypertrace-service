@@ -110,6 +110,8 @@ hypertraceDataQueryServiceConfig:
   name: hypertrace-data-query-service-config
   data:
     application.conf: |-
+      service.port = 9001
+      service.admin.port = 9002
 
 logConfig:
   name: hypertrace-data-query-service-log-config
