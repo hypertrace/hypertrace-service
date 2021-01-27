@@ -98,9 +98,4 @@ public class HypertraceDataQueryService extends PlatformService {
   public boolean healthCheck() {
     return true;
   }
-
-  @Override
-  public String getServiceName() {
-    return serviceName;
-  }
 }
