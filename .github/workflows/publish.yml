@@ -67,6 +67,7 @@ jobs:
         run: |
            ./.github/workflows/helm.sh package
            ./.github/workflows/helm.sh publish
+           
   publish-release-notes:
     runs-on: ubuntu-20.04
     steps:
