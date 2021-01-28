@@ -28,8 +28,6 @@ public class HypertraceDataQueryService extends PlatformService {
   private static final String QUERY_SERVICE_NAME = "query-service";
 
   private static final String QUERY_SERVICE_SERVICE_CONFIG = "service.config";
-
-  private String serviceName;
   private Server server;
 
   public HypertraceDataQueryService(ConfigClient configClient) {
@@ -38,7 +36,6 @@ public class HypertraceDataQueryService extends PlatformService {
 
   @Override
   protected void doInit() {
-    serviceName = getServiceName();
     int port = getAppConfig().getInt(PORT_PATH);
 
     final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(port);
@@ -84,7 +81,7 @@ public class HypertraceDataQueryService extends PlatformService {
 
   @Override
   protected void doStop() {
-    LOGGER.info("Shutting down Hypertrace Data Query Service: {}", serviceName);
+    LOGGER.info("Shutting down Hypertrace Data Query Service: {}", getServiceName());
     while (!server.isShutdown()) {
       server.shutdown();
       try {

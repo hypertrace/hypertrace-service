@@ -64,8 +64,6 @@ spec:
               containerPort: {{ .Values.containerAdminPort }}
               protocol: TCP
           env:
-            - name: SERVICE_NAME
-              value: "{{ .Values.service.name }}"
             - name: LOG4J_CONFIGURATION_FILE
               value: "/var/{{ .Chart.Name }}/log/log4j2.properties"
             - name: JAVA_OPTS
