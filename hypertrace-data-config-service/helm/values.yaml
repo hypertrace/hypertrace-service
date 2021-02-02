@@ -122,3 +122,29 @@ logConfig:
   appender:
     rolling:
       enabled: false
+
+config-bootstrapper:
+  jobs:
+    attribute:
+      prefix: attribute
+      configurationCommands: {}
+    entity:
+      prefix: entity
+      configurationCommands: {}
+  entityServiceConfig:
+    name: entity-service-config
+    data:
+      host: hypertrace-data-config-service
+      port: 9012
+  attributeServiceConfig:
+    name: attribute-service-config
+    data:
+      host: hypertrace-data-config-service
+      port: 9012
+  dataStoreType: "mongo"
+  mongoConfig:
+    name: mongo-config
+    data:
+      host: mongo
+      port: 27017
+      url: ""

@@ -39,12 +39,15 @@ spec:
         - name: service-config
           configMap:
             name: {{ .Values.hypertraceDataConfigServiceConfig.name }}
-        - name: query-service-config
+        - name: attribute-service-config
           configMap:
-            name: {{ .Values.queryServiceConfig.name }}
-        - name: gateway-service-config
+            name: {{ .Values.attributeServiceConfig.name }}
+        - name: entity-service-config
           configMap:
-            name: {{ .Values.gatewayServiceConfig.name }}
+            name: {{ .Values.entityServiceConfig.name }}
+        - name: config-service-config
+          configMap:
+            name: {{ .Values.configServiceConfig.name }}
         - name: log4j-config
           configMap:
             name: {{ .Values.logConfig.name }}
@@ -54,7 +57,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ include "hypertraceDataQueryService.image" . }}"
+          image: "{{ include "hypertraceDataConfigService.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: grpc-port
@@ -72,11 +75,14 @@ spec:
             - name: service-config
               mountPath: /app/resources/configs/{{ .Values.hypertraceDataConfigServiceConfig.name }}/application.conf
               subPath: application.conf
-            - name: query-service-config
-              mountPath: /app/resources/configs/query-service/default-cluster/default-pod/application.conf
+            - name: attribute-service-config
+              mountPath: /app/resources/configs/attribute-service/default-cluster/default-pod/application.conf
               subPath: application.conf
-            - name: gateway-service-config
-              mountPath: /app/resources/configs/gateway-service/default-cluster/default-pod/application.conf
+            - name: entity-service-config
+              mountPath: /app/resources/configs/entity-service/default-cluster/default-pod/application.conf
+              subPath: application.conf
+            - name: config-service-config
+              mountPath: /app/resources/configs/config-service/default-cluster/default-pod/application.conf
               subPath: application.conf
             - name: log4j-config
               mountPath: /var/{{ .Chart.Name }}/log

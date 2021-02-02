@@ -1,4 +1,4 @@
-{{- define "hypertraceDataQueryService.image" -}}
+{{- define "hypertraceDataConfigService.image" -}}
   {{- if and .Values.image.tagOverride  -}}
     {{- printf "%s:%s" .Values.image.repository .Values.image.tagOverride }}
   {{- else -}}
