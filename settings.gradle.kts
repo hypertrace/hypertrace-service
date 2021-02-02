@@ -23,3 +23,4 @@ includeBuild("./config-service")
 
 include(":hypertrace-service")
 include(":hypertrace-data-query-service")
+include(":hypertrace-data-config-service")
