@@ -23,5 +23,5 @@ version: 0.1.0
 
 dependencies:
   - name: config-bootstrapper
-    repository: "https://storage.googleapis.com/hypertrace-helm-charts"
+    repository: "file://config-bootstrapper"
     version: 0.2.3
