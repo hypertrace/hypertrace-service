@@ -17,9 +17,9 @@ replicaCount: 1
 maxUnavailable: 0
 
 image:
-  repository: traceableai-docker.jfrog.io/hypertrace/hypertrace-data-query-service
+  repository: hypertrace/hypertrace-data-query-service
   pullPolicy: IfNotPresent
-  tagOverride: "test"
+  tagOverride: ""
 
 imagePullSecrets: {}
 
