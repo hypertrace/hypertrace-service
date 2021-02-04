@@ -1,14 +1,10 @@
-{{ $global := . }}
-{{- range $k, $job := .Values.jobs }}
-{{ if $job.enabled }}
----
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ $job.prefix }}-{{ $global.Chart.Name }}
+  name: {{ .Values.job.prefix }}-{{ .Chart.Name }}
   labels:
-    release: {{ $global.Release.Name }}
-  {{- with $global.Values.jobLabels }}
+    release: {{ .Release.Name }}
+  {{- with .Values.jobLabels }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
   annotations:
@@ -22,77 +18,79 @@ spec:
   template:
     metadata:
       labels:
-        release: {{ $global.Release.Name }}
-      {{- with $global.Values.podLabels }}
+        release: {{ .Release.Name }}
+      {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
       restartPolicy: OnFailure
-    {{- with $global.Values.imagePullSecrets }}
+    {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
       {{- toYaml . | nindent 8 }}
     {{- end }}
       volumes:
         - name: job-config
           configMap:
-            name: {{ $job.prefix }}-{{ $global.Values.configBootstrapperConfig.name }}
+            name: {{ .Values.job.prefix }}-{{ .Values.configBootstrapperConfig.name }}
         - name: log4j-config
           configMap:
-            name: {{ $job.prefix }}-{{ $global.Values.logConfig.name }}
-        {{- if $global.Values.configurationCommands }}
+            name: {{ .Values.job.prefix }}-{{ .Values.logConfig.name }}
+        {{- if .Values.configurationCommands }}
         - name: bootstrap-configs
           configMap:
-            name: {{ $job.prefix }}-bootstrap-configs
+            name: {{ .Values.job.prefix }}-bootstrap-configs
         {{- end }}
-    {{- with $global.Values.nodeLabels }}
+    {{- with .Values.nodeLabels }}
       nodeSelector:
       {{- toYaml . | nindent 8}}
     {{- end }}
       initContainers:
-        {{- if or (eq $job.prefix "default") (eq $job.prefix "attribute") }}
+        {{- if or (eq .Values.job.prefix "default") (eq .Values.job.prefix "attribute") (eq .Values.job.prefix "attribute-entity") }}
         - name: attribute-service-ready
           image: busybox
           imagePullPolicy: IfNotPresent
           command: ["sh", "-c"]
-          args: ["until nc -zv {{ $global.Values.attributeServiceConfig.data.host }} {{ $global.Values.attributeServiceConfig.data.port }}; \
-                  do echo 'waiting for {{ $global.Values.attributeServiceConfig.data.host }} {{ $global.Values.attributeServiceConfig.data.port }}'; \
+          args: ["until nc -zv {{ .Values.attributeServiceConfig.data.host }} {{ .Values.attributeServiceConfig.data.port }}; \
+                  do echo 'waiting for {{ .Values.attributeServiceConfig.data.host }} {{ .Values.attributeServiceConfig.data.port }}'; \
                   sleep 5; done"]
         {{- end }}
-        {{- if or (eq $job.prefix "default") (eq $job.prefix "entity") }}
+        {{- if or (eq .Values.job.prefix "default") (eq .Values.job.prefix "entity") (eq .Values.job.prefix "attribute-entity") }}
         - name: entity-service-ready
           image: busybox
           imagePullPolicy: IfNotPresent
           command: ["sh", "-c"]
-          args: ["until nc -zv {{ $global.Values.entityServiceConfig.data.host }} {{ $global.Values.entityServiceConfig.data.port }}; \
-                  do echo 'waiting for {{ $global.Values.entityServiceConfig.data.host }} {{ $global.Values.entityServiceConfig.data.port }}'; \
+          args: ["until nc -zv {{ .Values.entityServiceConfig.data.host }} {{ .Values.entityServiceConfig.data.port }}; \
+                  do echo 'waiting for {{ .Values.entityServiceConfig.data.host }} {{ .Values.entityServiceConfig.data.port }}'; \
                   sleep 5; done"]
         {{- end }}
       containers:
-        - name: {{ $global.Chart.Name }}
-          image: "{{ $global.Values.image.repository }}:{{ $global.Chart.AppVersion }}"
-          imagePullPolicy: {{ $global.Values.image.pullPolicy }}
-          args: [ "-c", "/etc/config-bootstrapper/application.conf", "-C", "/app/resources/configs/config-bootstrapper/{{ $job.prefix }}-service", "--upgrade" ]
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if (eq .Values.job.prefix "attribute-entity") }}
+          args: [ "-c", "/etc/config-bootstrapper/application.conf", "-C", "/app/resources/configs/config-bootstrapper", "--upgrade" ]
+        {{- else }}
+          args: [ "-c", "/etc/config-bootstrapper/application.conf", "-C", "/app/resources/configs/config-bootstrapper/{{ .Values.job.prefix }}-service", "--upgrade" ]
+        {{- end }}
           env:
             - name: SERVICE_NAME
-              value: "{{ $global.Chart.Name }}"
+              value: "{{ .Chart.Name }}"
             - name: LOG4J_CONFIGURATION_FILE
-              value: "/var/{{ $global.Chart.Name }}/log/log4j2.properties"
+              value: "/var/{{ .Chart.Name }}/log/log4j2.properties"
             - name: JAVA_TOOL_OPTIONS
-              value: {{ $global.Values.javaOpts | quote }}
+              value: {{ .Values.javaOpts | quote }}
           volumeMounts:
             - name: job-config
               mountPath: /etc/config-bootstrapper/application.conf
               subPath: application.conf
             - name: log4j-config
-              mountPath: /var/{{ $global.Chart.Name }}/log
-            {{- range $key, $value := $job.configurationCommands }}
+              mountPath: /var/{{ .Chart.Name }}/log
+            {{- range $key, $value := .Values.configurationCommands }}
             - name: bootstrap-configs
-              mountPath: /app/resources/configs/config-bootstrapper/{{ $job.prefix }}-service/extras/{{ $key }}
+              mountPath: /app/resources/configs/config-bootstrapper/{{ $.Values.job.prefix }}-service/extras/{{ $key }}
               subPath: {{ $key }}
             {{- end }}
           resources:
-            {{- toYaml $global.Values.resources | nindent 12 }}
+            {{- toYaml .Values.resources | nindent 12 }}
 
   backoffLimit: 100
-{{- end }}
-{{- end }}

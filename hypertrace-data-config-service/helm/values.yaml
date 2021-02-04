@@ -124,17 +124,435 @@ logConfig:
       enabled: false
 
 config-bootstrapper:
-  jobs:
-    default:
-      enabled: false
-    attribute:
-      prefix: attribute
-      enabled: true
-      configurationCommands: {}
-    entity:
-      prefix: entity
-      enabled: true
-      configurationCommands: {}
+  job:
+    prefix: attribute-entity
+  configurationCommands:
+    saas_entity: |-
+      version = 2
+      name = saas_entity
+      commands = [
+        {
+          upgrade : [
+            {
+              type : EntityType,
+              action : ADD,
+              data : {
+                entityTypes = [
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          },
+                          {
+                              "name" : "NAMESPACE_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          },
+                          {
+                              "name" : "CLUSTER_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          }
+                      ],
+                      "name" : "K8S_STATEFUL_SET"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          },
+                          {
+                              "name" : "CLUSTER_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          },
+                          {
+                              "name" : "selector",
+                              "valueKind" : "TYPE_STRING"
+                          },
+                          {
+                              "name" : "NAMESPACE_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          }
+                      ],
+                      "name" : "K8S_SERVICE"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          },
+                          {
+                              "name" : "NAMESPACE_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          },
+                          {
+                              "name" : "CLUSTER_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          }
+                      ],
+                      "name" : "K8S_REPLICA_SET"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          },
+                          {
+                              "name" : "NAMESPACE_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          },
+                          {
+                              "name" : "CLUSTER_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          },
+                          {
+                              "name" : "REPLICASET_NAME",
+                              "valueKind" : "TYPE_STRING"
+                          },
+                          {
+                              "name" : "REPLICASET_ID",
+                              "valueKind" : "TYPE_STRING"
+                          }
+                      ],
+                      "name" : "K8S_POD"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          },
+                          {
+                              "name" : "CLUSTER_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          }
+                      ],
+                      "name" : "K8S_NODE"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          },
+                          {
+                              "name" : "CLUSTER_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          }
+                      ],
+                      "name" : "K8S_NAMESPACE"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          },
+                          {
+                              "name" : "NAMESPACE_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          },
+                          {
+                              "name" : "CLUSTER_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          }
+                      ],
+                      "name" : "K8S_JOB"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          }
+                      ],
+                      "name" : "K8S_ENDPOINT"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          },
+                          {
+                              "name" : "NAMESPACE_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          },
+                          {
+                              "name" : "CLUSTER_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          }
+                      ],
+                      "name" : "K8S_DEPLOYMENT"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          },
+                          {
+                              "name" : "CLUSTER_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          },
+                          {
+                              "name" : "NAMESPACE_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          }
+                      ],
+                      "name" : "K8S_DAEMON_SET"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          },
+                          {
+                              "name" : "NAMESPACE_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          },
+                          {
+                              "name" : "CLUSTER_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          }
+                      ],
+                      "name" : "K8S_CRONJOB"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          }
+                      ],
+                      "name" : "K8S_CONFIG_MAP"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          }
+                      ],
+                      "name" : "K8S_CLUSTER"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "EXTERNAL_ID",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          },
+                          {
+                              "name" : "NAMESPACE_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          },
+                          {
+                              "name" : "IMAGE",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          },
+                          {
+                              "name" : "POD_NAME",
+                              "valueKind" : "TYPE_STRING"
+                          },
+                          {
+                              "name" : "CLUSTER_NAME",
+                              "valueKind" : "TYPE_STRING",
+                              "materialized" : true
+                          }
+                      ],
+                      "name" : "DOCKER_CONTAINER"
+                  },
+                  {
+                      "attributeType" : [
+                          {
+                              "name" : "actor_id",
+                              "valueKind" : "TYPE_STRING",
+                              "identifyingAttribute" : true
+                          }
+                      ],
+                      "name" : "ACTOR"
+                  }
+                ]
+              }
+            }
+          ]
+          rollback : [
+            {
+              type : EntityType,
+              action : DELETE,
+              data : {
+                filter = {}
+              }
+            }
+          ]
+        },
+        {
+          upgrade : [
+            {
+              type : EntityRelationshipType,
+              action : ADD,
+              data : {
+                entityRelationshipTypes = [
+                  {
+                      "fromEntityType" : "K8S_STATEFUL_SET",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "STATEFULSET_POD",
+                      "toEntityType" : "K8S_POD"
+                  },
+                  {
+                      "fromEntityType" : "SERVICE",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "SERVICE_DEPLOYMENT",
+                      "toEntityType" : "K8S_DEPLOYMENT"
+                  },
+                  {
+                      "fromEntityType" : "K8S_REPLICA_SET",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "REPLICASET_POD",
+                      "toEntityType" : "K8S_POD"
+                  },
+                  {
+                      "fromEntityType" : "K8S_POD",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "POD_CONTAINER",
+                      "toEntityType" : "DOCKER_CONTAINER"
+                  },
+                  {
+                      "fromEntityType" : "K8S_NAMESPACE",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "NAMESPACE_STATEFULSET",
+                      "toEntityType" : "K8S_STATEFUL_SET"
+                  },
+                  {
+                      "fromEntityType" : "K8S_NAMESPACE",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "NAMESPACE_K8S_SERVICE",
+                      "toEntityType" : "K8S_SERVICE"
+                  },
+                  {
+                      "fromEntityType" : "K8S_NAMESPACE",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "NAMESPACE_JOB",
+                      "toEntityType" : "K8S_JOB"
+                  },
+                  {
+                      "fromEntityType" : "K8S_NAMESPACE",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "NAMESPACE_DEPLOYMENT",
+                      "toEntityType" : "K8S_DEPLOYMENT"
+                  },
+                  {
+                      "fromEntityType" : "K8S_NAMESPACE",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "NAMESPACE_DAEMONSET",
+                      "toEntityType" : "K8S_DAEMON_SET"
+                  },
+                  {
+                      "fromEntityType" : "K8S_NAMESPACE",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "NAMESPACE_CRONJOB",
+                      "toEntityType" : "K8S_CRONJOB"
+                  },
+                  {
+                      "fromEntityType" : "K8S_NODE",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "K8S_NODE_POD",
+                      "toEntityType" : "K8S_POD"
+                  },
+                  {
+                      "fromEntityType" : "K8S_DEPLOYMENT",
+                      "multiplicityKind" : "ONE_TO_ONE",
+                      "name" : "DEPLOYMENT_REPLICASET",
+                      "toEntityType" : "K8S_REPLICA_SET"
+                  },
+                  {
+                      "fromEntityType" : "K8S_DAEMON_SET",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "DAEMONSET_POD",
+                      "toEntityType" : "K8S_POD"
+                  },
+                  {
+                      "fromEntityType" : "K8S_CLUSTER",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "CLUSTER_NODE",
+                      "toEntityType" : "K8S_NODE"
+                  },
+                  {
+                      "fromEntityType" : "K8S_CLUSTER",
+                      "multiplicityKind" : "ONE_TO_MANY",
+                      "name" : "CLUSTER_NAMESPACE",
+                      "toEntityType" : "K8S_NAMESPACE"
+                  },
+                  {
+                      "fromEntityType" : "API",
+                      "multiplicityKind" : "MANY_TO_MANY",
+                      "name" : "API_POD",
+                      "toEntityType" : "K8S_POD"
+                  },
+                  {
+                    "fromEntityType" : "K8S_SERVICE",
+                    "multiplicityKind" : "MANY_TO_MANY",
+                    "name" : "K8S_SERVICE_K8S_DEPLOYMENT",
+                    "toEntityType" : "K8S_DEPLOYMENT"
+                  },
+                  {
+                    "fromEntityType" : "K8S_NAMESPACE",
+                    "multiplicityKind" : "ONE_TO_MANY",
+                    "name" : "NAMESPACE_SERVICE",
+                    "toEntityType" : "SERVICE"
+                  }
+                ]
+              }
+            }
+          ]
+          rollback : [
+            {
+              type : EntityRelationshipType,
+              action : DELETE,
+              data : {
+                filter = {}
+              }
+            }
+          ]
+        }
+      ]
   entityServiceConfig:
     name: entity-service-config
     data:
