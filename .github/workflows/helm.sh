@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-SUB_PROJECTS_DIRS=./hypertrace-data-query-service ./hypertrace-data-config-service ./hypertrace-service
+SUB_PROJECTS_DIRS="./hypertrace-data-query-service ./hypertrace-data-config-service ./hypertrace-service"
 
 subcommand=$1; shift
 case "$subcommand" in
