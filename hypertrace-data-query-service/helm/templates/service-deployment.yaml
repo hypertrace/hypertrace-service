@@ -70,7 +70,7 @@ spec:
               value: {{ .Values.javaOpts | quote }}
           volumeMounts:
             - name: service-config
-              mountPath: /app/resources/configs/{{ .Values.hypertraceDataQueryServiceConfig.name }}/application.conf
+              mountPath: /app/resources/configs/{{ .Values.hypertraceDataQueryServiceConfig.name }}/default-cluster/application.conf
               subPath: application.conf
             - name: query-service-config
               mountPath: /app/resources/configs/query-service/default-cluster/default-pod/application.conf
