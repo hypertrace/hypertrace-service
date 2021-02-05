@@ -39,6 +39,4 @@ data:
     {{- if .Values.logConfig.appender.rolling.enabled }}
     rootLogger.appenderRef.rolling.ref = ROLLING_FILE
     {{- end }}
-    loggers = PINOT_HANDLER
-    logger.PINOT_HANDLER.name = org.hypertrace.core.query.service.pinot.PinotBasedRequestHandler
-    logger.PINOT_HANDLER.level = INFO
+

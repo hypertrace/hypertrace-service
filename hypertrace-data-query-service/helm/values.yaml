@@ -84,7 +84,7 @@ queryServiceConfig:
     zookeeperConnectionString: zookeeper:2181/pinot/hypertrace-views
     tenantColumnName: tenant_id
     attributeClient:
-      host: attribute-service
+      host: hypertrace-data-config-service
       port: 9012
   handlers: []
   extraHandlers: []
@@ -98,11 +98,11 @@ gatewayServiceConfig:
         port = 9001
       }
       entity.service.config = {
-        host = entity-service
-        port = 50061
+        host = hypertrace-data-config-service
+        port = 9012
       }
       attributes.service.config = {
-        host = attribute-service
+        host = hypertrace-data-config-service
         port = 9012
       }
 
