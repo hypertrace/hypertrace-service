@@ -4,9 +4,9 @@ Hypertrace service combines [hypertrace-ui](https://github.com/hypertrace/hypert
 
 ## How this works?
 
-| ![space-1.jpg](https://hypertrace-docs.s3.amazonaws.com/arch/ht-query.png) | 
+| ![space-1.jpg](https://hypertrace-docs.s3.amazonaws.com/arch/ht-arch.png) | 
 |:--:| 
-| *Hypertrace Query Architecture* |
+| *Hypertrace Architecture* |
 
 [hypertrace-UI](ttps://github.com/hypertrace/hypertrace-ui) talks to [hypertrace-GraphQL](ttps://github.com/hypertrace/hypertrace-graphql) service which serves the GraphQL API which queries data from downstream services. GraphQL services talks to different grpc services to form the response.
 
