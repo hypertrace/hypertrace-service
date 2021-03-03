@@ -39,3 +39,10 @@ data:
     {{- if .Values.logConfig.appender.rolling.enabled }}
     rootLogger.appenderRef.rolling.ref = ROLLING_FILE
     {{- end }}
+
+    loggers = {{ include "helm-toolkit.utils.joinListWithComma" .Values.logConfig.loggers.loggers }}
+    {{- $loggers  := .Values.logConfig.loggers -}}
+    {{- range $l := .Values.logConfig.loggers.loggers }}
+    logger.{{ $l }}.name = {{ index $loggers (printf "%s" $l) "name" }}
+    logger.{{ $l }}.level = {{ index $loggers (printf "%s" $l) "level" }}
+    {{- end }}

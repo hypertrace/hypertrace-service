@@ -48,7 +48,13 @@ logConfig:
   name: hypertrace-log-config
   monitorInterval: 30
   rootLogger:
-    level: INFO
+    level: ERROR
   appender:
     rolling:
       enabled: false
+  loggers:
+    loggers:
+      - HYPERTRACE
+    HYPERTRACE:
+      name: org.hypertrace
+      level: INFO
