@@ -53,8 +53,7 @@ logConfig:
     rolling:
       enabled: false
   loggers:
-    loggers:
-      - HYPERTRACE
     HYPERTRACE:
       name: org.hypertrace
       level: INFO
+
