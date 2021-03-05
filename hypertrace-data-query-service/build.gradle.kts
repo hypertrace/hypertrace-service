@@ -17,10 +17,10 @@ dependencies {
   implementation("org.eclipse.jetty:jetty-servlet:9.4.35.v20201120")
   implementation("org.eclipse.jetty:jetty-rewrite:9.4.35.v20201120")
 
-  implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.16")
+  implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.21")
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.3.0")
   implementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.3.0")
-  implementation("org.hypertrace.core.documentstore:document-store:0.5.3")
+  implementation("org.hypertrace.core.documentstore:document-store:0.5.4")
 
   // Logging
   implementation("org.slf4j:slf4j-api:1.7.30")
