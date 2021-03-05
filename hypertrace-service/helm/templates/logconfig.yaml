@@ -39,3 +39,9 @@ data:
     {{- if .Values.logConfig.appender.rolling.enabled }}
     rootLogger.appenderRef.rolling.ref = ROLLING_FILE
     {{- end }}
+
+    loggers = {{ keys .Values.logConfig.loggers | join "," }}
+    {{- range $k, $v := .Values.logConfig.loggers }}
+    logger.{{ $k }}.name = {{ $v.name }}
+    logger.{{ $k }}.level = {{ $v.level }}
+    {{- end }}
