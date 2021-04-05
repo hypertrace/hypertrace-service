@@ -78,7 +78,7 @@ public class BootstrapTimerTask extends TimerTask {
       isDone = true;
       cancel();
     } catch (Exception ex) {
-      LOGGER.error(String.format("Failure in bootsrapping attributes, will try after [%s]", getInterval()));
+      LOGGER.error(String.format("Failure in bootsrapping attributes, will try after [%s]", getInterval()), ex);
     } finally {
       numRetries++;
     }

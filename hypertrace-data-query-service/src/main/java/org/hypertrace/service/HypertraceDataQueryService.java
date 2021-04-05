@@ -11,6 +11,7 @@ import org.hypertrace.core.serviceframework.config.ConfigClient;
 import org.hypertrace.core.serviceframework.config.ConfigUtils;
 import org.hypertrace.gateway.service.GatewayServiceImpl;
 import org.hypertrace.gateway.service.entity.config.InteractionConfigs;
+import org.hypertrace.gateway.service.entity.config.TimestampConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,7 @@ public class HypertraceDataQueryService extends PlatformService {
     // Gateway service
     final Config gatewayServiceAppConfig = getServiceConfig(GATEWAY_SERVICE_NAME);
     InteractionConfigs.init(gatewayServiceAppConfig);
+    TimestampConfigs.init(gatewayServiceAppConfig);
     serverBuilder.addService(InterceptorUtil.wrapInterceptors(
         new GatewayServiceImpl(gatewayServiceAppConfig)));
 

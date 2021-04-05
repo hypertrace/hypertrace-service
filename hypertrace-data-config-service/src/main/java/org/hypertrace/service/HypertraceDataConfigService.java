@@ -1,8 +1,7 @@
 package org.hypertrace.service;
 
 import com.typesafe.config.Config;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import io.grpc.Channel;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
@@ -10,6 +9,7 @@ import org.hypertrace.config.service.ConfigServicesFactory;
 import org.hypertrace.core.attribute.service.AttributeServiceImpl;
 import org.hypertrace.core.documentstore.Datastore;
 import org.hypertrace.core.documentstore.DatastoreProvider;
+import org.hypertrace.core.grpcutils.client.GrpcChannelRegistry;
 import org.hypertrace.core.grpcutils.server.InterceptorUtil;
 import org.hypertrace.core.serviceframework.PlatformService;
 import org.hypertrace.core.serviceframework.config.ConfigClient;
@@ -62,14 +62,16 @@ public class HypertraceDataConfigService extends PlatformService {
     final Datastore datastore =
         DatastoreProvider.getDatastore(entityServiceConfig.getDataStoreType(), dataStoreConfig);
 
-    ManagedChannel localChannel =
-        ManagedChannelBuilder.forAddress("localhost", port).usePlaintext().build();
+    GrpcChannelRegistry channelRegistry = new GrpcChannelRegistry();
+    this.getLifecycle().shutdownComplete().thenRun(channelRegistry::shutdown);
+
+    Channel localChannel = channelRegistry.forAddress("localhost", port);
 
     serverBuilder.addService(InterceptorUtil.wrapInterceptors(new org.hypertrace.entity.type.service.EntityTypeServiceImpl(datastore)))
         .addService(InterceptorUtil.wrapInterceptors(new EntityTypeServiceImpl(datastore)))
         .addService(InterceptorUtil.wrapInterceptors(new EntityDataServiceImpl(datastore, localChannel)))
         .addService(InterceptorUtil
-            .wrapInterceptors(new EntityQueryServiceImpl(datastore, entityServiceAppConfig)));
+            .wrapInterceptors(new EntityQueryServiceImpl(datastore, entityServiceAppConfig, channelRegistry)));
 
     // Config service
     ConfigServicesFactory.buildAllConfigServices(
