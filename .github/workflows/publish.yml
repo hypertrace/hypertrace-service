@@ -42,8 +42,6 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_PUBLISH_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PUBLISH_TOKEN }}
-          ORG_GRADLE_PROJECT_publishUser: ${{ secrets.BINTRAY_USER }}
-          ORG_GRADLE_PROJECT_publishApiKey: ${{ secrets.BINTRAY_API_KEY }}
 
   publish-helm-charts:
     runs-on: ubuntu-20.04
@@ -80,4 +78,3 @@ jobs:
       - uses: hypertrace/github-actions/release-notes@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          
