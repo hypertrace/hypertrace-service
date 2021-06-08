@@ -1,10 +1,10 @@
 [submodule "attribute-service"]
 	path = attribute-service
-	url = git@github.com:hypertrace/attribute-service.git
+	url = https://github.com/hypertrace/attribute-service.git
 	branch = main
 [submodule "entity-service"]
 	path = entity-service
-	url = git@github.com:hypertrace/entity-service.git
+	url = https://github.com/hypertrace/entity-service.git
 	branch = main
 [submodule "gateway-service"]
 	path = gateway-service
@@ -20,7 +20,7 @@
 	branch = main
 [submodule "config-bootstrapper"]
 	path = config-bootstrapper
-	url = git@github.com:hypertrace/config-bootstrapper.git
+	url = https://github.com/hypertrace/config-bootstrapper.git
 	branch = main
 [submodule "config-service"]
   path = config-service
