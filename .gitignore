@@ -22,6 +22,7 @@ test-output
 .idea/dictionaries/
 .idea/codeStyles/
 .idea/.name
+.idea/*
 # Local config to handle using Java 8 vs java 11.
 .java-version
 *.tgz
