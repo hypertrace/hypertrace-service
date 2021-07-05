@@ -1,7 +1,7 @@
 ARG HYPERTRACE_UI_VERSION
 FROM hypertrace/hypertrace-ui:${HYPERTRACE_UI_VERSION} AS ui
 
-FROM razorpay/java:11
+FROM hypertrace/java:11
 LABEL maintainer="Hypertrace 'https://www.hypertrace.org/'"
 WORKDIR /app
 COPY build/docker/libs libs/

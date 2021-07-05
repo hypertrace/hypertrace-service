@@ -60,7 +60,7 @@ public class HypertraceService extends PlatformService {
   protected void doInit() {
     serviceName = getAppConfig().getString(SERVICE_NAME_CONFIG);
     int port = getAppConfig().getInt(PORT_PATH);
-    LOGGER.info("Hello Ronak");
+
     final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(port);
 
     // Attribute service
