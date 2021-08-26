@@ -1,4 +1,4 @@
-rootProject.name = "hypertrace-service"
+rootProject.name = "hypertrace-service-root"
 
 pluginManagement {
   repositories {
