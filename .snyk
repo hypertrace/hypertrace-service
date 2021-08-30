@@ -5,17 +5,17 @@ ignore:
   SNYK-JAVA-LOG4J-572732:
     - '*':
         reason: no available replacement
-        expires: 2021-07-31T00:00:00.000Z
+        expires: 2021-12-31T00:00:00.000Z
   SNYK-JAVA-LOG4J-1300176:
     - '*':
         reason: no available replacement
-        expires: 2021-07-31T00:00:00.000Z
+        expires: 2021-12-31T00:00:00.000Z
   SNYK-JAVA-IONETTY-473694:
     - '*':
         reason: no available replacement
-        expires: 2021-07-31T00:00:00.000Z
+        expires: 2021-12-31T00:00:00.000Z
   SNYK-JAVA-IONETTY-1042268:
     - '*':
         reason: No replacement available
-        expires: 2021-07-31T00:00:00.000Z
+        expires: 2021-12-31T00:00:00.000Z
 patch: {}
