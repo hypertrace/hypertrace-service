@@ -5,6 +5,9 @@ import io.grpc.Channel;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
+import java.time.Clock;
+import org.hypertrace.entity.service.change.event.api.EntityChangeEventGenerator;
+import org.hypertrace.entity.service.change.event.impl.EntityChangeEventGeneratorFactory;
 import org.hypertrace.config.service.ConfigServicesFactory;
 import org.hypertrace.core.attribute.service.AttributeServiceImpl;
 import org.hypertrace.core.documentstore.Datastore;
@@ -66,10 +69,13 @@ public class HypertraceDataConfigService extends PlatformService {
     this.getLifecycle().shutdownComplete().thenRun(channelRegistry::shutdown);
 
     Channel localChannel = channelRegistry.forAddress("localhost", port);
+    EntityChangeEventGenerator entityChangeEventGenerator =
+        EntityChangeEventGeneratorFactory.getInstance()
+            .createEntityChangeEventGenerator(getAppConfig(), Clock.systemUTC());
 
     serverBuilder.addService(InterceptorUtil.wrapInterceptors(new org.hypertrace.entity.type.service.EntityTypeServiceImpl(datastore)))
         .addService(InterceptorUtil.wrapInterceptors(new EntityTypeServiceImpl(datastore)))
-        .addService(InterceptorUtil.wrapInterceptors(new EntityDataServiceImpl(datastore, localChannel)))
+        .addService(InterceptorUtil.wrapInterceptors(new EntityDataServiceImpl(datastore, localChannel, entityChangeEventGenerator)))
         .addService(InterceptorUtil
             .wrapInterceptors(new EntityQueryServiceImpl(datastore, entityServiceAppConfig, channelRegistry)));
 

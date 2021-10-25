@@ -14,6 +14,7 @@ dependencies {
   implementation("org.hypertrace.core.attribute.service:attribute-service-impl")
   implementation("org.hypertrace.entity.service:entity-service")
   implementation("org.hypertrace.entity.service:entity-service-impl")
+  implementation("org.hypertrace.entity.service:entity-service-change-event-generator")
   implementation("org.hypertrace.core.query.service:query-service")
   implementation("org.hypertrace.core.query.service:query-service-impl")
   implementation("org.hypertrace.gateway.service:gateway-service")
