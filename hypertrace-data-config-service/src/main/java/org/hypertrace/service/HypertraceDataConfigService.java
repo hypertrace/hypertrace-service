@@ -71,7 +71,7 @@ public class HypertraceDataConfigService extends PlatformService {
     Channel localChannel = channelRegistry.forAddress("localhost", port);
     EntityChangeEventGenerator entityChangeEventGenerator =
         EntityChangeEventGeneratorFactory.getInstance()
-            .createEntityChangeEventGenerator(getAppConfig(), Clock.systemUTC());
+            .createEntityChangeEventGenerator(entityServiceAppConfig, Clock.systemUTC());
 
     serverBuilder.addService(InterceptorUtil.wrapInterceptors(new org.hypertrace.entity.type.service.EntityTypeServiceImpl(datastore)))
         .addService(InterceptorUtil.wrapInterceptors(new EntityTypeServiceImpl(datastore)))

@@ -86,7 +86,7 @@ public class HypertraceService extends PlatformService {
     Channel localChannel = channelRegistry.forAddress("localhost", port);
     EntityChangeEventGenerator entityChangeEventGenerator =
         EntityChangeEventGeneratorFactory.getInstance()
-            .createEntityChangeEventGenerator(getAppConfig(), Clock.systemUTC());
+            .createEntityChangeEventGenerator(entityServiceAppConfig, Clock.systemUTC());
 
     serverBuilder
         .addService(
