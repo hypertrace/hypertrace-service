@@ -25,26 +25,19 @@ dependencies {
   implementation("org.hypertrace.config.service:config-service")
   implementation("org.hypertrace.config.service:config-service-impl")
 
-  implementation("org.eclipse.jetty:jetty-server:9.4.42.v20210604")
-  implementation("org.eclipse.jetty:jetty-servlet:9.4.42.v20210604")
-  implementation("org.eclipse.jetty:jetty-rewrite:9.4.42.v20210604")
+  implementation("org.eclipse.jetty:jetty-server:9.4.44.v20210927")
+  implementation("org.eclipse.jetty:jetty-servlet:9.4.44.v20210927")
+  implementation("org.eclipse.jetty:jetty-rewrite:9.4.44.v20210927")
 
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.29")
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.6.1")
   implementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.6.1")
   implementation("org.hypertrace.core.documentstore:document-store:0.6.4")
-  // Config
   implementation("com.typesafe:config:1.4.1")
-  // Logging
-  implementation("org.slf4j:slf4j-api:1.7.30")
-  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.17.0")
+  implementation("org.slf4j:slf4j-api:1.7.32")
 
-  // GRPC
-  runtimeOnly("io.grpc:grpc-netty:1.40.0")
-  constraints {
-    runtimeOnly("io.netty:netty-codec-http2:4.1.71.Final")
-    runtimeOnly("io.netty:netty-handler-proxy:4.1.71.Final")
-  }
+  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.17.1")
+  runtimeOnly("io.grpc:grpc-netty:1.43.2")
 }
 
 application {
