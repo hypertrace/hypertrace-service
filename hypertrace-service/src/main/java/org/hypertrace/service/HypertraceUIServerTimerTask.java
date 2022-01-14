@@ -166,7 +166,7 @@ public class HypertraceUIServerTimerTask extends TimerTask {
     return SpansRequest.newBuilder()
         .setStartTimeMillis(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(10))
         .setEndTimeMillis(System.currentTimeMillis())
-        .addSelection(QueryExpressionUtil.getColumnExpression("EVENT.id"))
+        .addSelection(QueryExpressionUtil.buildAttributeExpression("EVENT.id"))
         .setLimit(1)
         .build();
   }

@@ -32,7 +32,7 @@ dependencies {
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.29")
   implementation("org.hypertrace.core.grpcutils:grpc-server-utils:0.6.1")
   implementation("org.hypertrace.core.grpcutils:grpc-client-utils:0.6.1")
-  implementation("org.hypertrace.core.documentstore:document-store:0.6.0")
+  implementation("org.hypertrace.core.documentstore:document-store:0.6.4")
   // Config
   implementation("com.typesafe:config:1.4.1")
   // Logging
@@ -48,7 +48,7 @@ dependencies {
 }
 
 application {
-  mainClassName = "org.hypertrace.core.serviceframework.PlatformServiceLauncher"
+  mainClass.set("org.hypertrace.core.serviceframework.PlatformServiceLauncher")
 }
 
 hypertraceDocker {
