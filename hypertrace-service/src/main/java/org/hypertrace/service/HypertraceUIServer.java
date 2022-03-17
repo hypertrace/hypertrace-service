@@ -48,7 +48,7 @@ public class HypertraceUIServer {
     rewriteHandler.setRewritePathInfo(false);
     rewriteHandler.setOriginalPathAttribute("requestedPath");
 
-    String graphqlPath = this.graphQlService.getGraphQlServiceConfig().getGraphqlUrlPath();
+    String graphqlPath = this.graphQlService.getGraphQlServiceConfig().getGraphQlUrlPath();
 
     // Doesn't start with the graphql root, /assets/, or end with .png, .css,  or .js
     String matchRegex = "^(?!" + graphqlPath + "|/assets/).*(?<!\\.png|\\.css|\\.js)$";
