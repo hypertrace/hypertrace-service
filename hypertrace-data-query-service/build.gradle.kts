@@ -47,11 +47,21 @@ application {
   mainClass.set("org.hypertrace.core.serviceframework.PlatformServiceLauncher")
 }
 
+task<Exec>("getLastestGitCommit") {
+  commandLine("git rev-parse HEAD")
+}
+
 hypertraceDocker {
-  defaultImage {
+  image("hypertrace-data-query-service-custom-image") {
+    dockerFile.set(file("build/docker/Dockerfile"))
     javaApplication {
       envVars.put("CLUSTER_NAME", "default-cluster")
       envVars.put("POD_NAME", "default-pod")
+    }
+  }
+  tag("custom-tag") {
+    onlyIf { candidateImage ->
+      candidateImage.name == "hypertrace-data-query-service-custom-image"
     }
   }
 }
