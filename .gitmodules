@@ -1,28 +1,28 @@
 [submodule "attribute-service"]
 	path = attribute-service
-	url = https://github.com/hypertrace/attribute-service.git
+	url = https://github.com/suddendust/attribute-service.git
 	branch = main
 [submodule "entity-service"]
 	path = entity-service
-	url = https://github.com/hypertrace/entity-service.git
+	url = https://github.com/suddendust/entity-service.git
 	branch = main
 [submodule "gateway-service"]
 	path = gateway-service
-	url = https://github.com/hypertrace/gateway-service.git
+	url = https://github.com/suddendust/gateway-service.git
 	branch = main
 [submodule "query-service"]
 	path = query-service
-	url = https://github.com/hypertrace/query-service.git
+	url = https://github.com/suddendust/query-service.git
 	branch = main
 [submodule "hypertrace-graphql"]
 	path = hypertrace-graphql
-	url = https://github.com/hypertrace/hypertrace-graphql.git
+	url = https://github.com/suddendust/hypertrace-graphql.git
 	branch = main
 [submodule "config-bootstrapper"]
 	path = config-bootstrapper
-	url = https://github.com/hypertrace/config-bootstrapper.git
+	url = https://github.com/suddendust/config-bootstrapper.git
 	branch = main
 [submodule "config-service"]
   path = config-service
-  url = https://github.com/hypertrace/config-service.git
+  url = https://github.com/suddendust/config-service.git
   branch = main

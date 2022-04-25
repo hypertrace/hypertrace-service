@@ -40,10 +40,16 @@ application {
 }
 
 hypertraceDocker {
-  defaultImage {
+  image("hypertrace-data-query-service-custom-image-2") {
+    dockerFile.set(file("build/docker/Dockerfile"))
     javaApplication {
       envVars.put("CLUSTER_NAME", "default-cluster")
       envVars.put("POD_NAME", "default-pod")
+    }
+  }
+  tag("custom-tag-2") {
+    onlyIf { candidateImage ->
+      candidateImage.name == "hypertrace-data-query-service-custom-image-2"
     }
   }
 }
