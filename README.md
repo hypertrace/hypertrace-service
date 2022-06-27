@@ -4,7 +4,7 @@ Hypertrace service combines [hypertrace-ui](https://github.com/hypertrace/hypert
 
 ## How this works?
 
-| ![space-1.jpg](https://raw.githubusercontent.com/hypertrace/hypertrace-service/ht-architecture.png) | 
+| ![space-1.jpg](https://raw.githubusercontent.com/hypertrace/hypertrace-docs-website/main/static/images/ht-architecture.png) | 
 |:--:| 
 | *Hypertrace Architecture* |
 
